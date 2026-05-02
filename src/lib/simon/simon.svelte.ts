@@ -43,7 +43,7 @@ function get_step_ms(len: number): number {
 }
 
 function add_to_sequence(s: SimonState, colors: readonly ButtonColor[]): void {
-	const index = Math.floor(Math.random() * colors.length);
+	const index = Math.floor(Math.random() * colors.length); // NOSONAR — game RNG, not security-sensitive
 	s.sequence.push(colors[index] ?? FALLBACK_COLOR);
 }
 
