@@ -1,4 +1,9 @@
 import { override_event_offset } from '$lib/game/override-event-offset';
+import {
+	create_listener_manager,
+	type ListenerManager,
+	type ListenerSpec
+} from '$lib/game/listener-manager';
 
 const MOUSE_SENSITIVITY = 0.004;
 const WHEEL_SENSITIVITY = 0.004;
@@ -18,7 +23,7 @@ type InputState = {
 	is_sprinting: boolean;
 	is_jump_requested: boolean;
 };
-type InputRefs = { active_cleanup: (() => void) | null; canvas_el: HTMLCanvasElement | null };
+type InputRefs = { canvas_el: HTMLCanvasElement | null };
 
 const KEY_MAP: Record<string, keyof Keys> = {
 	w: 'w',
@@ -33,13 +38,6 @@ const KEY_MAP: Record<string, keyof Keys> = {
 	d: 'd',
 	D: 'd',
 	ArrowRight: 'd'
-};
-
-type ListenerSpec = {
-	target: EventTarget;
-	type: string;
-	handler: EventListener;
-	options?: AddEventListenerOptions;
 };
 
 const PASSIVE_FALSE: AddEventListenerOptions = { passive: false };
@@ -181,14 +179,9 @@ function make_listener_specs(s: InputState, refs: InputRefs): readonly ListenerS
 	];
 }
 
-function setup_input_listeners(s: InputState, jm: Vec2, jl: Vec2, refs: InputRefs): () => void {
-	if (refs.active_cleanup) return refs.active_cleanup;
-	const specs = make_listener_specs(s, refs);
-	for (const spec of specs) spec.target.addEventListener(spec.type, spec.handler, spec.options);
-	const cleanup = function cleanup(): void {
-		for (const spec of specs)
-			spec.target.removeEventListener(spec.type, spec.handler, spec.options);
-		refs.active_cleanup = null;
+function make_input_api(s: InputState, jm: Vec2, jl: Vec2, refs: InputRefs) {
+	let manager: ListenerManager | null = null;
+	function on_cleanup(): void {
 		s.yaw = 0;
 		s.pitch = 0;
 		reset_transient_input(s);
@@ -196,12 +189,7 @@ function setup_input_listeners(s: InputState, jm: Vec2, jl: Vec2, refs: InputRef
 		jm.y = 0;
 		jl.x = 0;
 		jl.y = 0;
-	};
-	refs.active_cleanup = cleanup;
-	return cleanup;
-}
-
-function make_input_api(s: InputState, jm: Vec2, jl: Vec2, refs: InputRefs) {
+	}
 	return {
 		get is_dragging_look() {
 			return s.is_dragging_look;
@@ -234,8 +222,9 @@ function make_input_api(s: InputState, jm: Vec2, jl: Vec2, refs: InputRefs) {
 			return jl;
 		},
 		setup_listeners: (canvas_el: HTMLCanvasElement | null): (() => void) => {
-			if (!refs.active_cleanup || canvas_el !== null) refs.canvas_el = canvas_el;
-			return setup_input_listeners(s, jm, jl, refs);
+			const m = (manager ??= create_listener_manager(make_listener_specs(s, refs)));
+			if (!m.is_active || canvas_el !== null) refs.canvas_el = canvas_el;
+			return m.setup(on_cleanup);
 		},
 		set_joystick_move: (x: number, y: number): void => {
 			jm.x = x;
@@ -274,7 +263,7 @@ export function create_input() {
 	});
 	const joystick_move = $state<Vec2>({ x: 0, y: 0 });
 	const joystick_look = $state<Vec2>({ x: 0, y: 0 });
-	const refs: InputRefs = { active_cleanup: null, canvas_el: null };
+	const refs: InputRefs = { canvas_el: null };
 	return make_input_api(s, joystick_move, joystick_look, refs);
 }
 
