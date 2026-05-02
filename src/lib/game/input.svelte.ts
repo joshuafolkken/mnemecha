@@ -234,7 +234,7 @@ function make_input_api(s: InputState, jm: Vec2, jl: Vec2, refs: InputRefs) {
 			return jl;
 		},
 		setup_listeners: (canvas_el: HTMLCanvasElement | null): (() => void) => {
-			refs.canvas_el = canvas_el;
+			if (!refs.active_cleanup || canvas_el !== null) refs.canvas_el = canvas_el;
 			return setup_input_listeners(s, jm, jl, refs);
 		},
 		set_joystick_move: (x: number, y: number): void => {
