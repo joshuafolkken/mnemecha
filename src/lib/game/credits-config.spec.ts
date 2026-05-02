@@ -13,6 +13,8 @@ import {
 	advance_scroll
 } from './credits-config';
 
+const TEST_HALF_DEPTH = 5;
+
 describe('credits-config', () => {
 	it('FLOOR_TEXT_ROTATION_X is -PI/2', () => {
 		expect(FLOOR_TEXT_ROTATION_X).toBeCloseTo(-Math.PI / 2);
@@ -59,24 +61,30 @@ describe('credits-config', () => {
 
 	describe('make_credits_scroll_bounds', () => {
 		it('start_z is positive', () => {
-			const { start_z } = make_credits_scroll_bounds(10);
+			const { start_z } = make_credits_scroll_bounds(10, TEST_HALF_DEPTH);
 			expect(start_z).toBeGreaterThan(0);
 		});
 
 		it('end_z is negative', () => {
-			const { end_z } = make_credits_scroll_bounds(10);
+			const { end_z } = make_credits_scroll_bounds(10, TEST_HALF_DEPTH);
 			expect(end_z).toBeLessThan(0);
 		});
 
 		it('start_z and end_z are symmetric around zero', () => {
-			const { start_z, end_z } = make_credits_scroll_bounds(10);
+			const { start_z, end_z } = make_credits_scroll_bounds(10, TEST_HALF_DEPTH);
 			expect(start_z).toBeCloseTo(-end_z);
 		});
 
 		it('start_z increases as line_count increases', () => {
-			const small = make_credits_scroll_bounds(10);
-			const large = make_credits_scroll_bounds(100);
+			const small = make_credits_scroll_bounds(10, TEST_HALF_DEPTH);
+			const large = make_credits_scroll_bounds(100, TEST_HALF_DEPTH);
 			expect(large.start_z).toBeGreaterThan(small.start_z);
+		});
+
+		it('start_z increases as half_depth increases', () => {
+			const shallow = make_credits_scroll_bounds(10, 1);
+			const deep = make_credits_scroll_bounds(10, 10);
+			expect(deep.start_z).toBeGreaterThan(shallow.start_z);
 		});
 	});
 
@@ -87,24 +95,31 @@ describe('credits-config', () => {
 
 		it('moves z in the negative direction by speed times delta', () => {
 			const initial_z = 5;
-			const result = advance_scroll(initial_z, FRAME_DELTA, START_Z, END_Z);
+			const result = advance_scroll(initial_z, FRAME_DELTA, START_Z, END_Z, CREDITS_SCROLL_SPEED);
 			expect(result).toBeCloseTo(initial_z - CREDITS_SCROLL_SPEED * FRAME_DELTA);
 		});
 
 		it('resets to start_z when z drops below end_z', () => {
 			const past_end = END_Z - 0.1;
-			expect(advance_scroll(past_end, 0, START_Z, END_Z)).toBe(START_Z);
+			expect(advance_scroll(past_end, 0, START_Z, END_Z, CREDITS_SCROLL_SPEED)).toBe(START_Z);
 		});
 
 		it('does not reset when z equals end_z exactly', () => {
-			expect(advance_scroll(END_Z, 0, START_Z, END_Z)).toBe(END_Z);
+			expect(advance_scroll(END_Z, 0, START_Z, END_Z, CREDITS_SCROLL_SPEED)).toBe(END_Z);
 		});
 
 		it('continues scrolling when z is above end_z', () => {
 			const z = 0;
-			const result = advance_scroll(z, 1, START_Z, END_Z);
+			const result = advance_scroll(z, 1, START_Z, END_Z, CREDITS_SCROLL_SPEED);
 			expect(result).toBeLessThan(z);
 			expect(result).not.toBe(START_Z);
+		});
+
+		it('uses the provided speed parameter', () => {
+			const initial_z = 5;
+			const slow = advance_scroll(initial_z, FRAME_DELTA, START_Z, END_Z, 0.1);
+			const fast = advance_scroll(initial_z, FRAME_DELTA, START_Z, END_Z, 1.0);
+			expect(fast).toBeLessThan(slow);
 		});
 	});
 });

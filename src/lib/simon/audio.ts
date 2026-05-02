@@ -1,5 +1,4 @@
 import { audio as game_audio } from '$lib/game/audio';
-import { game_state } from '$lib/game/state.svelte';
 import type { ButtonColor } from './types';
 
 const FREQ: Record<ButtonColor, number> = { green: 415, red: 310, yellow: 252, blue: 209 };
@@ -15,7 +14,7 @@ let active_osc: OscillatorNode | null = null;
 
 type OscGraph = { osc: OscillatorNode; gain: GainNode; ctx: AudioContext };
 
-function create_osc_graph(freq: number): OscGraph | null {
+function create_osc_graph(freq: number, is_alt: boolean): OscGraph | null {
 	game_audio.init_audio();
 	const ctx = game_audio.get_audio_context();
 	if (!ctx) return null;
@@ -24,7 +23,7 @@ function create_osc_graph(freq: number): OscGraph | null {
 	osc.connect(gain);
 	gain.connect(ctx.destination);
 	osc.frequency.setValueAtTime(freq, ctx.currentTime);
-	osc.type = game_state.is_alt ? CYBER_WAVE : NORMAL_WAVE;
+	osc.type = is_alt ? CYBER_WAVE : NORMAL_WAVE;
 	gain.gain.setValueAtTime(GAIN_VALUE, ctx.currentTime);
 	return { osc, gain, ctx };
 }
@@ -39,38 +38,34 @@ function stop_tone(): void {
 	active_osc = null;
 }
 
-function start_tone_raw(freq: number): void {
+function start_tone_raw(freq: number, is_alt: boolean): void {
 	stop_tone();
-	const nodes = create_osc_graph(freq);
+	const nodes = create_osc_graph(freq, is_alt);
 	if (!nodes) return;
 	nodes.osc.start(nodes.ctx.currentTime);
 	active_osc = nodes.osc;
 }
 
-function play_raw_tone(freq: number, duration_ms: number): void {
-	const nodes = create_osc_graph(freq);
+function play_raw_tone(freq: number, duration_ms: number, is_alt: boolean): void {
+	const nodes = create_osc_graph(freq, is_alt);
 	if (!nodes) return;
 	const { osc, gain, ctx } = nodes;
 	const duration_s = duration_ms / MS_PER_SECOND;
-	if (game_state.is_alt) {
-		gain.gain.exponentialRampToValueAtTime(GAIN_FLOOR, ctx.currentTime + duration_s);
-	}
+	if (is_alt) gain.gain.exponentialRampToValueAtTime(GAIN_FLOOR, ctx.currentTime + duration_s);
 	osc.start(ctx.currentTime);
 	osc.stop(ctx.currentTime + duration_s);
 }
 
-function start_tone(color: ButtonColor): void {
-	const is_alt = game_state.is_alt;
-	start_tone_raw(is_alt ? CYBER_FREQ[color] : FREQ[color]);
+function start_tone(color: ButtonColor, is_alt: boolean): void {
+	start_tone_raw(is_alt ? CYBER_FREQ[color] : FREQ[color], is_alt);
 }
 
-function play_tone(color: ButtonColor, duration_ms: number): void {
-	const is_alt = game_state.is_alt;
-	play_raw_tone(is_alt ? CYBER_FREQ[color] : FREQ[color], duration_ms);
+function play_tone(color: ButtonColor, duration_ms: number, is_alt: boolean): void {
+	play_raw_tone(is_alt ? CYBER_FREQ[color] : FREQ[color], duration_ms, is_alt);
 }
 
-function play_error_tone(duration_ms: number): void {
-	play_raw_tone(ERROR_FREQ, duration_ms);
+function play_error_tone(duration_ms: number, is_alt: boolean): void {
+	play_raw_tone(ERROR_FREQ, duration_ms, is_alt);
 }
 
 export const simon_audio = {

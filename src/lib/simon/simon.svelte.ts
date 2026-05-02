@@ -1,5 +1,6 @@
 import { simon_audio } from './audio';
 import { score as default_score, type ScoreInstance } from './score.svelte';
+import { game_state } from '$lib/game/state.svelte';
 import type { ButtonColor, SimonPhase } from './types';
 
 const COLORS: readonly ButtonColor[] = ['green', 'red', 'yellow', 'blue'];
@@ -67,8 +68,8 @@ function cancel_flash(s: SimonState, t: SimonTimers): void {
 	s.flash_intensity = 1;
 }
 
-function play_all_tones(duration_ms: number): void {
-	for (const color of COLORS) simon_audio.play_tone(color, duration_ms);
+function play_all_tones(duration_ms: number, is_alt: boolean): void {
+	for (const color of COLORS) simon_audio.play_tone(color, duration_ms, is_alt);
 }
 
 async function run_show(s: SimonState, t: SimonTimers, gen: number): Promise<void> {
@@ -78,7 +79,7 @@ async function run_show(s: SimonState, t: SimonTimers, gen: number): Promise<voi
 	for (const color of s.sequence) {
 		if (gen !== t.show_gen) return;
 		s.active_color = color;
-		simon_audio.play_tone(color, on_ms);
+		simon_audio.play_tone(color, on_ms, game_state.is_alt);
 		await delay(on_ms);
 		if (gen !== t.show_gen) return;
 		s.active_color = null;
@@ -95,7 +96,7 @@ async function flash_burst(s: SimonState, t: SimonTimers, gen: number): Promise<
 		if (t.flash_gen !== gen) return;
 		s.flash_colors = [...COLORS];
 		s.flash_intensity = FLASH_INTENSITY_BURST;
-		play_all_tones(FLASH_BURST_ON_MS);
+		play_all_tones(FLASH_BURST_ON_MS, game_state.is_alt);
 		await delay(FLASH_BURST_ON_MS);
 		if (t.flash_gen !== gen) return;
 		s.flash_colors = [];
@@ -109,14 +110,14 @@ async function flash_cascade(s: SimonState, t: SimonTimers, gen: number): Promis
 		if (t.flash_gen !== gen) return;
 		s.flash_colors = [color];
 		s.flash_intensity = FLASH_INTENSITY_BURST;
-		simon_audio.play_tone(color, FLASH_CASCADE_FWD_MS);
+		simon_audio.play_tone(color, FLASH_CASCADE_FWD_MS, game_state.is_alt);
 		await delay(FLASH_CASCADE_FWD_MS);
 	}
 	for (const color of [...COLORS].reverse()) {
 		if (t.flash_gen !== gen) return;
 		s.flash_colors = [color];
 		s.flash_intensity = FLASH_INTENSITY_BURST;
-		simon_audio.play_tone(color, FLASH_CASCADE_REV_MS);
+		simon_audio.play_tone(color, FLASH_CASCADE_REV_MS, game_state.is_alt);
 		await delay(FLASH_CASCADE_REV_MS);
 	}
 }
@@ -125,7 +126,7 @@ async function flash_finale(s: SimonState, t: SimonTimers, gen: number): Promise
 	if (t.flash_gen !== gen) return;
 	s.flash_colors = [...COLORS];
 	s.flash_intensity = FLASH_INTENSITY_FINALE;
-	play_all_tones(FLASH_FINALE_MS);
+	play_all_tones(FLASH_FINALE_MS, game_state.is_alt);
 	await delay(FLASH_FINALE_MS);
 	if (t.flash_gen !== gen) return;
 	s.flash_colors = [];
@@ -188,11 +189,11 @@ function press_simon(
 ): void {
 	if (s.phase !== 'player_input') return;
 	s.pressed_color = color;
-	simon_audio.start_tone(color);
+	simon_audio.start_tone(color, game_state.is_alt);
 	if (color === s.sequence[s.position]) {
 		handle_correct_press(s, t, score);
 	} else {
-		simon_audio.play_error_tone(ERROR_BEEP_MS);
+		simon_audio.play_error_tone(ERROR_BEEP_MS, game_state.is_alt);
 		s.phase = 'gameover';
 	}
 }

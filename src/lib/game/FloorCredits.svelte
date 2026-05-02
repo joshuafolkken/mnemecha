@@ -8,11 +8,12 @@
 		CREDITS_NORMAL_COLOR,
 		CREDITS_CYBER_COLOR,
 		CREDITS_POSITION_Y,
+		CREDITS_SCROLL_SPEED,
 		CREDITS_GLOW_BLUR,
 		CREDITS_GLOW_OPACITY,
-		FLOOR_TEXT_ROTATION_X
+		FLOOR_TEXT_ROTATION_X,
+		advance_scroll
 	} from './credits-config';
-	import { advance_scroll } from './credits-config';
 
 	interface Props {
 		is_alt: boolean;
@@ -28,7 +29,7 @@
 	let scroll_z = $state(scroll_start_z);
 
 	function tick(delta: number): void {
-		scroll_z = advance_scroll(scroll_z, delta, scroll_start_z, scroll_end_z);
+		scroll_z = advance_scroll(scroll_z, delta, scroll_start_z, scroll_end_z, CREDITS_SCROLL_SPEED);
 	}
 
 	useTask(tick);
