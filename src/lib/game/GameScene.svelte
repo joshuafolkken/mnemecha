@@ -58,6 +58,7 @@
 	}
 
 	function on_scene_loaded(): void {
+		loading.set_step('ready');
 		loading.mark_ready();
 	}
 
