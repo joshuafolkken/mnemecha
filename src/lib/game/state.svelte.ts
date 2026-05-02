@@ -3,7 +3,7 @@ const DEFAULT_IS_ALT = true;
 export function create_game_state() {
 	let is_alt = $state(DEFAULT_IS_ALT);
 
-	function return_to_title(): void {
+	function reset_mode(): void {
 		is_alt = DEFAULT_IS_ALT;
 	}
 
@@ -15,7 +15,7 @@ export function create_game_state() {
 		get is_alt() {
 			return is_alt;
 		},
-		return_to_title,
+		reset_mode,
 		toggle_alt
 	};
 }

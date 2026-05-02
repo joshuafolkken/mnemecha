@@ -20,11 +20,5 @@ function get_font_size_multiplier(is_alt: boolean): number {
 export const fonts = {
 	get_font,
 	get_font_family,
-	get_font_size_multiplier,
-	FONT_RETRO,
-	FONT_ALT,
-	FONT_FAMILY_RETRO,
-	FONT_FAMILY_ALT,
-	RETRO_FONT_SIZE_MULTIPLIER,
-	ALT_FONT_SIZE_MULTIPLIER
+	get_font_size_multiplier
 };

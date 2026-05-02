@@ -1,40 +1,72 @@
-import { describe, it, expect, afterEach } from 'vitest';
-import { device } from '$lib/game/device';
+import { describe, it, expect, afterEach, vi } from 'vitest';
+import { create_device } from '$lib/game/device.svelte';
 
 const TOUCH_PRIMARY_QUERY = '(hover: none) and (pointer: coarse)';
 
-type MatchMediaCarrier = { matchMedia?: typeof globalThis.matchMedia };
+type ChangeListener = (e: { matches: boolean }) => void;
 
-function make_mql(matches: boolean): MediaQueryList {
-	return { matches } as unknown as MediaQueryList;
+function make_mock_mql(initial: boolean): MediaQueryList & { _fire: (v: boolean) => void } {
+	const listeners: ChangeListener[] = [];
+	return {
+		matches: initial,
+		addEventListener(_: string, fn: EventListenerOrEventListenerObject): void {
+			listeners.push(fn as unknown as ChangeListener);
+		},
+		removeEventListener(): void {},
+		_fire(v: boolean): void {
+			for (const fn of listeners) fn({ matches: v });
+		}
+	} as unknown as MediaQueryList & { _fire: (v: boolean) => void };
 }
 
-describe('device.is_touch_primary', () => {
-	const carrier = globalThis as MatchMediaCarrier;
-	const original = carrier.matchMedia;
-
+describe('device', () => {
 	afterEach(() => {
-		if (original === undefined) {
-			delete carrier.matchMedia;
-		} else {
-			carrier.matchMedia = original;
-		}
+		vi.unstubAllGlobals();
 	});
 
-	it('returns true when the touch-primary media query matches', () => {
-		let received_query = '';
-		carrier.matchMedia = function fake(query: string): MediaQueryList {
-			received_query = query;
-			return make_mql(true);
-		};
-		expect(device.is_touch_primary()).toBe(true);
-		expect(received_query).toBe(TOUCH_PRIMARY_QUERY);
+	it('is_touch_primary is true when media query matches', () => {
+		vi.stubGlobal('matchMedia', () => make_mock_mql(true));
+		const d = create_device();
+		expect(d.is_touch_primary).toBe(true);
 	});
 
-	it('returns false when the touch-primary media query does not match', () => {
-		carrier.matchMedia = function fake(): MediaQueryList {
-			return make_mql(false);
-		};
-		expect(device.is_touch_primary()).toBe(false);
+	it('is_touch_primary is false when media query does not match', () => {
+		vi.stubGlobal('matchMedia', () => make_mock_mql(false));
+		const d = create_device();
+		expect(d.is_touch_primary).toBe(false);
+	});
+
+	it('uses the touch primary media query', () => {
+		let received = '';
+		vi.stubGlobal('matchMedia', (q: string) => {
+			received = q;
+			return make_mock_mql(false);
+		});
+		create_device();
+		expect(received).toBe(TOUCH_PRIMARY_QUERY);
+	});
+
+	it('updates is_touch_primary when media query changes to true', () => {
+		const mql = make_mock_mql(false);
+		vi.stubGlobal('matchMedia', () => mql);
+		const d = create_device();
+		expect(d.is_touch_primary).toBe(false);
+		mql._fire(true);
+		expect(d.is_touch_primary).toBe(true);
+	});
+
+	it('updates is_touch_primary when media query changes to false', () => {
+		const mql = make_mock_mql(true);
+		vi.stubGlobal('matchMedia', () => mql);
+		const d = create_device();
+		expect(d.is_touch_primary).toBe(true);
+		mql._fire(false);
+		expect(d.is_touch_primary).toBe(false);
+	});
+
+	it('defaults to false when matchMedia is unavailable', () => {
+		vi.stubGlobal('matchMedia', undefined);
+		const d = create_device();
+		expect(d.is_touch_primary).toBe(false);
 	});
 });

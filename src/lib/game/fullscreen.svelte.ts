@@ -1,3 +1,5 @@
+import { create_listener_manager, type ListenerManager } from '$lib/game/listener-manager';
+
 declare global {
 	interface Element {
 		webkitRequestFullscreen?: () => Promise<void> | void;
@@ -9,7 +11,6 @@ declare global {
 }
 
 type FullscreenState = { is_pseudo_fullscreen: boolean; is_native_fullscreen: boolean };
-type FullscreenRefs = { active_cleanup: (() => void) | null };
 
 function get_native_fullscreen_element(): Element | null {
 	return document.fullscreenElement ?? document.webkitFullscreenElement ?? null;
@@ -55,26 +56,21 @@ async function exit_fullscreen(s: FullscreenState): Promise<void> {
 	if (s.is_native_fullscreen) await call_native_exit();
 }
 
-function setup_fullscreen_listeners(s: FullscreenState, refs: FullscreenRefs): () => void {
-	if (refs.active_cleanup) return refs.active_cleanup;
-	const handler = (): void => update_native_flag(s);
-	update_native_flag(s);
-	document.addEventListener('fullscreenchange', handler);
-	document.addEventListener('webkitfullscreenchange', handler);
-	const cleanup = function cleanup(): void {
-		document.removeEventListener('fullscreenchange', handler);
-		document.removeEventListener('webkitfullscreenchange', handler);
-		refs.active_cleanup = null;
-		s.is_native_fullscreen = false;
-		s.is_pseudo_fullscreen = false;
-	};
-	refs.active_cleanup = cleanup;
-	return cleanup;
-}
-
 export function create_fullscreen() {
 	const s = $state<FullscreenState>({ is_pseudo_fullscreen: false, is_native_fullscreen: false });
-	const refs: FullscreenRefs = { active_cleanup: null };
+	const handler = (): void => update_native_flag(s);
+	let manager: ListenerManager | null = null;
+	function setup_listeners(): () => void {
+		const m = (manager ??= create_listener_manager([
+			{ target: document, type: 'fullscreenchange', handler },
+			{ target: document, type: 'webkitfullscreenchange', handler }
+		]));
+		update_native_flag(s);
+		return m.setup((): void => {
+			s.is_native_fullscreen = false;
+			s.is_pseudo_fullscreen = false;
+		});
+	}
 	return {
 		get is_pseudo_fullscreen() {
 			return s.is_pseudo_fullscreen;
@@ -87,7 +83,7 @@ export function create_fullscreen() {
 		},
 		request: (el: HTMLElement): Promise<void> => request_fullscreen(s, el),
 		exit: (): Promise<void> => exit_fullscreen(s),
-		setup_listeners: (): (() => void) => setup_fullscreen_listeners(s, refs)
+		setup_listeners
 	};
 }
 

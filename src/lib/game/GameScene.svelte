@@ -9,7 +9,7 @@
 	import { fullscreen } from '$lib/game/fullscreen.svelte';
 	import { fullscreen_switch_input } from '$lib/game/fullscreen-switch-input';
 	import { loading } from '$lib/game/loading.svelte';
-	import { device } from '$lib/game/device';
+	import { device } from '$lib/game/device.svelte';
 
 	interface Props {
 		children?: Snippet;
@@ -46,7 +46,7 @@
 	function start_game(): void {
 		if (is_started) return;
 		audio.init_audio();
-		if (container && device.is_touch_primary()) void fullscreen.request(container);
+		if (container && device.is_touch_primary) void fullscreen.request(container);
 		is_started = true;
 		on_start?.();
 	}

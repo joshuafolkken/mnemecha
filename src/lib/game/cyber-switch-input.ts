@@ -1,5 +1,4 @@
-import { session } from '$lib/game/session.svelte';
-import { switch_audio } from '$lib/game/switch-audio';
+import { create_switch_input } from '$lib/game/switch-input';
 
 type CyberSwitchCallbacks = {
 	on_toggle: () => void;
@@ -11,10 +10,6 @@ function configure(cbs: CyberSwitchCallbacks): void {
 	cyber_callbacks = cbs;
 }
 
-function on_click(): void {
-	if (!session.is_session_started) return;
-	switch_audio.play_switch_click();
-	cyber_callbacks.on_toggle();
-}
+const { on_click } = create_switch_input({ action: () => cyber_callbacks.on_toggle() });
 
 export const cyber_switch_input = { configure, on_click };
