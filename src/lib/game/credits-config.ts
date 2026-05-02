@@ -1,5 +1,3 @@
-import { HALF_D } from './room-config';
-
 export const CREDITS_FONT_SIZE = 0.1;
 export const CREDITS_LINE_HEIGHT = 1.3;
 export const CREDITS_NORMAL_COLOR = '#776655';
@@ -12,9 +10,12 @@ export const FLOOR_TEXT_ROTATION_X = -Math.PI / 2;
 
 const HALF_DIVISOR = 2;
 
-export function make_credits_scroll_bounds(line_count: number): { start_z: number; end_z: number } {
+export function make_credits_scroll_bounds(
+	line_count: number,
+	half_depth: number
+): { start_z: number; end_z: number } {
 	const height = line_count * CREDITS_FONT_SIZE * CREDITS_LINE_HEIGHT;
-	const offset = HALF_D + height / HALF_DIVISOR;
+	const offset = half_depth + height / HALF_DIVISOR;
 	return { start_z: offset, end_z: -offset };
 }
 
@@ -22,8 +23,9 @@ export function advance_scroll(
 	current_z: number,
 	delta: number,
 	start_z: number,
-	end_z: number
+	end_z: number,
+	speed: number
 ): number {
-	const next_z = current_z - CREDITS_SCROLL_SPEED * delta;
+	const next_z = current_z - speed * delta;
 	return next_z < end_z ? start_z : next_z;
 }

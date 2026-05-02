@@ -65,7 +65,8 @@
 	onMount(() => {
 		loading.set_step('loading_assets');
 		fullscreen_switch_input.set_container(container);
-		const cleanup_input = input.setup_listeners();
+		const canvas_el = container.querySelector<HTMLCanvasElement>('canvas');
+		const cleanup_input = input.setup_listeners(canvas_el);
 		const cleanup_fullscreen = fullscreen.setup_listeners();
 		return function cleanup(): void {
 			cleanup_input();

@@ -18,7 +18,7 @@ type InputState = {
 	is_sprinting: boolean;
 	is_jump_requested: boolean;
 };
-type InputRefs = { active_cleanup: (() => void) | null };
+type InputRefs = { active_cleanup: (() => void) | null; canvas_el: HTMLCanvasElement | null };
 
 const KEY_MAP: Record<string, keyof Keys> = {
 	w: 'w',
@@ -56,9 +56,13 @@ function reset_transient_input(s: InputState): void {
 	s.is_dragging_look = false;
 }
 
-function dispatch_synthetic_pointer(type: 'pointerdown' | 'pointerup', x: number, y: number): void {
-	const canvas = document.querySelector('canvas');
-	if (!canvas) return;
+function dispatch_synthetic_pointer(
+	type: 'pointerdown' | 'pointerup',
+	x: number,
+	y: number,
+	canvas_el: HTMLCanvasElement | null
+): void {
+	if (!canvas_el) return;
 	const synth = new PointerEvent(type, {
 		button: 0,
 		clientX: x,
@@ -66,7 +70,7 @@ function dispatch_synthetic_pointer(type: 'pointerdown' | 'pointerup', x: number
 		bubbles: true,
 		cancelable: true
 	});
-	canvas.dispatchEvent(synth);
+	canvas_el.dispatchEvent(synth);
 }
 
 function on_mouse_down_impl(s: InputState, e: MouseEvent): void {
@@ -106,12 +110,12 @@ function override_offset_during_drag_impl(s: InputState, event: Event): void {
 	override_event_offset(event, s.drag_start_x - rect.left, s.drag_start_y - rect.top);
 }
 
-function on_left_mouse_for_synth_impl(s: InputState, e: MouseEvent): void {
+function on_left_mouse_for_synth_impl(s: InputState, e: MouseEvent, refs: InputRefs): void {
 	if (!s.is_dragging_look || e.button !== 0) return;
 	if (e.type === 'mousedown')
-		dispatch_synthetic_pointer('pointerdown', s.drag_start_x, s.drag_start_y);
+		dispatch_synthetic_pointer('pointerdown', s.drag_start_x, s.drag_start_y, refs.canvas_el);
 	else if (e.type === 'mouseup')
-		dispatch_synthetic_pointer('pointerup', s.drag_start_x, s.drag_start_y);
+		dispatch_synthetic_pointer('pointerup', s.drag_start_x, s.drag_start_y, refs.canvas_el);
 }
 
 function on_key_impl(s: InputState, e: KeyboardEvent, is_down: boolean): void {
@@ -139,7 +143,7 @@ function make_drag_override_specs(s: InputState): ListenerSpec[] {
 	];
 }
 
-function make_listener_specs(s: InputState): readonly ListenerSpec[] {
+function make_listener_specs(s: InputState, refs: InputRefs): readonly ListenerSpec[] {
 	return [
 		{ target: document, type: 'mousedown', handler: (e) => on_mouse_down_impl(s, e as MouseEvent) },
 		{ target: document, type: 'mousemove', handler: (e) => on_mouse_move_impl(s, e as MouseEvent) },
@@ -147,13 +151,13 @@ function make_listener_specs(s: InputState): readonly ListenerSpec[] {
 		{
 			target: document,
 			type: 'mousedown',
-			handler: (e) => on_left_mouse_for_synth_impl(s, e as MouseEvent),
+			handler: (e) => on_left_mouse_for_synth_impl(s, e as MouseEvent, refs),
 			options: CAPTURE
 		},
 		{
 			target: document,
 			type: 'mouseup',
-			handler: (e) => on_left_mouse_for_synth_impl(s, e as MouseEvent),
+			handler: (e) => on_left_mouse_for_synth_impl(s, e as MouseEvent, refs),
 			options: CAPTURE
 		},
 		{
@@ -179,7 +183,7 @@ function make_listener_specs(s: InputState): readonly ListenerSpec[] {
 
 function setup_input_listeners(s: InputState, jm: Vec2, jl: Vec2, refs: InputRefs): () => void {
 	if (refs.active_cleanup) return refs.active_cleanup;
-	const specs = make_listener_specs(s);
+	const specs = make_listener_specs(s, refs);
 	for (const spec of specs) spec.target.addEventListener(spec.type, spec.handler, spec.options);
 	const cleanup = function cleanup(): void {
 		for (const spec of specs)
@@ -229,7 +233,10 @@ function make_input_api(s: InputState, jm: Vec2, jl: Vec2, refs: InputRefs) {
 		get joystick_look() {
 			return jl;
 		},
-		setup_listeners: (): (() => void) => setup_input_listeners(s, jm, jl, refs),
+		setup_listeners: (canvas_el: HTMLCanvasElement | null): (() => void) => {
+			refs.canvas_el = canvas_el;
+			return setup_input_listeners(s, jm, jl, refs);
+		},
 		set_joystick_move: (x: number, y: number): void => {
 			jm.x = x;
 			jm.y = y;
@@ -267,7 +274,7 @@ export function create_input() {
 	});
 	const joystick_move = $state<Vec2>({ x: 0, y: 0 });
 	const joystick_look = $state<Vec2>({ x: 0, y: 0 });
-	const refs: InputRefs = { active_cleanup: null };
+	const refs: InputRefs = { active_cleanup: null, canvas_el: null };
 	return make_input_api(s, joystick_move, joystick_look, refs);
 }
 

@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { score, create_score } from '$lib/simon/score.svelte';
+import {
+	score,
+	create_score,
+	compute_check,
+	load_stored_data,
+	type StorageKeys
+} from '$lib/simon/score.svelte';
 
 const ROUND_1 = 1;
 const ROUND_5 = 5;
@@ -10,9 +16,11 @@ const ELAPSED_5S = 5_000;
 const ELAPSED_10S = 10_000;
 const ELAPSED_100S = 100_000;
 
-const STORAGE_KEY = 'simon_high_score';
-const ROUND_KEY = 'simon_high_score_round';
-const CHECK_KEY = 'simon_high_score_check';
+const DEFAULT_KEYS: StorageKeys = {
+	score: 'simon_high_score',
+	round: 'simon_high_score_round',
+	check: 'simon_high_score_check'
+};
 
 describe('score', () => {
 	beforeEach(() => {
@@ -139,73 +147,6 @@ describe('score', () => {
 		});
 	});
 
-	describe('compute_check', () => {
-		it('returns a non-zero value for (0, 0)', () => {
-			expect(score.compute_check(0, 0)).not.toBe(0);
-		});
-
-		it('is deterministic — same inputs produce same output', () => {
-			expect(score.compute_check(1_000, 3)).toBe(score.compute_check(1_000, 3));
-		});
-
-		it('produces different values when score differs', () => {
-			expect(score.compute_check(1_000, 3)).not.toBe(score.compute_check(2_000, 3));
-		});
-
-		it('produces different values when round differs', () => {
-			expect(score.compute_check(1_000, 3)).not.toBe(score.compute_check(1_000, 4));
-		});
-	});
-
-	describe('load_stored_data', () => {
-		afterEach(() => {
-			vi.unstubAllGlobals();
-		});
-
-		it('returns {score: 0, round: 0} when nothing is stored', () => {
-			vi.stubGlobal('localStorage', { getItem: () => null, setItem: () => {} });
-			expect(score.load_stored_data()).toEqual({ score: 0, round: 0 });
-		});
-
-		it('returns correct values when data is valid', () => {
-			const stored_score = 5_000;
-			const stored_round = 3;
-			const stored_check = score.compute_check(stored_score, stored_round);
-			vi.stubGlobal('localStorage', {
-				getItem: (key: string) => {
-					if (key === STORAGE_KEY) return String(stored_score);
-					if (key === ROUND_KEY) return String(stored_round);
-					if (key === CHECK_KEY) return String(stored_check);
-					return null;
-				},
-				setItem: () => {}
-			});
-			expect(score.load_stored_data()).toEqual({ score: stored_score, round: stored_round });
-		});
-
-		it('returns {score: 0, round: 0} when check digit does not match (tampered)', () => {
-			vi.stubGlobal('localStorage', {
-				getItem: (key: string) => {
-					if (key === STORAGE_KEY) return '5000';
-					if (key === ROUND_KEY) return '3';
-					if (key === CHECK_KEY) return '99999';
-					return null;
-				},
-				setItem: () => {}
-			});
-			expect(score.load_stored_data()).toEqual({ score: 0, round: 0 });
-		});
-
-		it('returns {score: 0, round: 0} when localStorage throws', () => {
-			vi.stubGlobal('localStorage', {
-				getItem: () => {
-					throw new Error('unavailable');
-				}
-			});
-			expect(score.load_stored_data()).toEqual({ score: 0, round: 0 });
-		});
-	});
-
 	describe('last_cleared_round', () => {
 		it('starts at 0', () => {
 			expect(score.last_cleared_round).toBe(0);
@@ -249,6 +190,90 @@ describe('score', () => {
 	});
 });
 
+describe('compute_check', () => {
+	it('returns a non-zero value for (0, 0)', () => {
+		expect(compute_check(0, 0)).not.toBe(0);
+	});
+
+	it('is deterministic — same inputs produce same output', () => {
+		expect(compute_check(1_000, 3)).toBe(compute_check(1_000, 3));
+	});
+
+	it('produces different values when score differs', () => {
+		expect(compute_check(1_000, 3)).not.toBe(compute_check(2_000, 3));
+	});
+
+	it('produces different values when round differs', () => {
+		expect(compute_check(1_000, 3)).not.toBe(compute_check(1_000, 4));
+	});
+});
+
+describe('load_stored_data', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	it('returns {score: 0, round: 0} when nothing is stored', () => {
+		vi.stubGlobal('localStorage', { getItem: () => null, setItem: () => {} });
+		expect(load_stored_data(DEFAULT_KEYS)).toEqual({ score: 0, round: 0 });
+	});
+
+	it('returns correct values when data is valid', () => {
+		const stored_score = 5_000;
+		const stored_round = 3;
+		const stored_check = compute_check(stored_score, stored_round);
+		vi.stubGlobal('localStorage', {
+			getItem: (key: string) => {
+				if (key === DEFAULT_KEYS.score) return String(stored_score);
+				if (key === DEFAULT_KEYS.round) return String(stored_round);
+				if (key === DEFAULT_KEYS.check) return String(stored_check);
+				return null;
+			},
+			setItem: () => {}
+		});
+		expect(load_stored_data(DEFAULT_KEYS)).toEqual({ score: stored_score, round: stored_round });
+	});
+
+	it('returns {score: 0, round: 0} when check digit does not match (tampered)', () => {
+		vi.stubGlobal('localStorage', {
+			getItem: (key: string) => {
+				if (key === DEFAULT_KEYS.score) return '5000';
+				if (key === DEFAULT_KEYS.round) return '3';
+				if (key === DEFAULT_KEYS.check) return '99999';
+				return null;
+			},
+			setItem: () => {}
+		});
+		expect(load_stored_data(DEFAULT_KEYS)).toEqual({ score: 0, round: 0 });
+	});
+
+	it('returns {score: 0, round: 0} when localStorage throws', () => {
+		vi.stubGlobal('localStorage', {
+			getItem: () => {
+				throw new Error('unavailable');
+			}
+		});
+		expect(load_stored_data(DEFAULT_KEYS)).toEqual({ score: 0, round: 0 });
+	});
+
+	it('uses keys from the provided StorageKeys object', () => {
+		const custom_keys: StorageKeys = { score: 'test_s', round: 'test_r', check: 'test_c' };
+		const stored_score = 1_000;
+		const stored_round = 1;
+		const stored_check = compute_check(stored_score, stored_round);
+		vi.stubGlobal('localStorage', {
+			getItem: (key: string) => {
+				if (key === custom_keys.score) return String(stored_score);
+				if (key === custom_keys.round) return String(stored_round);
+				if (key === custom_keys.check) return String(stored_check);
+				return null;
+			},
+			setItem: () => {}
+		});
+		expect(load_stored_data(custom_keys)).toEqual({ score: stored_score, round: stored_round });
+	});
+});
+
 describe('create_score isolation', () => {
 	it('two instances do not share current_score state', () => {
 		const a = create_score();
@@ -256,5 +281,12 @@ describe('create_score isolation', () => {
 		a.add_round_score(ELAPSED_0, SEQ_1, ROUND_1);
 		expect(a.current_score).toBeGreaterThan(0);
 		expect(b.current_score).toBe(0);
+	});
+
+	it('custom key prefix stores to different keys than default', () => {
+		const custom = create_score('test');
+		vi.stubGlobal('localStorage', { getItem: () => null, setItem: () => {} });
+		expect(custom.high_score).toBe(0);
+		vi.unstubAllGlobals();
 	});
 });
