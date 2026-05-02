@@ -6,14 +6,16 @@ import {
 	ON_RATIO,
 	OFF_RATIO,
 	ERROR_BEEP_MS,
-	RESTART_DELAY_MS,
+	RESTART_DELAY_MS
+} from '$lib/simon/simon.svelte';
+import {
 	FLASH_BURST_ON_MS,
 	FLASH_BURST_OFF_MS,
 	FLASH_BURST_CYCLES,
 	FLASH_CASCADE_FWD_MS,
 	FLASH_CASCADE_REV_MS,
 	FLASH_FINALE_MS
-} from '$lib/simon/simon.svelte';
+} from '$lib/simon/simon-flash';
 import { score, create_score } from '$lib/simon/score.svelte';
 import { simon_audio } from '$lib/simon/audio';
 import type { ButtonColor } from '$lib/simon/types';
@@ -459,5 +461,19 @@ describe('create_simon isolation', () => {
 		expect(a.sequence).toHaveLength(1);
 		expect(b.sequence).toHaveLength(0);
 		a.reset();
+	});
+
+	it('create_simon with custom colors only uses those colors in sequence', () => {
+		const score_c = create_score();
+		const custom_colors: ButtonColor[] = ['green', 'blue'];
+		const c = create_simon(score_c, { colors: custom_colors });
+		c.start();
+		for (let i = 0; i < 20; i++) {
+			c.reset();
+			c.start();
+		}
+		const used = new Set(c.sequence);
+		for (const color of used) expect(custom_colors).toContain(color);
+		c.reset();
 	});
 });

@@ -20,11 +20,5 @@ function get_ambient_color(is_alt: boolean): string {
 export const lighting = {
 	get_ambient_intensity,
 	get_point_light_intensity,
-	get_ambient_color,
-	AMBIENT_INTENSITY,
-	ALT_AMBIENT_INTENSITY,
-	POINT_LIGHT_INTENSITY,
-	ALT_POINT_LIGHT_INTENSITY,
-	AMBIENT_COLOR_NORMAL,
-	AMBIENT_COLOR_ALT
+	get_ambient_color
 };

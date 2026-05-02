@@ -3,7 +3,7 @@ import { game_state, create_game_state } from './state.svelte';
 
 describe('game_state', () => {
 	beforeEach(() => {
-		game_state.return_to_title();
+		game_state.reset_mode();
 	});
 
 	it('starts with alt mode on', () => {
@@ -21,9 +21,9 @@ describe('game_state', () => {
 		expect(game_state.is_alt).toBe(true);
 	});
 
-	it('resets alt mode to default (on) on return_to_title', () => {
+	it('resets alt mode to default (on) on reset_mode', () => {
 		game_state.toggle_alt();
-		game_state.return_to_title();
+		game_state.reset_mode();
 		expect(game_state.is_alt).toBe(true);
 	});
 });

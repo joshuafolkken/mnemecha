@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { flushSync } from 'svelte';
 import GameScene from './GameScene.svelte';
 import { audio } from '$lib/game/audio';
-import { device } from '$lib/game/device';
+import { device } from '$lib/game/device.svelte';
 import { fullscreen } from '$lib/game/fullscreen.svelte';
 import { fullscreen_switch_input } from '$lib/game/fullscreen-switch-input';
 
@@ -131,7 +131,7 @@ describe('GameScene', () => {
 	});
 
 	it('start_game requests fullscreen on touch-primary devices', () => {
-		vi.spyOn(device, 'is_touch_primary').mockReturnValue(true);
+		vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(true);
 		const fullscreen_spy = vi.spyOn(fullscreen, 'request').mockResolvedValue();
 		const { container } = render(GameScene, {
 			props: {
@@ -148,7 +148,7 @@ describe('GameScene', () => {
 	});
 
 	it('start_game does not request fullscreen on desktop devices but still inits audio', () => {
-		vi.spyOn(device, 'is_touch_primary').mockReturnValue(false);
+		vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(false);
 		const fullscreen_spy = vi.spyOn(fullscreen, 'request').mockResolvedValue();
 		const audio_spy = vi.spyOn(audio, 'init_audio');
 		const { container } = render(GameScene, {
