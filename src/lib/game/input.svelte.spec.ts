@@ -58,23 +58,19 @@ function make_pointer_event_with_offsets(
 	return evt;
 }
 
-function record_canvas_events(type: string): { canvas: HTMLCanvasElement; received: string[] } {
-	const canvas = document.createElement('canvas');
-	document.body.appendChild(canvas);
-	const received: string[] = [];
-	canvas.addEventListener(type, (e) => received.push(`${e.type}:${(e as PointerEvent).button}`));
-	return { canvas, received };
-}
-
 describe('input', () => {
 	let cleanup: () => void;
+	let canvas_el: HTMLCanvasElement;
 
 	beforeEach(() => {
-		cleanup = input.setup_listeners();
+		canvas_el = document.createElement('canvas');
+		document.body.appendChild(canvas_el);
+		cleanup = input.setup_listeners(canvas_el);
 	});
 
 	afterEach(() => {
 		cleanup();
+		canvas_el.remove();
 		vi.restoreAllMocks();
 	});
 
@@ -168,38 +164,46 @@ describe('input', () => {
 	});
 
 	it('synthesizes pointerdown on canvas when left mousedown fires during drag', () => {
-		const { canvas, received } = record_canvas_events('pointerdown');
+		const received: string[] = [];
+		canvas_el.addEventListener('pointerdown', (e) =>
+			received.push(`${e.type}:${(e as PointerEvent).button}`)
+		);
 		dispatch_mouse('mousedown', { button: RIGHT_BUTTON, clientX: 200, clientY: 150 });
 		dispatch_mouse('mousedown', { button: LEFT_BUTTON });
 
 		expect(received).toContain('pointerdown:0');
-		document.body.removeChild(canvas);
 	});
 
 	it('synthesizes pointerup on canvas when left mouseup fires during drag', () => {
-		const { canvas, received } = record_canvas_events('pointerup');
+		const received: string[] = [];
+		canvas_el.addEventListener('pointerup', (e) =>
+			received.push(`${e.type}:${(e as PointerEvent).button}`)
+		);
 		dispatch_mouse('mousedown', { button: RIGHT_BUTTON, clientX: 200, clientY: 150 });
 		dispatch_mouse('mouseup', { button: LEFT_BUTTON });
 
 		expect(received).toContain('pointerup:0');
-		document.body.removeChild(canvas);
 	});
 
 	it('does not synthesize pointer events when not dragging', () => {
-		const { canvas, received } = record_canvas_events('pointerdown');
+		const received: string[] = [];
+		canvas_el.addEventListener('pointerdown', (e) =>
+			received.push(`${e.type}:${(e as PointerEvent).button}`)
+		);
 		dispatch_mouse('mousedown', { button: LEFT_BUTTON });
 
 		expect(received).toHaveLength(0);
-		document.body.removeChild(canvas);
 	});
 
 	it('does not synthesize pointer events for right mousedown during drag', () => {
-		const { canvas, received } = record_canvas_events('pointerdown');
+		const received: string[] = [];
+		canvas_el.addEventListener('pointerdown', (e) =>
+			received.push(`${e.type}:${(e as PointerEvent).button}`)
+		);
 		dispatch_mouse('mousedown', { button: RIGHT_BUTTON, clientX: 200, clientY: 150 });
-		const startCount = received.length;
+		const start_count = received.length;
 		dispatch_mouse('mousedown', { button: RIGHT_BUTTON });
-		expect(received.length).toBe(startCount);
-		document.body.removeChild(canvas);
+		expect(received.length).toBe(start_count);
 	});
 
 	it('right mouse down requests pointer lock on event target', () => {
@@ -373,7 +377,7 @@ describe('input', () => {
 	});
 
 	it('setup_listeners is idempotent when called twice', () => {
-		const second_cleanup = input.setup_listeners();
+		const second_cleanup = input.setup_listeners(canvas_el);
 		expect(second_cleanup).toBe(cleanup);
 	});
 
@@ -387,7 +391,7 @@ describe('input', () => {
 		expect(input.keys.w).toBe(false);
 		expect(input.joystick_move.x).toBe(0);
 		expect(input.joystick_look.x).toBe(0);
-		cleanup = input.setup_listeners();
+		cleanup = input.setup_listeners(canvas_el);
 	});
 
 	it('Shift keydown sets is_sprinting true', () => {
@@ -440,8 +444,8 @@ describe('create_input isolation', () => {
 	it('cleaning up one instance does not detach the other instance listeners', () => {
 		const a = create_input();
 		const b = create_input();
-		const cleanup_a = a.setup_listeners();
-		const cleanup_b = b.setup_listeners();
+		const cleanup_a = a.setup_listeners(null);
+		const cleanup_b = b.setup_listeners(null);
 		cleanup_a();
 		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
 		expect(a.keys.w).toBe(false);
