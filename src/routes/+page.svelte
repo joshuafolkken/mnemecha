@@ -1,18 +1,15 @@
 <script lang="ts">
 	import GameScene from '$lib/game/GameScene.svelte';
 	import SimonScene from '$lib/simon/SimonScene.svelte';
-	import { game_state } from '$lib/game/state.svelte';
-	import { fonts } from '$lib/game/fonts';
+	import { simon_board_input } from '$lib/simon/simon-board-input';
+	import { simon } from '$lib/simon/simon.svelte';
 	import { messages } from '$lib/messages/en';
-	import { session } from '$lib/game/session.svelte';
 
-	const CLICK_HINT_BASE_FONT_SIZE_REM = 1;
-
-	let is_alt = $derived(game_state.is_alt);
-	let hint_font_family = $derived(fonts.get_font_family(is_alt));
-	let hint_font_size_rem = $derived(
-		CLICK_HINT_BASE_FONT_SIZE_REM * fonts.get_font_size_multiplier(is_alt)
-	);
+	simon_board_input.configure({
+		on_press: (color) => simon.press(color),
+		on_release: () => simon.release(),
+		on_start: () => simon.start()
+	});
 </script>
 
 <GameScene
@@ -20,41 +17,6 @@
 	label_jump={messages.jump_button}
 	label_game={messages.game_application_label}
 	label_game_started={messages.game_started_announcement}
-	{hint_font_family}
-	{hint_font_size_rem}
-	on_start={session.start_session}
 >
-	{#snippet overlay()}
-		{#if is_alt}
-			<div class="cyber-glow" data-testid="cyber-glow" aria-hidden="true"></div>
-		{/if}
-	{/snippet}
 	<SimonScene />
 </GameScene>
-
-<style>
-	.cyber-glow {
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		z-index: 5;
-		background: radial-gradient(
-			ellipse at center,
-			rgba(255, 0, 255, 0.12) 0%,
-			rgba(100, 0, 255, 0.06) 50%,
-			transparent 70%
-		);
-		mix-blend-mode: screen;
-		animation: cyber-pulse 2s ease-in-out infinite;
-	}
-
-	@keyframes cyber-pulse {
-		0%,
-		100% {
-			opacity: 0.7;
-		}
-		50% {
-			opacity: 1;
-		}
-	}
-</style>

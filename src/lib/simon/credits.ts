@@ -1,7 +1,4 @@
-import { make_credits_scroll_bounds } from '$lib/game/credits-config';
-import { HALF_D } from '$lib/game/room-config';
-
-const CREDITS_LINES = [
+export const CREDITS_LINES = [
 	'SIMON',
 	'CREDITS',
 	'',
@@ -164,7 +161,4 @@ const CREDITS_LINES = [
 ] as const;
 
 export const CREDITS_TEXT = CREDITS_LINES.join('\n');
-
-const bounds = make_credits_scroll_bounds(CREDITS_LINES.length, HALF_D);
-export const CREDITS_SCROLL_START_Z = bounds.start_z;
-export const CREDITS_SCROLL_END_Z = bounds.end_z;
+export const CREDITS_LINE_COUNT = CREDITS_LINES.length;

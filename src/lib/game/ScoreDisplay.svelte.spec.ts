@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ScoreDisplay from './ScoreDisplay.svelte';
-import type { ScoreData } from '$lib/simon/score-display-types';
+import type { ScoreData } from '$lib/game/score-display-types';
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }));
 vi.mock('@threlte/extras', () => ({ Text: {} }));
