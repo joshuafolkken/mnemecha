@@ -18,13 +18,13 @@
 	>
 		<path
 			d="M38 56 A22 22 0 1 1 72 56"
-			stroke="rgba(255,255,255,0.5)"
+			stroke="rgba(160,130,255,0.7)"
 			stroke-width="2"
 			stroke-linecap="round"
 		/>
 		<polyline
 			points="72,50 72,57 79,57"
-			stroke="rgba(255,255,255,0.5)"
+			stroke="rgba(160,130,255,0.7)"
 			stroke-width="2"
 			stroke-linecap="round"
 			stroke-linejoin="round"
@@ -34,11 +34,11 @@
 			cx="55"
 			cy="56"
 			r="6"
-			fill="rgba(255,255,255,0.18)"
-			stroke="rgba(255,255,255,0.6)"
+			fill="rgba(140,100,255,0.2)"
+			stroke="rgba(160,130,255,0.7)"
 			stroke-width="1.5"
 		/>
-		<circle cx="55" cy="56" r="2" fill="rgba(255,255,255,0.8)" />
+		<circle cx="55" cy="56" r="2" fill="rgba(200,180,255,0.9)" />
 	</svg>
 {/snippet}
 
@@ -68,8 +68,8 @@
 		width: 100%;
 		height: 100%;
 		border-radius: 10px;
-		border: 1.5px solid rgba(255, 255, 255, 0.3);
-		background: rgba(255, 255, 255, 0.05);
+		border: 1.5px solid rgba(160, 120, 255, 0.5);
+		background: rgba(120, 80, 255, 0.05);
 		display: flex;
 		position: relative;
 	}
@@ -80,7 +80,7 @@
 		left: 50%;
 		top: 0;
 		bottom: 0;
-		border-left: 1px dashed rgba(255, 255, 255, 0.25);
+		border-left: 1px dashed rgba(140, 110, 255, 0.5);
 	}
 
 	.half {
@@ -111,7 +111,7 @@
 		}
 		40% {
 			opacity: 1;
-			filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+			filter: drop-shadow(0 0 4px rgba(160, 130, 255, 0.5));
 		}
 		70% {
 			opacity: 0.8;
