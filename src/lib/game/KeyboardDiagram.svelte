@@ -6,6 +6,43 @@
 	}
 
 	let { label_move, label_jump, label_return }: Props = $props();
+
+	type LetterKey = {
+		class_name: string;
+		rect_x: number;
+		rect_y: number;
+		text_x: number;
+		text_y: number;
+		label: string;
+	};
+
+	const LETTER_KEY_WIDTH = 40;
+	const LETTER_KEY_HEIGHT = 32;
+
+	const LETTER_KEYS: readonly LetterKey[] = [
+		{ class_name: 'key-w', rect_x: 54, rect_y: 2, text_x: 74, text_y: 18, label: 'W' },
+		{ class_name: 'key-a', rect_x: 2, rect_y: 46, text_x: 22, text_y: 62, label: 'A' },
+		{ class_name: 'key-s', rect_x: 54, rect_y: 46, text_x: 74, text_y: 62, label: 'S' },
+		{ class_name: 'key-d', rect_x: 106, rect_y: 46, text_x: 126, text_y: 62, label: 'D' }
+	] as const;
+
+	type ReturnKey = {
+		class_name: string;
+		rect_x: number;
+		text_x: number;
+		text_font_size: number;
+		label: string;
+	};
+
+	const RETURN_KEY_RECT_Y = 150;
+	const RETURN_KEY_WIDTH = 56;
+	const RETURN_KEY_HEIGHT = 24;
+	const RETURN_KEY_TEXT_Y = 162;
+
+	const RETURN_KEYS: readonly ReturnKey[] = [
+		{ class_name: 'key-esc', rect_x: 2, text_x: 30, text_font_size: 9, label: 'ESC' },
+		{ class_name: 'key-z', rect_x: 90, text_x: 118, text_font_size: 13, label: 'Z' }
+	] as const;
 </script>
 
 <svg
@@ -16,98 +53,30 @@
 	class="keyboard-diagram"
 	fill="none"
 >
-	<!-- W key -->
-	<g class="key key-w" aria-hidden="true">
-		<rect
-			x="54"
-			y="2"
-			width="40"
-			height="32"
-			rx="5"
-			fill="rgba(120,80,255,0.15)"
-			stroke="rgba(160,120,255,0.8)"
-			stroke-width="1.5"
-		/>
-		<text
-			x="74"
-			y="18"
-			text-anchor="middle"
-			dominant-baseline="central"
-			fill="rgba(200,180,255,0.95)"
-			font-size="13"
-			font-family="Orbitron, monospace"
-			font-weight="bold">W</text
-		>
-	</g>
-	<!-- A key -->
-	<g class="key key-a" aria-hidden="true">
-		<rect
-			x="2"
-			y="46"
-			width="40"
-			height="32"
-			rx="5"
-			fill="rgba(120,80,255,0.15)"
-			stroke="rgba(160,120,255,0.8)"
-			stroke-width="1.5"
-		/>
-		<text
-			x="22"
-			y="62"
-			text-anchor="middle"
-			dominant-baseline="central"
-			fill="rgba(200,180,255,0.95)"
-			font-size="13"
-			font-family="Orbitron, monospace"
-			font-weight="bold">A</text
-		>
-	</g>
-	<!-- S key -->
-	<g class="key key-s" aria-hidden="true">
-		<rect
-			x="54"
-			y="46"
-			width="40"
-			height="32"
-			rx="5"
-			fill="rgba(120,80,255,0.15)"
-			stroke="rgba(160,120,255,0.8)"
-			stroke-width="1.5"
-		/>
-		<text
-			x="74"
-			y="62"
-			text-anchor="middle"
-			dominant-baseline="central"
-			fill="rgba(200,180,255,0.95)"
-			font-size="13"
-			font-family="Orbitron, monospace"
-			font-weight="bold">S</text
-		>
-	</g>
-	<!-- D key -->
-	<g class="key key-d" aria-hidden="true">
-		<rect
-			x="106"
-			y="46"
-			width="40"
-			height="32"
-			rx="5"
-			fill="rgba(120,80,255,0.15)"
-			stroke="rgba(160,120,255,0.8)"
-			stroke-width="1.5"
-		/>
-		<text
-			x="126"
-			y="62"
-			text-anchor="middle"
-			dominant-baseline="central"
-			fill="rgba(200,180,255,0.95)"
-			font-size="13"
-			font-family="Orbitron, monospace"
-			font-weight="bold">D</text
-		>
-	</g>
+	{#each LETTER_KEYS as key (key.class_name)}
+		<g class="key {key.class_name}" aria-hidden="true">
+			<rect
+				x={key.rect_x}
+				y={key.rect_y}
+				width={LETTER_KEY_WIDTH}
+				height={LETTER_KEY_HEIGHT}
+				rx="5"
+				fill="rgba(120,80,255,0.15)"
+				stroke="rgba(160,120,255,0.8)"
+				stroke-width="1.5"
+			/>
+			<text
+				x={key.text_x}
+				y={key.text_y}
+				text-anchor="middle"
+				dominant-baseline="central"
+				fill="rgba(200,180,255,0.95)"
+				font-size="13"
+				font-family="Orbitron, monospace"
+				font-weight="bold">{key.label}</text
+			>
+		</g>
+	{/each}
 	<!-- Space bar -->
 	<g class="key key-space" aria-hidden="true" aria-label={label_jump}>
 		<rect
@@ -140,56 +109,34 @@
 			opacity="0.55"
 		/>
 	</g>
-	<!-- ESC key -->
-	<g class="key key-esc" aria-hidden="true" aria-label={label_return}>
-		<rect
-			x="2"
-			y="150"
-			width="56"
-			height="24"
-			rx="5"
-			fill="rgba(80,60,160,0.1)"
-			stroke="rgba(120,100,200,0.5)"
-			stroke-width="1.5"
-		/>
-		<text
-			x="30"
-			y="162"
-			text-anchor="middle"
-			dominant-baseline="central"
-			fill="rgba(160,140,220,0.7)"
-			font-size="9"
-			font-family="Orbitron, monospace"
-			font-weight="bold">ESC</text
-		>
-	</g>
-	<!-- Z key -->
-	<g class="key key-z" aria-hidden="true" aria-label={label_return}>
-		<rect
-			x="90"
-			y="150"
-			width="56"
-			height="24"
-			rx="5"
-			fill="rgba(80,60,160,0.1)"
-			stroke="rgba(120,100,200,0.5)"
-			stroke-width="1.5"
-		/>
-		<text
-			x="118"
-			y="162"
-			text-anchor="middle"
-			dominant-baseline="central"
-			fill="rgba(160,140,220,0.7)"
-			font-size="13"
-			font-family="Orbitron, monospace"
-			font-weight="bold">Z</text
-		>
-	</g>
+	{#each RETURN_KEYS as key (key.class_name)}
+		<g class="key {key.class_name}" aria-hidden="true" aria-label={label_return}>
+			<rect
+				x={key.rect_x}
+				y={RETURN_KEY_RECT_Y}
+				width={RETURN_KEY_WIDTH}
+				height={RETURN_KEY_HEIGHT}
+				rx="5"
+				fill="rgba(80,60,160,0.1)"
+				stroke="rgba(120,100,200,0.5)"
+				stroke-width="1.5"
+			/>
+			<text
+				x={key.text_x}
+				y={RETURN_KEY_TEXT_Y}
+				text-anchor="middle"
+				dominant-baseline="central"
+				fill="rgba(160,140,220,0.7)"
+				font-size={key.text_font_size}
+				font-family="Orbitron, monospace"
+				font-weight="bold">{key.label}</text
+			>
+		</g>
+	{/each}
 	<!-- slash separator between ESC and Z -->
 	<text
 		x="74"
-		y="162"
+		y={RETURN_KEY_TEXT_Y}
 		text-anchor="middle"
 		dominant-baseline="central"
 		fill="rgba(120,100,200,0.5)"
