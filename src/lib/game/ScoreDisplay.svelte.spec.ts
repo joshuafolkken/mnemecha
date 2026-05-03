@@ -2,9 +2,16 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ScoreDisplay from './ScoreDisplay.svelte';
 import type { ScoreData } from '$lib/game/score-display-types';
+import { useTask } from '@threlte/core';
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }));
 vi.mock('@threlte/extras', () => ({ Text: {} }));
+vi.mock('$lib/game/fonts', () => ({
+	fonts: {
+		get_font: vi.fn(() => 'sans'),
+		get_font_size_multiplier: vi.fn(() => 1)
+	}
+}));
 
 function make_score_data(overrides: Partial<ScoreData> = {}): ScoreData {
 	return {
@@ -13,7 +20,7 @@ function make_score_data(overrides: Partial<ScoreData> = {}): ScoreData {
 		is_new_high_score: false,
 		high_score_round: 3,
 		last_cleared_round: 2,
-		format_score: (v: number) => String(v),
+		format_score: String,
 		...overrides
 	};
 }
@@ -35,6 +42,14 @@ describe('ScoreDisplay', () => {
 		expect(container).toBeTruthy();
 	});
 
+	it('registers a tick callback via useTask', () => {
+		vi.mocked(useTask).mockClear();
+		render(ScoreDisplay, {
+			props: { score_data: make_score_data(), is_alt: false, position_z: -4.65, ...LABEL_PROPS }
+		});
+		expect(vi.mocked(useTask)).toHaveBeenCalledOnce();
+	});
+
 	it('accepts is_new_high_score flag via score_data', () => {
 		const { container } = render(ScoreDisplay, {
 			props: {
@@ -49,7 +64,7 @@ describe('ScoreDisplay', () => {
 
 	it('accepts custom format_score function via score_data', () => {
 		const format_score = vi.fn((v: number) => `${v} pts`);
-		render(ScoreDisplay, {
+		const { container } = render(ScoreDisplay, {
 			props: {
 				score_data: make_score_data({ format_score }),
 				is_alt: false,
@@ -57,6 +72,6 @@ describe('ScoreDisplay', () => {
 				...LABEL_PROPS
 			}
 		});
-		expect(format_score).toBeDefined();
+		expect(container).toBeTruthy();
 	});
 });
