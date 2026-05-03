@@ -29,4 +29,4 @@ export const SCORE_LABEL_Y = -0.07;
 export const SCORE_VALUE_Y = -0.2;
 export const ROUND_X = 0.52;
 
-export const ANIM_DURATION_MS = 1_000;
+export const ANIM_DURATION_MS = 620;
