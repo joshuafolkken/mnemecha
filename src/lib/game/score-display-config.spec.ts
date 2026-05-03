@@ -27,6 +27,15 @@ import {
 	ROUND_X,
 	ANIM_DURATION_MS
 } from './score-display-config.js';
+import {
+	FLASH_BURST_ON_MS,
+	FLASH_BURST_OFF_MS,
+	FLASH_BURST_CYCLES,
+	FLASH_CASCADE_FWD_MS,
+	FLASH_CASCADE_REV_MS
+} from '$lib/simon/simon-flash';
+
+const BUTTON_COUNT = 4;
 
 describe('SCORE_TEXT_Z', () => {
 	it('floats text in front of the score panel (0.05)', () => {
@@ -121,5 +130,11 @@ describe('ANIM_DURATION_MS', () => {
 
 	it('is at least 500ms (visible animation)', () => {
 		expect(ANIM_DURATION_MS).toBeGreaterThanOrEqual(500);
+	});
+
+	it('ends at the victory flash finale start (count-up stops when the 4 lamps light up)', () => {
+		const burst_total = FLASH_BURST_CYCLES * (FLASH_BURST_ON_MS + FLASH_BURST_OFF_MS);
+		const cascade_total = BUTTON_COUNT * (FLASH_CASCADE_FWD_MS + FLASH_CASCADE_REV_MS);
+		expect(ANIM_DURATION_MS).toBe(burst_total + cascade_total);
 	});
 });
