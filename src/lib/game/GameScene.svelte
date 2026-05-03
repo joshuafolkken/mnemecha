@@ -4,6 +4,7 @@
 	import { Suspense } from '@threlte/extras';
 	import { onMount } from 'svelte';
 	import VirtualJoystick from './VirtualJoystick.svelte';
+	import ControlsOverlay from './ControlsOverlay.svelte';
 	import { input } from '$lib/game/input.svelte';
 	import { audio } from '$lib/game/audio';
 	import { fullscreen } from '$lib/game/fullscreen.svelte';
@@ -12,9 +13,6 @@
 	import { device } from '$lib/game/device.svelte';
 	import { session } from '$lib/game/session.svelte';
 	import { game_state } from '$lib/game/state.svelte';
-	import { fonts } from '$lib/game/fonts';
-
-	const CLICK_HINT_BASE_FONT_SIZE_REM = 1;
 
 	interface Props {
 		children?: Snippet;
@@ -23,6 +21,7 @@
 		label_jump: string;
 		label_game: string;
 		label_game_started: string;
+		label_pause: string;
 	}
 
 	let {
@@ -31,7 +30,8 @@
 		on_start,
 		label_jump,
 		label_game,
-		label_game_started
+		label_game_started,
+		label_pause
 	}: Props = $props();
 
 	let container: HTMLElement;
@@ -40,12 +40,9 @@
 	let drag_start_y = $derived(input.drag_start_y);
 	let is_pseudo_fullscreen = $derived(fullscreen.is_pseudo_fullscreen);
 	let is_started = $derived(session.is_session_started);
+	let is_touch = $derived(device.is_touch_primary);
 	let game_status = $derived(is_started ? label_game_started : '');
 	let is_alt = $derived(game_state.is_alt);
-	let hint_font_family = $derived(fonts.get_font_family(is_alt));
-	let hint_font_size_rem = $derived(
-		CLICK_HINT_BASE_FONT_SIZE_REM * fonts.get_font_size_multiplier(is_alt)
-	);
 
 	function start_game(): void {
 		if (session.is_session_started) return;
@@ -55,8 +52,20 @@
 		on_start?.();
 	}
 
+	function on_pause_click(event: MouseEvent): void {
+		event.stopPropagation();
+		session.reset_session();
+	}
+
 	function on_key_down(event: KeyboardEvent): void {
-		if (event.key !== 'Enter' && event.key !== ' ') return;
+		if (event.key === 'Escape' || event.key === 'z' || event.key === 'Z') {
+			if (session.is_session_started) {
+				event.preventDefault();
+				session.reset_session();
+			}
+			return;
+		}
+		if (event.key !== 'Enter') return;
 		event.preventDefault();
 		start_game();
 	}
@@ -98,14 +107,27 @@
 >
 	<div role="status" class="sr-only">{game_status}</div>
 	{#if !is_started}
-		<div
-			class="click-hint"
-			aria-live="polite"
-			style:font-family={hint_font_family}
-			style:font-size="{hint_font_size_rem}rem"
+		<ControlsOverlay {hint_text} {is_touch} />
+	{/if}
+	{#if is_started && is_touch}
+		<button
+			class="pause-btn"
+			data-testid="pause-btn"
+			aria-label={label_pause}
+			onclick={on_pause_click}
 		>
-			{hint_text}
-		</div>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				width="20"
+				height="20"
+				fill="currentColor"
+				aria-hidden="true"
+			>
+				<rect x="5" y="4" width="4" height="16" rx="1" />
+				<rect x="15" y="4" width="4" height="16" rx="1" />
+			</svg>
+		</button>
 	{/if}
 	{#if is_alt}
 		<div class="cyber-glow" data-testid="cyber-glow" aria-hidden="true"></div>
@@ -115,7 +137,7 @@
 			{@render children?.()}
 		</Suspense>
 	</Canvas>
-	<VirtualJoystick {label_jump} />
+	<VirtualJoystick {label_jump} show_jump={is_started} />
 	{#if is_dragging_look}
 		<svg
 			class="fake-cursor"
@@ -143,6 +165,7 @@
 		position: relative;
 		width: 100%;
 		height: 100vh;
+		height: 100dvh;
 		background: #0d0d12;
 	}
 
@@ -151,6 +174,7 @@
 		inset: 0;
 		width: 100vw;
 		height: 100vh;
+		height: 100dvh;
 		z-index: 9999;
 	}
 
@@ -165,16 +189,23 @@
 		transform: translate(-2px, -2px);
 	}
 
-	.click-hint {
+	.pause-btn {
 		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		color: rgba(255, 255, 255, 0.6);
-		font-size: 1rem;
-		letter-spacing: 0.2em;
-		pointer-events: none;
-		z-index: 10;
+		bottom: 1rem;
+		right: 1rem;
+		z-index: 20;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.15);
+		border: 1.5px solid rgba(255, 255, 255, 0.4);
+		color: rgba(255, 255, 255, 0.85);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: all;
+		touch-action: manipulation;
+		cursor: pointer;
 	}
 
 	.cyber-glow {

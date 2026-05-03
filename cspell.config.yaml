@@ -31,6 +31,7 @@ words:
   - Raycaster
   - shellcheck
   - Stylesheet
+  - spacebar
   - sveltekit
   - tailwindlabs
   - TAILWINDLABS
@@ -38,5 +39,6 @@ words:
   - trycloudflare
   - SAMEORIGIN
   - unstub
+  - WASD
   - yoannmoinet
   - YOANNMOINET

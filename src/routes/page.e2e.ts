@@ -108,30 +108,33 @@ test('loading overlay disappears once the scene is ready', async ({ page }) => {
 	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible();
 });
 
-test('CLICK TO PLAY hint is visible before the user clicks', async ({ page }) => {
+test('controls overlay is visible before the user clicks', async ({ page }) => {
 	await page.goto('/');
-	await expect(page.locator('.click-hint')).toBeVisible();
+	await expect(page.locator('[data-testid="controls-overlay"]')).toBeVisible();
+	await expect(page.locator('[data-testid="start-hint"]')).toBeVisible();
 });
 
-test('CLICK TO PLAY hint disappears after the game scene is clicked', async ({ page }) => {
+test('controls overlay disappears after the game scene is clicked', async ({ page }) => {
 	await page.goto('/');
 	await page.locator('[data-testid="game-scene"]').click();
-	await expect(page.locator('.click-hint')).toHaveCount(0);
+	await expect(page.locator('[data-testid="controls-overlay"]')).toHaveCount(0);
 });
 
-test('first click on the game scene does not toggle cyber mode while CLICK TO PLAY is shown', async ({
+test('first click on the game scene does not toggle cyber mode while controls overlay is shown', async ({
 	page
 }) => {
 	await page.goto('/');
 	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible();
-	await expect(page.locator('.click-hint')).toBeVisible();
-	await expect(page.locator('[data-testid="cyber-glow"]')).toBeVisible();
+	await expect(page.locator('[data-testid="controls-overlay"]')).toBeVisible();
+	const glow_locator = page.locator('[data-testid="cyber-glow"]');
+	const initial_glow_count = await glow_locator.count();
 	await page.locator('[data-testid="game-scene"]').click();
-	await expect(page.locator('.click-hint')).toHaveCount(0);
-	await expect(page.locator('[data-testid="cyber-glow"]')).toBeVisible();
+	await expect(page.locator('[data-testid="controls-overlay"]')).toHaveCount(0);
+	const after_glow_count = await glow_locator.count();
+	expect(after_glow_count).toBe(initial_glow_count);
 });
 
-test('fullscreen is requested on touch-primary devices when CLICK TO PLAY is clicked', async ({
+test('fullscreen is requested on touch-primary devices when start hint is clicked', async ({
 	page
 }) => {
 	await stub_touch_primary(page, true);
@@ -157,7 +160,7 @@ test('fullscreen is requested on touch-primary devices when CLICK TO PLAY is cli
 	expect(fullscreen_target).toBe('game-scene');
 });
 
-test('fullscreen is NOT requested on desktop devices when CLICK TO PLAY is clicked', async ({
+test('fullscreen is NOT requested on desktop devices when start hint is clicked', async ({
 	page
 }) => {
 	await stub_touch_primary(page, false);
@@ -184,7 +187,7 @@ test('fullscreen is NOT requested on desktop devices when CLICK TO PLAY is click
 	);
 
 	expect(was_called).toBe(false);
-	await expect(page.locator('.click-hint')).toHaveCount(0);
+	await expect(page.locator('[data-testid="controls-overlay"]')).toHaveCount(0);
 });
 
 test('pseudo-fullscreen class is applied when native API is unavailable on touch devices', async ({
