@@ -40,4 +40,12 @@ describe('TouchDiagram', () => {
 		const texts = Array.from(container.querySelectorAll('text'));
 		expect(texts).toHaveLength(0);
 	});
+
+	it('gesture strokes use cyber-purple color (matches PC keyboard/mouse diagrams)', () => {
+		const { container } = render(TouchDiagram, { props: PROPS });
+		const path = container.querySelector('svg.move-gesture path');
+		const ring = container.querySelector('svg.move-gesture circle');
+		expect(path?.getAttribute('stroke')).toContain('160,130,255');
+		expect(ring?.getAttribute('stroke')).toContain('160,130,255');
+	});
 });
