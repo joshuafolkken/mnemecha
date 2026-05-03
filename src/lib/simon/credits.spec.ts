@@ -8,14 +8,6 @@ describe('credits', () => {
 			expect(CREDITS_TEXT.length).toBeGreaterThan(0);
 		});
 
-		it('includes the author credit', () => {
-			expect(CREDITS_TEXT).toContain('joshuafolkken');
-		});
-
-		it('includes the GitHub repository URL', () => {
-			expect(CREDITS_TEXT).toContain('github.com/joshuafolkken/simon');
-		});
-
 		it('includes core framework credits', () => {
 			expect(CREDITS_TEXT).toContain('Svelte');
 			expect(CREDITS_TEXT).toContain('Three.js');
@@ -62,9 +54,8 @@ describe('credits', () => {
 			expect(CREDITS_TEXT).toContain('ESLint');
 		});
 
-		it('includes AI tools credit', () => {
-			expect(CREDITS_TEXT).toContain('Claude Code');
-			expect(CREDITS_TEXT).toContain('Sonnet 4.6');
+		it('credits Claude Sonnet 4.6 as engineering staff', () => {
+			expect(CREDITS_TEXT).toContain('Claude Sonnet 4.6');
 		});
 
 		it('ends with thank you message', () => {
@@ -89,6 +80,48 @@ describe('credits', () => {
 			expect(CREDITS_TEXT).toContain('FONTS');
 			expect(CREDITS_TEXT).toContain('TESTING & TOOLING');
 			expect(CREDITS_TEXT).toContain('OPEN SOURCE LIBRARIES');
+		});
+
+		it('includes the signature line', () => {
+			expect(CREDITS_TEXT).toContain('A JOSHUA FOLKKEN GAME');
+		});
+
+		it('includes the STAFF section header', () => {
+			expect(CREDITS_TEXT).toContain('STAFF');
+		});
+
+		it('includes Joshua Folkken creative roles', () => {
+			expect(CREDITS_TEXT).toContain('CREATIVE DIRECTOR');
+			expect(CREDITS_TEXT).toContain('GAME DIRECTOR');
+			expect(CREDITS_TEXT).toContain('GAME DESIGNER');
+			expect(CREDITS_TEXT).toContain('PRODUCER');
+			expect(CREDITS_TEXT).toContain('WORLD ARCHITECT');
+			expect(CREDITS_TEXT).toContain('ART DIRECTOR');
+			expect(CREDITS_TEXT).toContain('SOUND DIRECTOR');
+			expect(CREDITS_TEXT).toContain('EXPERIENCE DESIGNER');
+		});
+
+		it('includes Claude Sonnet engineering roles', () => {
+			expect(CREDITS_TEXT).toContain('TECHNOLOGY DIRECTOR');
+			expect(CREDITS_TEXT).toContain('LEAD PROGRAMMER');
+			expect(CREDITS_TEXT).toContain('SYSTEMS ARCHITECT');
+			expect(CREDITS_TEXT).toContain('ENGINE PROGRAMMER');
+			expect(CREDITS_TEXT).toContain('UI PROGRAMMER');
+			expect(CREDITS_TEXT).toContain('AUDIO PROGRAMMER');
+			expect(CREDITS_TEXT).toContain('TEST ENGINEER');
+			expect(CREDITS_TEXT).toContain('QA ENGINEER');
+			expect(CREDITS_TEXT).toContain('REFACTORING LEAD');
+			expect(CREDITS_TEXT).toContain('CODE REVIEWER');
+			expect(CREDITS_TEXT).toContain('BUILD ENGINEER');
+		});
+
+		it('includes Joshua Folkken as a credited person', () => {
+			expect(CREDITS_TEXT).toContain('Joshua Folkken');
+		});
+
+		it('includes the directed-by and engineered-by end card', () => {
+			expect(CREDITS_TEXT).toContain('DIRECTED BY');
+			expect(CREDITS_TEXT).toContain('ENGINEERED BY');
 		});
 	});
 
