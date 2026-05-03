@@ -1,6 +1,6 @@
 {
 	"name": "simon",
-	"version": "0.89.0",
+	"version": "0.90.0",
 	"type": "module",
 	"private": true,
 	"scripts": {
@@ -24,7 +24,7 @@
 		"@axe-core/playwright": "^4.11.3",
 		"@eslint/compat": "^2.0.5",
 		"@eslint/js": "^10.0.1",
-		"@joshuafolkken/kit": "^0.119.0",
+		"@joshuafolkken/kit": "^0.120.0",
 		"@playwright/test": "^1.59.1",
 		"@size-limit/file": "^12.1.0",
 		"@size-limit/preset-app": "^12.1.0",

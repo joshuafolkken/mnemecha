@@ -19,6 +19,7 @@ vi.mock('./ScoreDisplay.svelte', () => ({ default: function ScoreDisplay() {} })
 vi.mock('./Switch.svelte', () => ({ default: function Switch() {} }));
 vi.mock('./FloorCredits.svelte', () => ({ default: function FloorCredits() {} }));
 vi.mock('$lib/game/fullscreen.svelte', () => ({ fullscreen: { is_active: false } }));
+vi.mock('$lib/game/state.svelte', () => ({ game_state: { is_alt: false } }));
 vi.mock('$lib/game/pointer-compute.js', () => ({
 	make_pointer_compute: vi.fn(() => vi.fn())
 }));
@@ -71,9 +72,9 @@ const MOCK_MESSAGES = {
 	cyber_switch_label: 'CYBER',
 	fullscreen_switch_label: 'FULLSCREEN',
 	fps_switch_label: 'FPS',
-	score_label_high_score: 'HI',
-	score_label_round: 'RND',
-	score_label_current: 'SCORE'
+	score_high_score: 'HI',
+	score_round: 'RND',
+	score_current: 'SCORE'
 };
 
 const MOCK_SCORE_DISPLAY_Z = -4.65;
@@ -86,7 +87,6 @@ function make_props(game_board: ReturnType<typeof createRawSnippet>) {
 		credits_text: 'Credits',
 		credits_start_z: MOCK_CREDITS_START_Z,
 		credits_end_z: MOCK_CREDITS_END_Z,
-		is_alt: false,
 		messages: MOCK_MESSAGES,
 		score_display_z: MOCK_SCORE_DISPLAY_Z
 	};
@@ -105,5 +105,13 @@ describe('SceneObjects', () => {
 		}));
 		const { container } = render(SceneObjects, { props: make_props(game_board) });
 		expect(container.querySelector('[data-testid="board-slot"]')).toBeTruthy();
+	});
+
+	it('reads is_alt from game_state (no is_alt prop required)', () => {
+		const game_board = createRawSnippet(() => ({ render: () => '<span></span>' }));
+		const props = make_props(game_board);
+		expect('is_alt' in props).toBe(false);
+		const { container } = render(SceneObjects, { props });
+		expect(container).toBeTruthy();
 	});
 });

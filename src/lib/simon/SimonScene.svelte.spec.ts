@@ -1,16 +1,22 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import SimonScene from './SimonScene.svelte';
+import { score } from '$lib/simon/score.svelte';
+import { messages } from '$lib/messages/en';
+import { make_credits_scroll_bounds } from '$lib/game/credits-config';
 
 vi.mock('$lib/game/SceneObjects.svelte', () => ({ default: function SceneObjects() {} }));
 vi.mock('$lib/simon/SimonBoard.svelte', () => ({ default: function SimonBoard() {} }));
-vi.mock('$lib/simon/board-config', () => ({ BOARD_Z: -4.8 }));
+vi.mock('$lib/simon/board-config', () => ({
+	SCORE_DISPLAY_Z: -4.65
+}));
 vi.mock('$lib/game/state.svelte', () => ({ game_state: { is_alt: false } }));
 vi.mock('$lib/messages/en', () => ({
 	messages: {
 		game_title: 'SIMON',
 		cyber_switch_label: 'CYBER',
 		fullscreen_switch_label: 'FULLSCREEN',
+		fps_switch_label: 'FPS',
 		score_high_score: 'HI',
 		score_round: 'RND',
 		score_current: 'SCORE',
@@ -31,11 +37,11 @@ vi.mock('$lib/simon/simon.svelte', () => ({
 }));
 vi.mock('$lib/simon/score.svelte', () => ({
 	score: {
-		high_score: 0,
-		current_score: 0,
-		is_new_high_score: false,
-		high_score_round: 0,
-		last_cleared_round: 0,
+		high_score: 42,
+		current_score: 7,
+		is_new_high_score: true,
+		high_score_round: 5,
+		last_cleared_round: 3,
 		format_score: String
 	}
 }));
@@ -52,5 +58,24 @@ describe('SimonScene', () => {
 	it('renders without error', () => {
 		const { container } = render(SimonScene);
 		expect(container).toBeTruthy();
+	});
+
+	it('calls make_credits_scroll_bounds with CREDITS_LINE_COUNT and HALF_D', () => {
+		render(SimonScene);
+		expect(vi.mocked(make_credits_scroll_bounds)).toHaveBeenCalledWith(1, 5);
+	});
+
+	it('score module exposes all required score_data fields', () => {
+		expect(score.high_score).toBe(42);
+		expect(score.current_score).toBe(7);
+		expect(score.is_new_high_score).toBe(true);
+		expect(score.high_score_round).toBe(5);
+		expect(score.last_cleared_round).toBe(3);
+	});
+
+	it('messages use score_high_score key (no score_label prefix)', () => {
+		expect(messages.score_high_score).toBe('HI');
+		expect(messages.score_round).toBe('RND');
+		expect(messages.score_current).toBe('SCORE');
 	});
 });
