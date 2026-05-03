@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CREDITS_TEXT, CREDITS_SCROLL_START_Z, CREDITS_SCROLL_END_Z } from './credits';
+import { CREDITS_TEXT, CREDITS_LINE_COUNT } from './credits';
 
 describe('credits', () => {
 	describe('CREDITS_TEXT', () => {
@@ -92,21 +92,15 @@ describe('credits', () => {
 		});
 	});
 
-	describe('scroll bounds', () => {
-		it('CREDITS_SCROLL_START_Z is positive', () => {
-			expect(CREDITS_SCROLL_START_Z).toBeGreaterThan(0);
+	describe('CREDITS_LINE_COUNT', () => {
+		it('is a positive integer', () => {
+			expect(Number.isInteger(CREDITS_LINE_COUNT)).toBe(true);
+			expect(CREDITS_LINE_COUNT).toBeGreaterThan(0);
 		});
 
-		it('CREDITS_SCROLL_END_Z is negative', () => {
-			expect(CREDITS_SCROLL_END_Z).toBeLessThan(0);
-		});
-
-		it('CREDITS_SCROLL_START_Z is greater than CREDITS_SCROLL_END_Z', () => {
-			expect(CREDITS_SCROLL_START_Z).toBeGreaterThan(CREDITS_SCROLL_END_Z);
-		});
-
-		it('CREDITS_SCROLL_START_Z and CREDITS_SCROLL_END_Z are symmetric around zero', () => {
-			expect(CREDITS_SCROLL_START_Z).toBeCloseTo(-CREDITS_SCROLL_END_Z);
+		it('matches the number of newlines in CREDITS_TEXT plus one', () => {
+			const line_count_from_text = CREDITS_TEXT.split('\n').length;
+			expect(CREDITS_LINE_COUNT).toBe(line_count_from_text);
 		});
 	});
 });

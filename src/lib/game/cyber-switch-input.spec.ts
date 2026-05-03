@@ -1,37 +1,35 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { cyber_switch_input } from './cyber-switch-input';
 import { session } from './session.svelte';
+import { game_state } from './state.svelte';
 import { switch_audio } from '$lib/game/switch-audio';
 
 describe('cyber_switch_input', () => {
-	let toggle_mock: ReturnType<typeof vi.fn<() => void>>;
-
 	beforeEach(() => {
 		session.reset_session();
-		toggle_mock = vi.fn<() => void>();
-		cyber_switch_input.configure({ on_toggle: toggle_mock });
+		if (game_state.is_alt) game_state.toggle_alt();
 	});
 
 	afterEach(() => {
 		vi.restoreAllMocks();
 	});
 
-	it('does not call on_toggle when session is not started', () => {
+	it('does not toggle alt mode when session is not started', () => {
 		cyber_switch_input.on_click();
-		expect(toggle_mock).not.toHaveBeenCalled();
+		expect(game_state.is_alt).toBe(false);
 	});
 
-	it('calls on_toggle once session has started', () => {
+	it('toggles alt mode once session has started', () => {
 		session.start_session();
 		cyber_switch_input.on_click();
-		expect(toggle_mock).toHaveBeenCalledTimes(1);
+		expect(game_state.is_alt).toBe(true);
 	});
 
-	it('calls on_toggle twice when clicked twice after session started', () => {
+	it('toggles alt mode twice when clicked twice after session started', () => {
 		session.start_session();
 		cyber_switch_input.on_click();
 		cyber_switch_input.on_click();
-		expect(toggle_mock).toHaveBeenCalledTimes(2);
+		expect(game_state.is_alt).toBe(false);
 	});
 
 	it('plays switch click sound when session is started', () => {

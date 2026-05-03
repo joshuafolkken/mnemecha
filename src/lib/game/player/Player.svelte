@@ -15,13 +15,12 @@
 	const FAR_PLANE = 50;
 	const JOYSTICK_LOOK_SPEED = 2;
 	const GAMEOVER_SHAKE_STRENGTH = 1.0;
-	const GAMEOVER_PHASE = 'gameover';
 
 	interface Props {
-		game_phase: string;
+		is_gameover: boolean;
 	}
 
-	let { game_phase }: Props = $props();
+	let { is_gameover }: Props = $props();
 
 	let pos_x = $state(SPAWN_X);
 	let pos_y = $state(SPAWN_Y);
@@ -34,7 +33,7 @@
 	let shake_roll = $state(0);
 
 	$effect(() => {
-		if (game_phase === GAMEOVER_PHASE) camera_shake.trigger(GAMEOVER_SHAKE_STRENGTH);
+		if (is_gameover) camera_shake.trigger(GAMEOVER_SHAKE_STRENGTH);
 	});
 
 	function get_axis_input(): { forward: number; strafe: number } {
