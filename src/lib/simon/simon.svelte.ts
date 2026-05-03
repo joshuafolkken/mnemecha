@@ -88,11 +88,17 @@ function schedule_next_round(s: SimonState, t: SimonTimers, colors: readonly But
 	t.restart_timer = setTimeout(() => start_next_round(s, t, colors), RESTART_DELAY_MS);
 }
 
-function handle_correct_press(s: SimonState, t: SimonTimers, score: ScoreInstance): void {
+function handle_correct_release(
+	s: SimonState,
+	t: SimonTimers,
+	score: ScoreInstance,
+	colors: readonly ButtonColor[]
+): void {
 	s.position += 1;
 	if (s.position < s.sequence.length) return;
 	score.add_round_score(Date.now() - t.input_start_ms, s.sequence.length, s.round);
 	s.phase = 'round_complete';
+	schedule_next_round(s, t, colors);
 }
 
 function start_simon(
@@ -112,27 +118,30 @@ function start_simon(
 	void run_show(s, t, t.show_gen);
 }
 
-function release_simon(s: SimonState, t: SimonTimers, colors: readonly ButtonColor[]): void {
-	simon_audio.stop_tone();
-	s.pressed_color = null;
-	if (s.phase === 'round_complete') schedule_next_round(s, t, colors);
-}
-
-function press_simon(
+function release_simon(
 	s: SimonState,
 	t: SimonTimers,
 	score: ScoreInstance,
-	color: ButtonColor
+	colors: readonly ButtonColor[]
 ): void {
+	simon_audio.stop_tone();
+	const color = s.pressed_color;
+	s.pressed_color = null;
 	if (s.phase !== 'player_input') return;
-	s.pressed_color = color;
-	simon_audio.start_tone(color, game_state.is_alt);
+	if (color === null) return;
 	if (color === s.sequence[s.position]) {
-		handle_correct_press(s, t, score);
+		handle_correct_release(s, t, score, colors);
 	} else {
 		simon_audio.play_error_tone(ERROR_BEEP_MS, game_state.is_alt);
 		s.phase = 'gameover';
 	}
+}
+
+function press_simon(s: SimonState, color: ButtonColor): void {
+	if (s.phase !== 'player_input') return;
+	if (s.pressed_color !== null) return;
+	s.pressed_color = color;
+	simon_audio.start_tone(color, game_state.is_alt);
 }
 
 function reset_simon(s: SimonState, t: SimonTimers, score: ScoreInstance): void {
@@ -182,8 +191,8 @@ function make_simon_api(
 			return s.flash_intensity;
 		},
 		start: (): void => start_simon(s, t, score, colors),
-		press: (color: ButtonColor): void => press_simon(s, t, score, color),
-		release: (): void => release_simon(s, t, colors),
+		press: (color: ButtonColor): void => press_simon(s, color),
+		release: (): void => release_simon(s, t, score, colors),
 		reset: (): void => reset_simon(s, t, score)
 	};
 }

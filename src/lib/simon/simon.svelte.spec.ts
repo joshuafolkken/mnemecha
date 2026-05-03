@@ -85,21 +85,24 @@ describe('simon FSM', () => {
 		expect(simon.phase).toBe('player_input');
 	});
 
-	it('correct final press transitions to round_complete and blocks further input', async () => {
+	it('final correct press + release advances to showing for the next round', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0));
-		expect(simon.phase).toBe('round_complete');
+		simon.release();
+		expect(simon.phase).toBe('showing');
 		expect(simon.round).toBe(1);
 	});
 
-	it('next round does not start while last button is still held', async () => {
+	it('round does not advance while last button is still held', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
-		simon.press(seq_at(0));
+		const final_color = seq_at(0);
+		simon.press(final_color);
 		await vi.advanceTimersByTimeAsync(RESTART_DELAY_MS * 2);
-		expect(simon.phase).toBe('round_complete');
+		expect(simon.phase).toBe('player_input');
 		expect(simon.round).toBe(1);
+		expect(simon.pressed_color).toBe(final_color);
 	});
 
 	it('next round starts after 1 second delay following release of final button', async () => {
@@ -113,7 +116,7 @@ describe('simon FSM', () => {
 		expect(simon.sequence).toHaveLength(2);
 	});
 
-	it('press is ignored during round_complete phase', async () => {
+	it('press is ignored while another button is being held', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0));
@@ -121,10 +124,10 @@ describe('simon FSM', () => {
 		simon.press('green');
 		simon.press('red');
 		expect(spy).not.toHaveBeenCalled();
-		expect(simon.phase).toBe('round_complete');
+		expect(simon.phase).toBe('player_input');
 	});
 
-	it('reset() during round_complete cancels pending next round', async () => {
+	it('reset() while a button is held returns to idle', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0));
@@ -145,7 +148,7 @@ describe('simon FSM', () => {
 		expect(simon.round).toBe(0);
 	});
 
-	it('correct intermediate press advances position without completing round', async () => {
+	it('correct intermediate press + release advances position without completing round', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0)); // complete round 1
@@ -153,23 +156,26 @@ describe('simon FSM', () => {
 		await vi.runAllTimersAsync(); // drain round 2 show
 		const first_color = seq_at(0);
 		simon.press(first_color); // first of two correct presses
+		simon.release();
 		expect(simon.position).toBe(1);
 		expect(simon.phase).toBe('player_input');
 		expect(simon.round).toBe(2);
 	});
 
-	it('wrong press triggers gameover', async () => {
+	it('wrong press + release triggers gameover', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(wrong_color(seq_at(0)));
+		simon.release();
 		expect(simon.phase).toBe('gameover');
 	});
 
-	it('wrong press plays error tone for ERROR_BEEP_MS', async () => {
+	it('wrong press + release plays error tone for ERROR_BEEP_MS', async () => {
 		const spy = vi.spyOn(simon_audio, 'play_error_tone');
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(wrong_color(seq_at(0)));
+		simon.release();
 		expect(spy).toHaveBeenCalledWith(ERROR_BEEP_MS, true);
 	});
 
@@ -226,33 +232,23 @@ describe('simon FSM', () => {
 		expect(simon.phase).toBe('idle');
 	});
 
-	it('start() from round_complete before release resets game to round 1', async () => {
+	it('release while phase is showing does not schedule an extra next-round timer', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
-		simon.press(seq_at(0));
-		expect(simon.phase).toBe('round_complete');
-		simon.start();
-		await vi.runAllTimersAsync();
-		expect(simon.phase).toBe('player_input');
-		expect(simon.round).toBe(1);
-		expect(simon.sequence).toHaveLength(1);
-	});
-
-	it('release after start() from round_complete does not schedule next round', async () => {
-		simon.start();
-		await vi.runAllTimersAsync();
-		simon.press(seq_at(0)); // phase = round_complete, player still holding button
-		simon.start(); // restart — phase becomes showing
-		simon.release(); // release while showing — must not call schedule_next_round
+		simon.press(seq_at(0)); // holding the final button (phase still player_input)
+		simon.release(); // completes round 1 → phase becomes showing
+		simon.release(); // should be ignored while showing
 		await vi.advanceTimersByTimeAsync(RESTART_DELAY_MS);
-		expect(simon.round).toBe(1);
-		expect(simon.sequence).toHaveLength(1);
+		expect(simon.round).toBe(2);
+		await vi.advanceTimersByTimeAsync(RESTART_DELAY_MS);
+		expect(simon.round).toBe(2);
 	});
 
 	it('start() from gameover restarts the game', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(wrong_color(seq_at(0)));
+		simon.release();
 		expect(simon.phase).toBe('gameover');
 		simon.start();
 		expect(simon.phase).toBe('showing');
@@ -311,10 +307,12 @@ describe('score integration', () => {
 		simon.reset();
 	});
 
-	it('current_score increases after a round completes', async () => {
+	it('current_score is 0 while the final button is held and increases after release', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0));
+		expect(score.current_score).toBe(0);
+		simon.release();
 		expect(score.current_score).toBeGreaterThan(0);
 	});
 
@@ -322,6 +320,7 @@ describe('score integration', () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0));
+		simon.release();
 		expect(score.current_score).toBe(1_000);
 	});
 
@@ -329,6 +328,7 @@ describe('score integration', () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0));
+		simon.release();
 		expect(score.current_score).toBeGreaterThan(0);
 		simon.reset();
 		expect(score.current_score).toBe(0);
@@ -338,7 +338,12 @@ describe('score integration', () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0));
+		simon.release();
 		expect(score.current_score).toBeGreaterThan(0);
+		await vi.runAllTimersAsync();
+		simon.press(wrong_color(seq_at(0)));
+		simon.release();
+		expect(simon.phase).toBe('gameover');
 		simon.start();
 		expect(score.current_score).toBe(0);
 	});
