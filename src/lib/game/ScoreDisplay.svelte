@@ -2,7 +2,34 @@
 	import { T, useTask } from '@threlte/core';
 	import { Text } from '@threlte/extras';
 	import { fonts } from '$lib/game/fonts';
-	import { SCORE_TEXT_Z } from '$lib/game/score-display-config';
+	import {
+		SCORE_TEXT_Z,
+		DISPLAY_Y,
+		PANEL_W,
+		PANEL_H,
+		PANEL_Z_OFFSET,
+		PANEL_OPACITY,
+		CYBER_PANEL_COLOR,
+		CYBER_PANEL_EMISSIVE,
+		CYBER_PANEL_EMISSIVE_INTENSITY,
+		RETRO_PANEL_COLOR,
+		RETRO_PANEL_EMISSIVE,
+		RETRO_PANEL_EMISSIVE_INTENSITY,
+		CYBER_LABEL_COLOR,
+		CYBER_VALUE_COLOR,
+		RETRO_LABEL_COLOR,
+		RETRO_VALUE_COLOR,
+		NEW_HIGH_SCORE_COLOR,
+		LABEL_FONT_SIZE,
+		VALUE_FONT_SIZE,
+		ROUND_VALUE_FONT_SIZE,
+		HI_LABEL_Y,
+		HI_VALUE_Y,
+		SCORE_LABEL_Y,
+		SCORE_VALUE_Y,
+		ROUND_X,
+		ANIM_DURATION_MS
+	} from '$lib/game/score-display-config';
 	import type { ScoreData } from '$lib/game/score-display-types';
 
 	interface Props {
@@ -16,40 +43,6 @@
 
 	let { score_data, is_alt, position_z, label_high_score, label_round, label_current }: Props =
 		$props();
-
-	const DISPLAY_Y = 2.5;
-
-	const PANEL_W = 1.6;
-	const PANEL_H = 0.62;
-	const PANEL_Z_OFFSET = -0.01;
-	const PANEL_OPACITY = 0.88;
-
-	const CYBER_PANEL_COLOR = '#000a1a';
-	const CYBER_PANEL_EMISSIVE = '#001a33';
-	const CYBER_PANEL_EMISSIVE_INTENSITY = 0.6;
-	const RETRO_PANEL_COLOR = '#0a0a0a';
-	const RETRO_PANEL_EMISSIVE = '#0a1a0a';
-	const RETRO_PANEL_EMISSIVE_INTENSITY = 0.15;
-
-	const CYBER_LABEL_COLOR = '#2a5a7a';
-	const CYBER_VALUE_COLOR = '#00ffff';
-	const RETRO_LABEL_COLOR = '#336633';
-	const RETRO_VALUE_COLOR = '#00ff88';
-	const NEW_HIGH_SCORE_COLOR = '#ffff00';
-
-	const LABEL_FONT_SIZE = 0.055;
-	const VALUE_FONT_SIZE = 0.1;
-
-	const HI_LABEL_Y = 0.2;
-	const HI_VALUE_Y = 0.07;
-	const SCORE_LABEL_Y = -0.07;
-	const SCORE_VALUE_Y = -0.2;
-
-	const ROUND_X = 0.52;
-	const ROUND_VALUE_Y = SCORE_VALUE_Y;
-	const ROUND_VALUE_FONT_SIZE = 0.09;
-
-	const ANIM_DURATION_MS = 1_000;
 
 	let displayed_score = $state(0);
 	let score_from = 0;
@@ -196,7 +189,7 @@
 		anchorX="center"
 		anchorY="middle"
 		position.x={ROUND_X}
-		position.y={ROUND_VALUE_Y}
+		position.y={SCORE_VALUE_Y}
 		position.z={SCORE_TEXT_Z}
 	/>
 </T.Group>

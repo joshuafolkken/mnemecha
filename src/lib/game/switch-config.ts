@@ -5,7 +5,7 @@ export const SWITCH_Y = 1.2;
 export const FPS_SWITCH_Y = 2.2;
 // 2x the score display wall distance: back wall=-5, score display=-4.65, distance=0.35, 2x=0.70
 export const SWITCH_Z = -4.3;
-export const CYBER_SWITCH_X = 1.6;
+export const LEFT_SWITCH_X = 1.6;
 export const FULLSCREEN_SWITCH_X = 2.6;
 
 export const PANEL_SIZE = 0.58;

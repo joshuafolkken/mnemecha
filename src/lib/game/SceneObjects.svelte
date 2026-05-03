@@ -9,6 +9,7 @@
 	import FpsDisplay from './FpsDisplay.svelte';
 	import FloorCredits from './FloorCredits.svelte';
 	import { fullscreen } from '$lib/game/fullscreen.svelte';
+	import { game_state } from '$lib/game/state.svelte';
 	import { make_pointer_compute } from '$lib/game/pointer-compute.js';
 	import { lighting } from '$lib/game/lighting';
 	import { fonts } from '$lib/game/fonts';
@@ -19,7 +20,7 @@
 		FULLSCREEN_SWITCH_COLORS,
 		FPS_SWITCH_COLORS
 	} from '$lib/game/switch-colors';
-	import { FPS_SWITCH_Y, CYBER_SWITCH_X, FULLSCREEN_SWITCH_X } from '$lib/game/switch-config';
+	import { FPS_SWITCH_Y, LEFT_SWITCH_X, FULLSCREEN_SWITCH_X } from '$lib/game/switch-config';
 	import { cyber_switch_input } from '$lib/game/cyber-switch-input';
 	import { fullscreen_switch_input } from '$lib/game/fullscreen-switch-input';
 	import { fps_switch_input } from '$lib/game/fps-switch-input';
@@ -53,7 +54,6 @@
 		credits_text: string;
 		credits_start_z: number;
 		credits_end_z: number;
-		is_alt: boolean;
 		messages: SceneObjectsMessages;
 		score_display_z: number;
 	}
@@ -65,7 +65,6 @@
 		credits_text,
 		credits_start_z,
 		credits_end_z,
-		is_alt,
 		messages,
 		score_display_z
 	}: Props = $props();
@@ -73,6 +72,7 @@
 	const { camera } = useThrelte();
 	interactivity({ compute: make_pointer_compute(camera) });
 
+	let is_alt = $derived(game_state.is_alt);
 	let bg_color = $derived(is_alt ? CYBER_BG : NORMAL_BG);
 	let ambient_intensity = $derived(lighting.get_ambient_intensity(is_alt));
 	let ambient_color = $derived(lighting.get_ambient_color(is_alt));
@@ -125,12 +125,12 @@
 	{score_data}
 	{is_alt}
 	position_z={score_display_z}
-	label_high_score={messages.score_label_high_score}
-	label_round={messages.score_label_round}
-	label_current={messages.score_label_current}
+	label_high_score={messages.score_high_score}
+	label_round={messages.score_round}
+	label_current={messages.score_current}
 />
 <Switch
-	position_x={CYBER_SWITCH_X}
+	position_x={LEFT_SWITCH_X}
 	is_active={fps.is_fps_enabled}
 	icon_type="fps"
 	label={messages.fps_switch_label}
@@ -143,7 +143,7 @@
 />
 <FpsDisplay />
 <Switch
-	position_x={CYBER_SWITCH_X}
+	position_x={LEFT_SWITCH_X}
 	is_active={is_alt}
 	icon_type="cyber"
 	label={messages.cyber_switch_label}
