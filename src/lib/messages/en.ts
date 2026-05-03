@@ -4,7 +4,8 @@ export const messages = {
 	cyber_switch_label: 'CYBER',
 	fullscreen_switch_label: 'FULLSCREEN',
 	fps_switch_label: 'FPS',
-	click_to_play: 'CLICK TO PLAY',
+	click_to_start: 'CLICK TO START',
+	tap_to_start: 'TAP TO START',
 	simon_start: 'START',
 	simon_round: 'ROUND',
 	simon_gameover: 'GAME OVER',
@@ -18,5 +19,11 @@ export const messages = {
 	score_current: 'SCORE',
 	score_round: 'RND',
 	game_application_label: 'Simon game',
-	game_started_announcement: 'Game started'
+	game_started_announcement: 'Game started',
+	pause_button: 'Pause',
+	controls_move: 'Move',
+	controls_look: 'Look around',
+	controls_action: 'Action',
+	controls_jump: 'Jump',
+	controls_return: 'Return to start'
 } as const;

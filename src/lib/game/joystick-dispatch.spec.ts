@@ -71,6 +71,15 @@ describe('dispatch_pointer_up', () => {
 		joystick_dispatch.dispatch_pointer_up(POINTER_ID, IS_PRIMARY, CLIENT_X, CLIENT_Y);
 		expect(dispatched).toEqual(['pointerup', 'click', 'pointerleave']);
 	});
+
+	it('does not dispatch click when is_tap=false (drag scenario)', () => {
+		vi.stubGlobal('PointerEvent', FakeEvent);
+		vi.stubGlobal('MouseEvent', FakeEvent);
+		const { dom, dispatched } = make_fake_dom();
+		stub_document(dom);
+		joystick_dispatch.dispatch_pointer_up(POINTER_ID, IS_PRIMARY, CLIENT_X, CLIENT_Y, false);
+		expect(dispatched).toEqual(['pointerup', 'pointerleave']);
+	});
 });
 
 describe('dispatch_pointer_cancel', () => {
