@@ -13,6 +13,19 @@ const HINT = 'Click to play';
 const LABEL_JUMP = 'JUMP';
 const LABEL_GAME = 'Simon game';
 const LABEL_GAME_STARTED = 'Game started';
+const LABEL_PAUSE = 'Pause';
+
+function render_scene(extra: Record<string, unknown> = {}) {
+	return render(GameScene, {
+		props: {
+			label_jump: LABEL_JUMP,
+			label_game: LABEL_GAME,
+			label_game_started: LABEL_GAME_STARTED,
+			label_pause: LABEL_PAUSE,
+			...extra
+		}
+	});
+}
 
 describe('GameScene', () => {
 	beforeEach(() => {
@@ -25,70 +38,54 @@ describe('GameScene', () => {
 	});
 
 	it('renders game-scene container', () => {
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+		const { container } = render_scene();
 		expect(container.querySelector('[data-testid="game-scene"]')).toBeTruthy();
-		expect(container.querySelector('[data-testid="jump-btn"]')?.textContent?.trim()).toBe(
-			LABEL_JUMP
-		);
 	});
 
-	it('renders a canvas element', () => {
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
-		expect(container.querySelector('canvas')).toBeTruthy();
+	it('hides jump button before the session starts', () => {
+		const { container } = render_scene();
+		expect(container.querySelector('[data-testid="jump-btn"]')).toBeNull();
 	});
 
-	it('shows hint_text before the session starts', () => {
-		const { container } = render(GameScene, {
-			props: {
-				hint_text: HINT,
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
-		expect(container.querySelector('.click-hint')?.textContent?.trim()).toBe(HINT);
-	});
-
-	it('hides the click-hint after the session starts', () => {
-		const { container } = render(GameScene, {
-			props: {
-				hint_text: HINT,
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+	it('shows jump button with aria-label after session starts', () => {
+		const { container } = render_scene();
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
 		expect(scene).toBeTruthy();
 		if (!scene) return;
-		expect(container.querySelector('.click-hint')).toBeTruthy();
 		scene.click();
 		flushSync();
-		expect(container.querySelector('.click-hint')).toBeNull();
+		const btn = container.querySelector<HTMLElement>('[data-testid="jump-btn"]');
+		expect(btn).toBeTruthy();
+		expect(btn?.getAttribute('aria-label')).toBe(LABEL_JUMP);
+		expect(btn?.querySelector('svg')).toBeTruthy();
+	});
+
+	it('renders a canvas element', () => {
+		const { container } = render_scene();
+		expect(container.querySelector('canvas')).toBeTruthy();
+	});
+
+	it('shows controls-overlay with hint_text before the session starts', () => {
+		const { container } = render_scene({ hint_text: HINT });
+		expect(container.querySelector('[data-testid="start-hint"]')?.textContent?.trim()).toBe(HINT);
+	});
+
+	it('hides controls-overlay after the session starts', () => {
+		const { container } = render_scene({ hint_text: HINT });
+		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+		expect(scene).toBeTruthy();
+		if (!scene) return;
+		expect(container.querySelector('[data-testid="controls-overlay"]')).toBeTruthy();
+		scene.click();
+		flushSync();
+		expect(container.querySelector('[data-testid="controls-overlay"]')).toBeNull();
 	});
 
 	it('calls on_start callback when user first clicks', () => {
 		let called = false;
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED,
-				on_start: () => {
-					called = true;
-				}
+		const { container } = render_scene({
+			on_start: () => {
+				called = true;
 			}
 		});
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
@@ -100,14 +97,9 @@ describe('GameScene', () => {
 
 	it('calls on_start only once across multiple clicks', () => {
 		let call_count = 0;
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED,
-				on_start: () => {
-					call_count++;
-				}
+		const { container } = render_scene({
+			on_start: () => {
+				call_count++;
 			}
 		});
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
@@ -121,13 +113,7 @@ describe('GameScene', () => {
 
 	it('start_game runs init_audio only once across multiple clicks', () => {
 		const spy = vi.spyOn(audio, 'init_audio');
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+		const { container } = render_scene();
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
 		expect(scene).toBeTruthy();
 		if (!scene) return;
@@ -140,13 +126,7 @@ describe('GameScene', () => {
 	it('start_game requests fullscreen on touch-primary devices', () => {
 		vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(true);
 		const fullscreen_spy = vi.spyOn(fullscreen, 'request').mockResolvedValue();
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+		const { container } = render_scene();
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
 		expect(scene).toBeTruthy();
 		if (!scene) return;
@@ -158,13 +138,7 @@ describe('GameScene', () => {
 		vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(false);
 		const fullscreen_spy = vi.spyOn(fullscreen, 'request').mockResolvedValue();
 		const audio_spy = vi.spyOn(audio, 'init_audio');
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+		const { container } = render_scene();
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
 		expect(scene).toBeTruthy();
 		if (!scene) return;
@@ -175,26 +149,14 @@ describe('GameScene', () => {
 
 	it('registers the game-scene container with fullscreen_switch_input on mount', () => {
 		const spy = vi.spyOn(fullscreen_switch_input, 'set_container');
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+		const { container } = render_scene();
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
 		expect(scene).toBeTruthy();
 		expect(spy).toHaveBeenCalledWith(scene);
 	});
 
 	it('sets session.is_session_started to true after first click', () => {
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+		const { container } = render_scene();
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
 		expect(scene).toBeTruthy();
 		if (!scene) return;
@@ -204,25 +166,142 @@ describe('GameScene', () => {
 	});
 
 	it('does not render cyber-glow when game_state.is_alt is false', () => {
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+		const { container } = render_scene();
 		expect(container.querySelector('[data-testid="cyber-glow"]')).toBeNull();
 	});
 
 	it('renders cyber-glow when game_state.is_alt is true', () => {
 		game_state.toggle_alt();
-		const { container } = render(GameScene, {
-			props: {
-				label_jump: LABEL_JUMP,
-				label_game: LABEL_GAME,
-				label_game_started: LABEL_GAME_STARTED
-			}
-		});
+		const { container } = render_scene();
 		expect(container.querySelector('[data-testid="cyber-glow"]')).toBeTruthy();
+	});
+
+	describe('ESC / Z key — return to start', () => {
+		it('pressing ESC while session is active calls reset_session', () => {
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			scene.click();
+			expect(session.is_session_started).toBe(true);
+			scene.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+			expect(session.is_session_started).toBe(false);
+		});
+
+		it('pressing Z while session is active calls reset_session', () => {
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			scene.click();
+			expect(session.is_session_started).toBe(true);
+			scene.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', bubbles: true }));
+			expect(session.is_session_started).toBe(false);
+		});
+
+		it('pressing ESC while session is not active does not start the game', () => {
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			expect(session.is_session_started).toBe(false);
+			scene.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+			expect(session.is_session_started).toBe(false);
+		});
+	});
+
+	describe('Enter / Space — start session', () => {
+		it('pressing Enter starts the session', () => {
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			expect(session.is_session_started).toBe(false);
+			scene.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+			expect(session.is_session_started).toBe(true);
+		});
+
+		it('pressing Space does NOT start the session (reserved for jump input)', () => {
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			expect(session.is_session_started).toBe(false);
+			scene.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+			expect(session.is_session_started).toBe(false);
+		});
+	});
+
+	describe('mobile move/look during controls overlay', () => {
+		it('joystick zones are rendered before session starts so move/look work in overlay', () => {
+			vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(true);
+			const { container } = render_scene();
+			expect(container.querySelectorAll('.joystick-zone')).toHaveLength(2);
+		});
+	});
+
+	describe('mobile pause button', () => {
+		it('shows pause button when session is active on touch device', () => {
+			vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(true);
+			vi.spyOn(fullscreen, 'request').mockResolvedValue();
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			scene.click();
+			flushSync();
+			expect(container.querySelector('[data-testid="pause-btn"]')).toBeTruthy();
+		});
+
+		it('does not show pause button on desktop', () => {
+			vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(false);
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			scene.click();
+			flushSync();
+			expect(container.querySelector('[data-testid="pause-btn"]')).toBeNull();
+		});
+
+		it('does not show pause button before session starts', () => {
+			vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(true);
+			const { container } = render_scene();
+			expect(container.querySelector('[data-testid="pause-btn"]')).toBeNull();
+		});
+
+		it('clicking pause button resets session', () => {
+			vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(true);
+			vi.spyOn(fullscreen, 'request').mockResolvedValue();
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			scene.click();
+			flushSync();
+			const pause_btn = container.querySelector<HTMLElement>('[data-testid="pause-btn"]');
+			expect(pause_btn).toBeTruthy();
+			if (!pause_btn) return;
+			pause_btn.click();
+			flushSync();
+			expect(session.is_session_started).toBe(false);
+		});
+
+		it('pause button is positioned at bottom-right of the screen', () => {
+			vi.spyOn(device, 'is_touch_primary', 'get').mockReturnValue(true);
+			vi.spyOn(fullscreen, 'request').mockResolvedValue();
+			const { container } = render_scene();
+			const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+			expect(scene).toBeTruthy();
+			if (!scene) return;
+			scene.click();
+			flushSync();
+			const pause_btn = container.querySelector<HTMLElement>('[data-testid="pause-btn"]');
+			expect(pause_btn).toBeTruthy();
+			if (!pause_btn) return;
+			const style = globalThis.getComputedStyle(pause_btn);
+			expect(style.bottom).toBe('16px');
+			expect(style.right).toBe('16px');
+		});
 	});
 });

@@ -2,12 +2,14 @@
 	import { onMount } from 'svelte';
 	import { input } from '$lib/game/input.svelte';
 	import { joystick_dispatch } from '$lib/game/joystick-dispatch';
+	import JumpIcon from './JumpIcon.svelte';
 
 	interface Props {
 		label_jump: string;
+		show_jump?: boolean;
 	}
 
-	let { label_jump }: Props = $props();
+	let { label_jump, show_jump = true }: Props = $props();
 
 	let move_zone: HTMLElement;
 	let look_zone: HTMLElement;
@@ -16,10 +18,12 @@
 	const MOVE_DEAD_ZONE = 6;
 	const TOUCH_LOOK_SENSITIVITY = 0.009;
 	const FIRST_MOVE_SENSITIVITY_FRACTION = 0.2;
+	const TAP_DRAG_THRESHOLD = 8;
 
 	let move_touch_id: number | null = null;
 	let move_start_x = 0;
 	let move_start_y = 0;
+	let move_did_drag = false;
 
 	let look_touch_id: number | null = null;
 	let look_last_x = 0;
@@ -27,6 +31,7 @@
 	let look_start_x = 0;
 	let look_start_y = 0;
 	let look_is_first_move = false;
+	let look_did_drag = false;
 
 	function find_touch(list: TouchList, id: number): Touch | undefined {
 		for (const t of list) {
@@ -46,6 +51,7 @@
 		move_touch_id = t.identifier;
 		move_start_x = t.clientX;
 		move_start_y = t.clientY;
+		move_did_drag = false;
 		joystick_dispatch.dispatch_pointer_down(
 			t.identifier,
 			look_touch_id === null,
@@ -65,6 +71,7 @@
 		look_start_x = t.clientX;
 		look_start_y = t.clientY;
 		look_is_first_move = true;
+		look_did_drag = false;
 		joystick_dispatch.dispatch_pointer_down(
 			t.identifier,
 			move_touch_id === null,
@@ -80,6 +87,9 @@
 	}
 
 	function apply_move_touch(t: Touch): void {
+		if (Math.hypot(t.clientX - move_start_x, t.clientY - move_start_y) > TAP_DRAG_THRESHOLD) {
+			move_did_drag = true;
+		}
 		input.set_joystick_move(
 			apply_dead_zone(t.clientX - move_start_x),
 			apply_dead_zone(move_start_y - t.clientY)
@@ -87,6 +97,9 @@
 	}
 
 	function apply_look_touch(t: Touch): void {
+		if (Math.hypot(t.clientX - look_start_x, t.clientY - look_start_y) > TAP_DRAG_THRESHOLD) {
+			look_did_drag = true;
+		}
 		const sensitivity = look_is_first_move
 			? TOUCH_LOOK_SENSITIVITY * FIRST_MOVE_SENSITIVITY_FRACTION
 			: TOUCH_LOOK_SENSITIVITY;
@@ -117,7 +130,8 @@
 			ptr_id,
 			look_touch_id === null,
 			move_start_x,
-			move_start_y
+			move_start_y,
+			!move_did_drag
 		);
 	}
 
@@ -127,7 +141,8 @@
 			ptr_id,
 			move_touch_id === null,
 			look_start_x,
-			look_start_y
+			look_start_y,
+			!look_did_drag
 		);
 	}
 
@@ -189,14 +204,17 @@
 <div class="joystick-overlay">
 	<div class="joystick-zone" aria-hidden="true" bind:this={move_zone}></div>
 	<div class="joystick-zone" aria-hidden="true" bind:this={look_zone}></div>
-	<button
-		class="jump-btn"
-		data-testid="jump-btn"
-		onclick={() => input.trigger_jump()}
-		ontouchstart={on_jump_touch_start}
-	>
-		{label_jump}
-	</button>
+	{#if show_jump}
+		<button
+			class="jump-btn"
+			data-testid="jump-btn"
+			aria-label={label_jump}
+			onclick={() => input.trigger_jump()}
+			ontouchstart={on_jump_touch_start}
+		>
+			<JumpIcon />
+		</button>
+	{/if}
 </div>
 
 <style>
@@ -208,9 +226,9 @@
 		touch-action: none;
 		user-select: none;
 		-webkit-user-select: none;
-		--jump-btn-size: 60px;
-		--jump-btn-bottom: 20%;
-		--jump-btn-left: 75%;
+		--jump-btn-size: 44px;
+		--jump-btn-bottom: 12%;
+		--jump-btn-left: 82%;
 	}
 
 	.joystick-zone {
@@ -227,15 +245,15 @@
 		width: var(--jump-btn-size);
 		height: var(--jump-btn-size);
 		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.2);
-		border: 2px solid rgba(255, 255, 255, 0.5);
-		color: rgba(255, 255, 255, 0.8);
-		font-size: 0.7rem;
-		letter-spacing: 0.1em;
+		background: rgba(255, 255, 255, 0.15);
+		border: 1.5px solid rgba(255, 255, 255, 0.4);
+		color: rgba(255, 255, 255, 0.85);
 		pointer-events: all;
 		touch-action: none;
 		user-select: none;
 		display: none;
+		align-items: center;
+		justify-content: center;
 	}
 
 	@media (hover: none) and (pointer: coarse) {
