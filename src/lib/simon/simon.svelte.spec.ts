@@ -232,15 +232,16 @@ describe('simon FSM', () => {
 		expect(simon.phase).toBe('idle');
 	});
 
-	it('release while phase is showing (after restart mid-press) does not schedule next round', async () => {
+	it('release while phase is showing does not schedule an extra next-round timer', async () => {
 		simon.start();
 		await vi.runAllTimersAsync();
 		simon.press(seq_at(0)); // holding the final button (phase still player_input)
 		simon.release(); // completes round 1 → phase becomes showing
+		simon.release(); // should be ignored while showing
 		await vi.advanceTimersByTimeAsync(RESTART_DELAY_MS);
 		expect(simon.round).toBe(2);
-		simon.reset();
-		expect(simon.phase).toBe('idle');
+		await vi.advanceTimersByTimeAsync(RESTART_DELAY_MS);
+		expect(simon.round).toBe(2);
 	});
 
 	it('start() from gameover restarts the game', async () => {
