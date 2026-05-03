@@ -48,7 +48,7 @@
 <svg
 	xmlns="http://www.w3.org/2000/svg"
 	viewBox="0 0 148 176"
-	aria-label={label_move}
+	aria-label="{label_move}. {label_jump}. {label_return}"
 	role="img"
 	class="keyboard-diagram"
 	fill="none"
@@ -78,7 +78,7 @@
 		</g>
 	{/each}
 	<!-- Space bar -->
-	<g class="key key-space" aria-hidden="true" aria-label={label_jump}>
+	<g class="key key-space" aria-hidden="true">
 		<rect
 			x="2"
 			y="110"
@@ -110,7 +110,7 @@
 		/>
 	</g>
 	{#each RETURN_KEYS as key (key.class_name)}
-		<g class="key {key.class_name}" aria-hidden="true" aria-label={label_return}>
+		<g class="key {key.class_name}" aria-hidden="true">
 			<rect
 				x={key.rect_x}
 				y={RETURN_KEY_RECT_Y}

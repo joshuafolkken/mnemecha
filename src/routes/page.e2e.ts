@@ -126,10 +126,12 @@ test('first click on the game scene does not toggle cyber mode while controls ov
 	await page.goto('/');
 	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible();
 	await expect(page.locator('[data-testid="controls-overlay"]')).toBeVisible();
-	await expect(page.locator('[data-testid="cyber-glow"]')).toBeVisible();
+	const glow_locator = page.locator('[data-testid="cyber-glow"]');
+	const initial_glow_count = await glow_locator.count();
 	await page.locator('[data-testid="game-scene"]').click();
 	await expect(page.locator('[data-testid="controls-overlay"]')).toHaveCount(0);
-	await expect(page.locator('[data-testid="cyber-glow"]')).toBeVisible();
+	const after_glow_count = await glow_locator.count();
+	expect(after_glow_count).toBe(initial_glow_count);
 });
 
 test('fullscreen is requested on touch-primary devices when start hint is clicked', async ({

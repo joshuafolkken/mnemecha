@@ -10,6 +10,14 @@ describe('KeyboardDiagram', () => {
 		expect(container.querySelector('svg.keyboard-diagram')).toBeTruthy();
 	});
 
+	it('SVG aria-label includes move, jump, and return labels for screen readers', () => {
+		const { container } = render(KeyboardDiagram, { props: PROPS });
+		const aria = container.querySelector('svg.keyboard-diagram')?.getAttribute('aria-label') ?? '';
+		expect(aria).toContain(PROPS.label_move);
+		expect(aria).toContain(PROPS.label_jump);
+		expect(aria).toContain(PROPS.label_return);
+	});
+
 	it('does not render a visible move label text', () => {
 		const { container } = render(KeyboardDiagram, { props: PROPS });
 		const texts = Array.from(container.querySelectorAll('text'));
