@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { createRawSnippet } from 'svelte';
 import SceneObjects from './SceneObjects.svelte';
-import type { ScoreData } from '$lib/simon/score-display-types';
+import type { ScoreData } from '$lib/game/score-display-types';
 
 vi.mock('@threlte/core', () => ({
 	T: {},
@@ -82,7 +82,7 @@ function make_props(game_board: ReturnType<typeof createRawSnippet>) {
 	return {
 		game_board,
 		score_data: MOCK_SCORE_DATA,
-		game_phase: 'idle',
+		is_gameover: false,
 		credits_text: 'Credits',
 		credits_start_z: MOCK_CREDITS_START_Z,
 		credits_end_z: MOCK_CREDITS_END_Z,

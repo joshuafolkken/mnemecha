@@ -4,6 +4,8 @@ import {
 	SWITCH_Y,
 	FPS_SWITCH_Y,
 	SWITCH_Z,
+	CYBER_SWITCH_X,
+	FULLSCREEN_SWITCH_X,
 	BORDER_POS,
 	PANEL_SIZE,
 	PANEL_DEPTH,
@@ -77,6 +79,17 @@ describe('PANEL_TEXT_Y', () => {
 
 	it('panel_text_z matches label_z (floats at same depth as label)', () => {
 		expect(PANEL_TEXT_Z).toBe(LABEL_Z);
+	});
+});
+
+describe('CYBER_SWITCH_X / FULLSCREEN_SWITCH_X', () => {
+	it('FULLSCREEN_SWITCH_X is greater than CYBER_SWITCH_X (no overlap)', () => {
+		expect(FULLSCREEN_SWITCH_X).toBeGreaterThan(CYBER_SWITCH_X);
+	});
+
+	it('both positions are positive (right side of scene)', () => {
+		expect(CYBER_SWITCH_X).toBeGreaterThan(0);
+		expect(FULLSCREEN_SWITCH_X).toBeGreaterThan(0);
 	});
 });
 

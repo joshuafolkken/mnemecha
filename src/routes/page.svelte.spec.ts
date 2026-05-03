@@ -17,7 +17,7 @@ describe('Home page', () => {
 		expect(container.querySelector('[data-testid="cyber-glow"]')).toBeNull();
 	});
 
-	it('renders cyber-glow overlay when cyber mode is active', () => {
+	it('renders cyber-glow when cyber mode is active', () => {
 		game_state.toggle_alt();
 		const { container } = render(Page);
 		expect(container.querySelector('[data-testid="cyber-glow"]')).toBeTruthy();

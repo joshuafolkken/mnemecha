@@ -10,13 +10,15 @@
 	import { fullscreen_switch_input } from '$lib/game/fullscreen-switch-input';
 	import { loading } from '$lib/game/loading.svelte';
 	import { device } from '$lib/game/device.svelte';
+	import { session } from '$lib/game/session.svelte';
+	import { game_state } from '$lib/game/state.svelte';
+	import { fonts } from '$lib/game/fonts';
+
+	const CLICK_HINT_BASE_FONT_SIZE_REM = 1;
 
 	interface Props {
 		children?: Snippet;
-		overlay?: Snippet;
 		hint_text?: string;
-		hint_font_family?: string;
-		hint_font_size_rem?: number;
 		on_start?: () => void;
 		label_jump: string;
 		label_game: string;
@@ -25,10 +27,7 @@
 
 	let {
 		children,
-		overlay,
 		hint_text = '',
-		hint_font_family,
-		hint_font_size_rem = 1,
 		on_start,
 		label_jump,
 		label_game,
@@ -36,18 +35,23 @@
 	}: Props = $props();
 
 	let container: HTMLElement;
-	let is_started = $state(false);
 	let is_dragging_look = $derived(input.is_dragging_look);
 	let drag_start_x = $derived(input.drag_start_x);
 	let drag_start_y = $derived(input.drag_start_y);
 	let is_pseudo_fullscreen = $derived(fullscreen.is_pseudo_fullscreen);
+	let is_started = $derived(session.is_session_started);
 	let game_status = $derived(is_started ? label_game_started : '');
+	let is_alt = $derived(game_state.is_alt);
+	let hint_font_family = $derived(fonts.get_font_family(is_alt));
+	let hint_font_size_rem = $derived(
+		CLICK_HINT_BASE_FONT_SIZE_REM * fonts.get_font_size_multiplier(is_alt)
+	);
 
 	function start_game(): void {
-		if (is_started) return;
+		if (session.is_session_started) return;
 		audio.init_audio();
 		if (container && device.is_touch_primary) void fullscreen.request(container);
-		is_started = true;
+		session.start_session();
 		on_start?.();
 	}
 
@@ -103,7 +107,9 @@
 			{hint_text}
 		</div>
 	{/if}
-	{@render overlay?.()}
+	{#if is_alt}
+		<div class="cyber-glow" data-testid="cyber-glow" aria-hidden="true"></div>
+	{/if}
 	<Canvas>
 		<Suspense onload={on_scene_loaded}>
 			{@render children?.()}
@@ -169,5 +175,30 @@
 		letter-spacing: 0.2em;
 		pointer-events: none;
 		z-index: 10;
+	}
+
+	.cyber-glow {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		z-index: 5;
+		background: radial-gradient(
+			ellipse at center,
+			rgba(255, 0, 255, 0.12) 0%,
+			rgba(100, 0, 255, 0.06) 50%,
+			transparent 70%
+		);
+		mix-blend-mode: screen;
+		animation: cyber-pulse 2s ease-in-out infinite;
+	}
+
+	@keyframes cyber-pulse {
+		0%,
+		100% {
+			opacity: 0.7;
+		}
+		50% {
+			opacity: 1;
+		}
 	}
 </style>

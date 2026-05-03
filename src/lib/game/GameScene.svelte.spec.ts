@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, vi } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { flushSync } from 'svelte';
 import GameScene from './GameScene.svelte';
@@ -6,6 +6,8 @@ import { audio } from '$lib/game/audio';
 import { device } from '$lib/game/device.svelte';
 import { fullscreen } from '$lib/game/fullscreen.svelte';
 import { fullscreen_switch_input } from '$lib/game/fullscreen-switch-input';
+import { session } from '$lib/game/session.svelte';
+import { game_state } from '$lib/game/state.svelte';
 
 const HINT = 'Click to play';
 const LABEL_JUMP = 'JUMP';
@@ -13,6 +15,11 @@ const LABEL_GAME = 'Simon game';
 const LABEL_GAME_STARTED = 'Game started';
 
 describe('GameScene', () => {
+	beforeEach(() => {
+		session.reset_session();
+		if (game_state.is_alt) game_state.toggle_alt();
+	});
+
 	afterEach(() => {
 		vi.restoreAllMocks();
 	});
@@ -178,5 +185,44 @@ describe('GameScene', () => {
 		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
 		expect(scene).toBeTruthy();
 		expect(spy).toHaveBeenCalledWith(scene);
+	});
+
+	it('sets session.is_session_started to true after first click', () => {
+		const { container } = render(GameScene, {
+			props: {
+				label_jump: LABEL_JUMP,
+				label_game: LABEL_GAME,
+				label_game_started: LABEL_GAME_STARTED
+			}
+		});
+		const scene = container.querySelector<HTMLElement>('[data-testid="game-scene"]');
+		expect(scene).toBeTruthy();
+		if (!scene) return;
+		expect(session.is_session_started).toBe(false);
+		scene.click();
+		expect(session.is_session_started).toBe(true);
+	});
+
+	it('does not render cyber-glow when game_state.is_alt is false', () => {
+		const { container } = render(GameScene, {
+			props: {
+				label_jump: LABEL_JUMP,
+				label_game: LABEL_GAME,
+				label_game_started: LABEL_GAME_STARTED
+			}
+		});
+		expect(container.querySelector('[data-testid="cyber-glow"]')).toBeNull();
+	});
+
+	it('renders cyber-glow when game_state.is_alt is true', () => {
+		game_state.toggle_alt();
+		const { container } = render(GameScene, {
+			props: {
+				label_jump: LABEL_JUMP,
+				label_game: LABEL_GAME,
+				label_game_started: LABEL_GAME_STARTED
+			}
+		});
+		expect(container.querySelector('[data-testid="cyber-glow"]')).toBeTruthy();
 	});
 });

@@ -4,10 +4,6 @@
 	import click_url from '$lib/assets/sound/dragon-studio-distorted-electronic-click-472367.opus';
 	import { loading, OVERLAY_ELEMENT_ID, OVERLAY_HIDDEN_CLASS } from '$lib/game/loading.svelte';
 	import { switch_audio } from '$lib/game/switch-audio';
-	import { simon_board_input } from '$lib/simon/simon-board-input';
-	import { cyber_switch_input } from '$lib/game/cyber-switch-input';
-	import { simon } from '$lib/simon/simon.svelte';
-	import { game_state } from '$lib/game/state.svelte';
 	import { messages } from '$lib/messages/en';
 
 	const LOADING_STATUS_ID = 'loading-status';
@@ -21,12 +17,6 @@
 		ready: messages.loading_ready
 	});
 	switch_audio.init(click_url);
-	simon_board_input.configure({
-		on_press: (color) => simon.press(color),
-		on_release: () => simon.release(),
-		on_start: () => simon.start()
-	});
-	cyber_switch_input.configure({ on_toggle: game_state.toggle_alt });
 	loading.set_step('initializing');
 
 	$effect(() => {

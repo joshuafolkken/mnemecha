@@ -19,17 +19,37 @@
 		FULLSCREEN_SWITCH_COLORS,
 		FPS_SWITCH_COLORS
 	} from '$lib/game/switch-colors';
-	import { FPS_SWITCH_Y } from '$lib/game/switch-config';
+	import { FPS_SWITCH_Y, CYBER_SWITCH_X, FULLSCREEN_SWITCH_X } from '$lib/game/switch-config';
 	import { cyber_switch_input } from '$lib/game/cyber-switch-input';
 	import { fullscreen_switch_input } from '$lib/game/fullscreen-switch-input';
 	import { fps_switch_input } from '$lib/game/fps-switch-input';
 	import { fps } from '$lib/game/fps.svelte';
-	import type { ScoreData } from '$lib/simon/score-display-types';
+	import type { ScoreData } from '$lib/game/score-display-types';
+	import {
+		NORMAL_BG,
+		CYBER_BG,
+		FLOOR_COLOR,
+		WALL_COLOR,
+		CEILING_COLOR,
+		CYBER_FLOOR_COLOR,
+		CYBER_WALL_COLOR,
+		CYBER_CEILING_COLOR,
+		NORMAL_POINT_LIGHT_COLOR,
+		CYBER_POINT_LIGHT_COLOR
+	} from '$lib/game/scene-colors';
+	import {
+		TITLE_FONT_SIZE,
+		TITLE_Y,
+		TITLE_Z,
+		BOB_SPEED,
+		BOB_AMPLITUDE,
+		POINT_LIGHT_Y
+	} from '$lib/game/scene-objects-config';
 
 	interface Props {
 		game_board: Snippet;
 		score_data: ScoreData;
-		game_phase: string;
+		is_gameover: boolean;
 		credits_text: string;
 		credits_start_z: number;
 		credits_end_z: number;
@@ -41,7 +61,7 @@
 	let {
 		game_board,
 		score_data,
-		game_phase,
+		is_gameover,
 		credits_text,
 		credits_start_z,
 		credits_end_z,
@@ -50,24 +70,6 @@
 		score_display_z
 	}: Props = $props();
 
-	const POINT_LIGHT_Y = 2.5;
-	const CYBER_SWITCH_X = 1.6;
-	const FULLSCREEN_SWITCH_X = 2.6;
-	const NORMAL_BG = '#0d0d12';
-	const CYBER_BG = '#030318';
-	const TITLE_FONT_SIZE = 0.6;
-	const TITLE_Y = 2.5;
-	const TITLE_Z = -1;
-	const BOB_SPEED = 0.001;
-	const BOB_AMPLITUDE = 0.05;
-	const FLOOR_COLOR = '#3a2f2f';
-	const WALL_COLOR = '#4a4a5a';
-	const CEILING_COLOR = '#2a2a3a';
-	const CYBER_FLOOR_COLOR = '#0d2525';
-	const CYBER_WALL_COLOR = '#0a2035';
-	const CYBER_CEILING_COLOR = '#08082a';
-	const CYBER_POINT_LIGHT_COLOR = '#ff00ff';
-	const NORMAL_POINT_LIGHT_COLOR = '#ffffff';
 	const { camera } = useThrelte();
 	interactivity({ compute: make_pointer_compute(camera) });
 
@@ -117,7 +119,7 @@
 	scroll_start_z={credits_start_z}
 	scroll_end_z={credits_end_z}
 />
-<Player {game_phase} />
+<Player {is_gameover} />
 {@render game_board()}
 <ScoreDisplay
 	{score_data}

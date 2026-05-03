@@ -50,19 +50,19 @@ describe('Player', () => {
 		vi.mocked(camera_shake.trigger).mockClear();
 	});
 
-	it('renders without error in idle phase', () => {
-		const { container } = render(Player, { props: { game_phase: 'idle' } });
+	it('renders without error when not in gameover', () => {
+		const { container } = render(Player, { props: { is_gameover: false } });
 		expect(container).toBeTruthy();
 	});
 
-	it('triggers camera shake when game_phase is gameover', async () => {
-		render(Player, { props: { game_phase: 'gameover' } });
+	it('triggers camera shake when is_gameover is true', async () => {
+		render(Player, { props: { is_gameover: true } });
 		await Promise.resolve();
 		expect(vi.mocked(camera_shake.trigger)).toHaveBeenCalledTimes(1);
 	});
 
-	it('does not trigger camera shake for non-gameover phases', async () => {
-		render(Player, { props: { game_phase: 'idle' } });
+	it('does not trigger camera shake when is_gameover is false', async () => {
+		render(Player, { props: { is_gameover: false } });
 		await Promise.resolve();
 		expect(vi.mocked(camera_shake.trigger)).not.toHaveBeenCalled();
 	});

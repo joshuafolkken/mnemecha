@@ -7,7 +7,12 @@
 	import { messages } from '$lib/messages/en';
 	import type { SceneObjectsMessages } from '$lib/game/scene-objects-messages';
 	import { BOARD_Z } from '$lib/simon/board-config';
-	import { CREDITS_TEXT, CREDITS_SCROLL_START_Z, CREDITS_SCROLL_END_Z } from '$lib/simon/credits';
+	import { CREDITS_TEXT, CREDITS_LINE_COUNT } from '$lib/simon/credits';
+	import { make_credits_scroll_bounds } from '$lib/game/credits-config';
+	import { HALF_D } from '$lib/game/room-config';
+
+	const { start_z: CREDITS_SCROLL_START_Z, end_z: CREDITS_SCROLL_END_Z } =
+		make_credits_scroll_bounds(CREDITS_LINE_COUNT, HALF_D);
 
 	let score_data = $derived({
 		high_score: score.high_score,
@@ -46,7 +51,7 @@
 	{is_alt}
 	messages={kit_messages}
 	score_display_z={SCORE_DISPLAY_Z}
-	game_phase={simon.phase}
+	is_gameover={simon.phase === 'gameover'}
 	credits_text={CREDITS_TEXT}
 	credits_start_z={CREDITS_SCROLL_START_Z}
 	credits_end_z={CREDITS_SCROLL_END_Z}

@@ -3,7 +3,7 @@
 	import { Text } from '@threlte/extras';
 	import { fonts } from '$lib/game/fonts';
 	import { SCORE_TEXT_Z } from '$lib/game/score-display-config';
-	import type { ScoreData } from '$lib/simon/score-display-types';
+	import type { ScoreData } from '$lib/game/score-display-types';
 
 	interface Props {
 		score_data: ScoreData;
