@@ -19,6 +19,10 @@
 		hint_text?: string;
 		on_start?: () => void;
 		label_jump: string;
+		label_move: string;
+		label_look: string;
+		label_action: string;
+		label_return: string;
 		label_game: string;
 		label_game_started: string;
 		label_pause: string;
@@ -29,6 +33,10 @@
 		hint_text = '',
 		on_start,
 		label_jump,
+		label_move,
+		label_look,
+		label_action,
+		label_return,
 		label_game,
 		label_game_started,
 		label_pause
@@ -107,7 +115,15 @@
 >
 	<div role="status" class="sr-only">{game_status}</div>
 	{#if !is_started}
-		<ControlsOverlay {hint_text} {is_touch} />
+		<ControlsOverlay
+			{hint_text}
+			{is_touch}
+			{label_move}
+			{label_look}
+			{label_action}
+			{label_jump}
+			{label_return}
+		/>
 	{/if}
 	{#if is_started && is_touch}
 		<button

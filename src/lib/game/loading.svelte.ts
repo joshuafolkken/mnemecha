@@ -66,7 +66,7 @@ function reset_impl<T extends string>(
 	set_step_impl(s, messages, initial_step);
 }
 
-export type SimonLoadingStep = 'downloading' | 'initializing' | 'loading_assets' | 'ready';
+export type DefaultLoadingStep = 'downloading' | 'initializing' | 'loading_assets' | 'ready';
 
 export function create_loading<T extends string>(initial_step: T) {
 	let step_messages: Partial<Record<T, string>> = {};
@@ -105,4 +105,4 @@ export function create_loading<T extends string>(initial_step: T) {
 
 export type LoadingInstance = ReturnType<typeof create_loading>;
 
-export const loading = create_loading<SimonLoadingStep>('downloading');
+export const loading = create_loading<DefaultLoadingStep>('downloading');

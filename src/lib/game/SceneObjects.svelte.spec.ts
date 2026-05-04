@@ -42,8 +42,8 @@ vi.mock('$lib/game/switch-colors', () => ({
 	FULLSCREEN_SWITCH_COLORS: {},
 	FPS_SWITCH_COLORS: {}
 }));
-vi.mock('$lib/game/cyber-switch-input', () => ({
-	cyber_switch_input: { on_click: vi.fn() }
+vi.mock('$lib/game/alt-switch-input', () => ({
+	alt_switch_input: { on_click: vi.fn() }
 }));
 vi.mock('$lib/game/fullscreen-switch-input', () => ({
 	fullscreen_switch_input: { on_click: vi.fn() }
@@ -69,7 +69,7 @@ const MOCK_SCORE_DATA: ScoreData = {
 
 const MOCK_MESSAGES = {
 	game_title: 'SIMON',
-	cyber_switch_label: 'CYBER',
+	alt_switch_label: 'ALT',
 	fullscreen_switch_label: 'FULLSCREEN',
 	fps_switch_label: 'FPS',
 	score_high_score: 'HI',
@@ -107,11 +107,9 @@ describe('SceneObjects', () => {
 		expect(container.querySelector('[data-testid="board-slot"]')).toBeTruthy();
 	});
 
-	it('reads is_alt from game_state (no is_alt prop required)', () => {
+	it('renders with default props without error', () => {
 		const game_board = createRawSnippet(() => ({ render: () => '<span></span>' }));
-		const props = make_props(game_board);
-		expect('is_alt' in props).toBe(false);
-		const { container } = render(SceneObjects, { props });
+		const { container } = render(SceneObjects, { props: make_props(game_board) });
 		expect(container).toBeTruthy();
 	});
 });

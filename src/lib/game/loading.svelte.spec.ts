@@ -4,9 +4,15 @@ import {
 	create_loading,
 	MIN_DISPLAY_MS,
 	OBSERVER_GLOBAL_KEY,
-	type SimonLoadingStep
+	type DefaultLoadingStep
 } from '$lib/game/loading.svelte';
-import { messages } from '$lib/messages/en';
+
+const STEP_MESSAGES: Record<DefaultLoadingStep, string> = {
+	downloading: 'Downloading',
+	initializing: 'Initializing',
+	loading_assets: 'Loading assets',
+	ready: 'Ready'
+};
 
 const HALF_MIN_DISPLAY_MS = MIN_DISPLAY_MS / 2;
 const ONE_MS_BEFORE_HIDE = MIN_DISPLAY_MS - 1;
@@ -27,12 +33,7 @@ describe('loading', () => {
 
 	beforeEach(() => {
 		vi.useFakeTimers();
-		loading.configure({
-			downloading: messages.loading_downloading,
-			initializing: messages.loading_initializing,
-			loading_assets: messages.loading_loading_assets,
-			ready: messages.loading_ready
-		});
+		loading.configure(STEP_MESSAGES);
 		loading.reset();
 		observer_disconnect = vi.fn();
 		(globalThis as Record<string, unknown>)[OBSERVER_GLOBAL_KEY] = {
@@ -49,7 +50,7 @@ describe('loading', () => {
 	it('starts with the downloading step, label, and initial progress', () => {
 		expect(loading.is_visible).toBe(true);
 		expect(loading.current_step).toBe('downloading');
-		expect(loading.status_text).toBe(messages.loading_downloading);
+		expect(loading.status_text).toBe(STEP_MESSAGES.downloading);
 		expect(loading.progress).toBe(INITIAL_PROGRESS);
 		expect(loading.progress_value).toBe(INITIAL_PROGRESS_VALUE);
 	});
@@ -57,13 +58,13 @@ describe('loading', () => {
 	it('updates step and label when set_step("initializing") is called', () => {
 		loading.set_step('initializing');
 		expect(loading.current_step).toBe('initializing');
-		expect(loading.status_text).toBe(messages.loading_initializing);
+		expect(loading.status_text).toBe(STEP_MESSAGES.initializing);
 	});
 
 	it('updates step and label when set_step("loading_assets") is called', () => {
 		loading.set_step('loading_assets');
 		expect(loading.current_step).toBe('loading_assets');
-		expect(loading.status_text).toBe(messages.loading_loading_assets);
+		expect(loading.status_text).toBe(STEP_MESSAGES.loading_assets);
 	});
 
 	it('does not modify progress when set_step is called for non-ready steps', () => {
@@ -81,7 +82,7 @@ describe('loading', () => {
 		loading.set_step('ready');
 		loading.mark_ready();
 		expect(loading.current_step).toBe('ready');
-		expect(loading.status_text).toBe(messages.loading_ready);
+		expect(loading.status_text).toBe(STEP_MESSAGES.ready);
 		expect(loading.progress).toBe(READY_PROGRESS);
 		expect(loading.progress_value).toBe(READY_PROGRESS_VALUE);
 		expect(observer_disconnect).toHaveBeenCalledTimes(1);
@@ -122,7 +123,7 @@ describe('loading', () => {
 		loading.reset();
 		expect(loading.is_visible).toBe(true);
 		expect(loading.current_step).toBe('downloading');
-		expect(loading.status_text).toBe(messages.loading_downloading);
+		expect(loading.status_text).toBe(STEP_MESSAGES.downloading);
 		expect(loading.progress).toBe(INITIAL_PROGRESS);
 		expect(loading.progress_value).toBe(INITIAL_PROGRESS_VALUE);
 
@@ -137,8 +138,8 @@ describe('loading', () => {
 describe('create_loading isolation', () => {
 	it('two instances do not share is_visible state', () => {
 		vi.useFakeTimers();
-		const a = create_loading<SimonLoadingStep>('downloading');
-		const b = create_loading<SimonLoadingStep>('downloading');
+		const a = create_loading<DefaultLoadingStep>('downloading');
+		const b = create_loading<DefaultLoadingStep>('downloading');
 		a.mark_ready();
 		vi.advanceTimersByTime(MIN_DISPLAY_MS);
 		expect(a.is_visible).toBe(false);
@@ -147,8 +148,8 @@ describe('create_loading isolation', () => {
 	});
 
 	it('two instances do not share current_step state', () => {
-		const a = create_loading<SimonLoadingStep>('downloading');
-		const b = create_loading<SimonLoadingStep>('downloading');
+		const a = create_loading<DefaultLoadingStep>('downloading');
+		const b = create_loading<DefaultLoadingStep>('downloading');
 		a.configure({ downloading: 'd', initializing: 'i', loading_assets: 'l', ready: 'r' });
 		b.configure({ downloading: 'd', initializing: 'i', loading_assets: 'l', ready: 'r' });
 		a.set_step('initializing');
