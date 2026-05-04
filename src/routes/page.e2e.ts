@@ -310,3 +310,22 @@ test('game scene loads without shadow-related WebGL errors', async ({ page }) =>
 	);
 	expect(webgl_errors).toHaveLength(0);
 });
+
+test('PWA manifest is linked in document head', async ({ page }) => {
+	await page.goto('/');
+	const manifest_href = await page.evaluate(() => {
+		const link = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
+		return link?.href ?? null;
+	});
+	expect(manifest_href).not.toBeNull();
+});
+
+test('service worker is ready after page load', async ({ page }) => {
+	await page.goto('/');
+	const scope = await page.evaluate(async () => {
+		if (!('serviceWorker' in navigator)) return null;
+		const reg = await navigator.serviceWorker.ready;
+		return reg.scope;
+	});
+	expect(scope).toBeTruthy();
+});
