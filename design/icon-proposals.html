@@ -724,35 +724,6 @@
 									<!-- green: top-left arc (225° to 315° from center perspective = top-left quarter) -->
 									<!-- Using path for each arc segment -->
 								</defs>
-								<!-- Green: top-right (0° to 90°, i.e., 12 o'clock to 3 o'clock) -->
-								<!-- Path: M center, L to outer, arc, L back, inner arc back -->
-								<!-- Outer radius: 44, inner radius: 16, gap: 3deg each side -->
-								<!-- Green top-right: angle 3° to 87° -->
-								<path
-									d="
-                M 50 50
-                L 49.86 6.00
-                A 44 44 0 0 1 93.83 52.54
-                Z"
-									fill="#00ffaa"
-									opacity="0.9"
-									filter="url(#glow-c)"
-									style="clip-path: none"
-								/>
-								<!-- Actually let's use proper arc math -->
-								<!-- I'll use simpler approach: 4 path segments for each quadrant with gap -->
-
-								<!-- Green: top-left quadrant (180° to 270° in standard math = upper-left visually) -->
-								<!-- Let me use SVG arc with correct angles -->
-								<!-- SVG: 0° is 3 o'clock, goes clockwise -->
-								<!-- top-right = 270° to 360° (or -90° to 0°) -->
-								<!-- top-left = 180° to 270° -->
-								<!-- bottom-left = 90° to 180° -->
-								<!-- bottom-right = 0° to 90° -->
-
-								<!-- gap = 3° on each side, so each segment = 84° -->
-								<!-- outer r=44, inner r=16 -->
-
 								<!-- Green: top-left: 183° to 267° -->
 								<path
 									d="M 50,50
