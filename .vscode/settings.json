@@ -49,5 +49,10 @@
 	"claudeCode.initialPermissionMode": "bypassPermissions",
 	"claudeCode.allowDangerouslySkipPermissions": true,
 	"claudeCode.useCtrlEnterToSend": true,
-	"claudeCode.enableNewConversationShortcut": true
+	"claudeCode.enableNewConversationShortcut": true,
+	"sonarlint.rules": {
+		"Web:PageWithoutTitleCheck": {
+			"level": "off"
+		}
+	}
 }
