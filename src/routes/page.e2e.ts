@@ -311,6 +311,15 @@ test('game scene loads without shadow-related WebGL errors', async ({ page }) =>
 	expect(webgl_errors).toHaveLength(0);
 });
 
+test('favicon link points to the Simon icon, not the Svelte logo', async ({ page }) => {
+	await page.goto('/');
+	const icon_href = await page.evaluate(() => {
+		const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+		return link?.getAttribute('href') ?? null;
+	});
+	expect(icon_href).toBe('/icon.svg');
+});
+
 test('PWA manifest is linked in document head', async ({ page }) => {
 	await page.goto('/');
 	const manifest_href = await page.evaluate(() => {
