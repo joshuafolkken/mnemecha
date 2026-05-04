@@ -11,6 +11,10 @@ import { game_state } from '$lib/game/state.svelte';
 
 const HINT = 'Click to play';
 const LABEL_JUMP = 'JUMP';
+const LABEL_MOVE = 'Move';
+const LABEL_LOOK = 'Look';
+const LABEL_ACTION = 'Action';
+const LABEL_RETURN = 'Return';
 const LABEL_GAME = 'Simon game';
 const LABEL_GAME_STARTED = 'Game started';
 const LABEL_PAUSE = 'Pause';
@@ -19,6 +23,10 @@ function render_scene(extra: Record<string, unknown> = {}) {
 	return render(GameScene, {
 		props: {
 			label_jump: LABEL_JUMP,
+			label_move: LABEL_MOVE,
+			label_look: LABEL_LOOK,
+			label_action: LABEL_ACTION,
+			label_return: LABEL_RETURN,
 			label_game: LABEL_GAME,
 			label_game_started: LABEL_GAME_STARTED,
 			label_pause: LABEL_PAUSE,
@@ -30,7 +38,7 @@ function render_scene(extra: Record<string, unknown> = {}) {
 describe('GameScene', () => {
 	beforeEach(() => {
 		session.reset_session();
-		if (game_state.is_alt) game_state.toggle_alt();
+		game_state.reset_mode();
 	});
 
 	afterEach(() => {

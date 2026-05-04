@@ -21,7 +21,7 @@
 		FPS_SWITCH_COLORS
 	} from '$lib/game/switch-colors';
 	import { FPS_SWITCH_Y, LEFT_SWITCH_X, FULLSCREEN_SWITCH_X } from '$lib/game/switch-config';
-	import { cyber_switch_input } from '$lib/game/cyber-switch-input';
+	import { alt_switch_input } from '$lib/game/alt-switch-input';
 	import { fullscreen_switch_input } from '$lib/game/fullscreen-switch-input';
 	import { fps_switch_input } from '$lib/game/fps-switch-input';
 	import { fps } from '$lib/game/fps.svelte';
@@ -146,10 +146,10 @@
 	position_x={LEFT_SWITCH_X}
 	is_active={is_alt}
 	icon_type="cyber"
-	label={messages.cyber_switch_label}
+	label={messages.alt_switch_label}
 	font={current_font}
 	font_size_multiplier={current_font_size_multiplier}
-	onclick={cyber_switch_input.on_click}
+	onclick={alt_switch_input.on_click}
 	colors={CYBER_SWITCH_COLORS}
 />
 <Switch

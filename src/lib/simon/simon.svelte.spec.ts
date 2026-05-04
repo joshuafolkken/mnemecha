@@ -176,7 +176,7 @@ describe('simon FSM', () => {
 		await vi.runAllTimersAsync();
 		simon.press(wrong_color(seq_at(0)));
 		simon.release();
-		expect(spy).toHaveBeenCalledWith(ERROR_BEEP_MS, true);
+		expect(spy).toHaveBeenCalledWith(ERROR_BEEP_MS, false);
 	});
 
 	it('press() is ignored when not in player_input phase', () => {
@@ -274,7 +274,7 @@ describe('simon FSM', () => {
 		await vi.runAllTimersAsync();
 		const color = seq_at(0);
 		simon.press(color);
-		expect(spy).toHaveBeenCalledWith(color, true);
+		expect(spy).toHaveBeenCalledWith(color, false);
 	});
 
 	it('press() does not start tone when not in player_input phase', () => {
