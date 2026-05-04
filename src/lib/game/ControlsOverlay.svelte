@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { messages } from '$lib/messages/en';
 	import KeyboardDiagram from './KeyboardDiagram.svelte';
 	import MouseDiagram from './MouseDiagram.svelte';
 	import TouchDiagram from './TouchDiagram.svelte';
@@ -7,9 +6,22 @@
 	interface Props {
 		hint_text: string;
 		is_touch: boolean;
+		label_move: string;
+		label_look: string;
+		label_action: string;
+		label_jump: string;
+		label_return: string;
 	}
 
-	let { hint_text, is_touch }: Props = $props();
+	let {
+		hint_text,
+		is_touch,
+		label_move,
+		label_look,
+		label_action,
+		label_jump,
+		label_return
+	}: Props = $props();
 </script>
 
 <div class="controls-overlay" data-testid="controls-overlay">
@@ -18,23 +30,15 @@
 
 	{#if is_touch}
 		<div class="controls-touch" data-testid="controls-touch">
-			<TouchDiagram
-				label_move={messages.controls_move}
-				label_look={messages.controls_look}
-				label_action={messages.controls_action}
-			/>
+			<TouchDiagram {label_move} {label_look} {label_action} />
 		</div>
 	{:else}
 		<div class="controls-pc" data-testid="controls-pc">
 			<div class="diagram-group">
-				<KeyboardDiagram
-					label_move={messages.controls_move}
-					label_jump={messages.controls_jump}
-					label_return={messages.controls_return}
-				/>
+				<KeyboardDiagram {label_move} {label_jump} {label_return} />
 			</div>
 			<div class="diagram-group">
-				<MouseDiagram label_action={messages.controls_action} label_look={messages.controls_look} />
+				<MouseDiagram {label_action} {label_look} />
 			</div>
 		</div>
 	{/if}

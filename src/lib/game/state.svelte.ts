@@ -1,4 +1,4 @@
-const DEFAULT_IS_ALT = true;
+const DEFAULT_IS_ALT = false;
 
 export function create_game_state() {
 	let is_alt = $state(DEFAULT_IS_ALT);
@@ -11,12 +11,17 @@ export function create_game_state() {
 		is_alt = !is_alt;
 	}
 
+	function set_alt(value: boolean): void {
+		is_alt = value;
+	}
+
 	return {
 		get is_alt() {
 			return is_alt;
 		},
 		reset_mode,
-		toggle_alt
+		toggle_alt,
+		set_alt
 	};
 }
 

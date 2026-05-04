@@ -34,7 +34,7 @@
 	let is_alt = $derived(game_state.is_alt);
 	const scene_messages: SceneObjectsMessages = {
 		game_title: messages.game_title,
-		cyber_switch_label: messages.cyber_switch_label,
+		alt_switch_label: messages.cyber_switch_label,
 		fullscreen_switch_label: messages.fullscreen_switch_label,
 		fps_switch_label: messages.fps_switch_label,
 		score_high_score: messages.score_high_score,

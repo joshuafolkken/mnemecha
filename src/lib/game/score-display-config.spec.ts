@@ -27,13 +27,11 @@ import {
 	ROUND_X,
 	ANIM_DURATION_MS
 } from './score-display-config.js';
-import {
-	FLASH_BURST_ON_MS,
-	FLASH_BURST_OFF_MS,
-	FLASH_BURST_CYCLES,
-	FLASH_CASCADE_FWD_MS,
-	FLASH_CASCADE_REV_MS
-} from '$lib/simon/simon-flash';
+const FLASH_BURST_ON_MS = 30;
+const FLASH_BURST_OFF_MS = 20;
+const FLASH_BURST_CYCLES = 4;
+const FLASH_CASCADE_FWD_MS = 65;
+const FLASH_CASCADE_REV_MS = 40;
 
 const BUTTON_COUNT = 4;
 
