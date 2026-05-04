@@ -56,7 +56,7 @@ jobs:
             ${{ runner.os }}-playwright-cache-
 
       - name: Setup safe-chain
-        run: pnpm dlx @aikidosec/safe-chain setup-ci
+        run: pnpm dlx @aikidosec/safe-chain@1.5.1 setup-ci
 
       - name: Install dependencies
         env:
@@ -165,7 +165,7 @@ jobs:
             ${{ runner.os }}-playwright-cache-
 
       - name: Setup safe-chain
-        run: pnpm dlx @aikidosec/safe-chain setup-ci
+        run: pnpm dlx @aikidosec/safe-chain@1.5.1 setup-ci
 
       - name: Install dependencies
         env:
