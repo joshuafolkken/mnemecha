@@ -1497,11 +1497,6 @@ packages:
     peerDependencies:
       '@playwright/test': '>=1.0.0'
       svelte: '>=5.0.0'
-    peerDependenciesMeta:
-      '@playwright/test':
-        optional: true
-      svelte:
-        optional: true
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -5681,13 +5676,12 @@ snapshots:
 
   '@joshuafolkken/kit@0.125.0(@playwright/test@1.59.1)(svelte@5.55.5(@typescript-eslint/types@8.59.1))':
     dependencies:
+      '@playwright/test': 1.59.1
       js-yaml: 4.1.1
       strip-json-comments: 5.0.3
+      svelte: 5.55.5(@typescript-eslint/types@8.59.1)
       tsx: 4.21.0
       zod: 4.4.2
-    optionalDependencies:
-      '@playwright/test': 1.59.1
-      svelte: 5.55.5(@typescript-eslint/types@8.59.1)
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:

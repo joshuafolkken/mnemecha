@@ -1,6 +1,5 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
 	import click_url from '$lib/assets/sound/dragon-studio-distorted-electronic-click-472367.opus';
 	import { loading, OVERLAY_ELEMENT_ID, OVERLAY_HIDDEN_CLASS } from '$lib/game/loading.svelte';
 	import { switch_audio } from '$lib/game/switch-audio';
@@ -41,6 +40,5 @@
 
 <svelte:head>
 	<title>{messages.game_title}</title>
-	<link rel="icon" href={favicon} />
 </svelte:head>
 {@render children()}
