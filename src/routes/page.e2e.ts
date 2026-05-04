@@ -314,8 +314,9 @@ test('game scene loads without shadow-related WebGL errors', async ({ page }) =>
 test('favicon link points to the Simon icon, not the Svelte logo', async ({ page }) => {
 	await page.goto('/');
 	const icon_href = await page.evaluate(() => {
-		const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
-		return link?.getAttribute('href') ?? null;
+		const links = document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]');
+		const last = links[links.length - 1];
+		return last?.getAttribute('href') ?? null;
 	});
 	expect(icon_href).toBe('/icon.svg');
 });
