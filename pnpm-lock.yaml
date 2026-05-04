@@ -31,8 +31,8 @@ importers:
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.3.0(jiti@2.6.1))
       '@joshuafolkken/kit':
-        specifier: ^0.124.0
-        version: 0.124.0(@playwright/test@1.59.1)(svelte@5.55.5(@typescript-eslint/types@8.59.1))
+        specifier: ^0.125.0
+        version: 0.125.0(@playwright/test@1.59.1)(svelte@5.55.5(@typescript-eslint/types@8.59.1))
       '@playwright/test':
         specifier: ^1.59.1
         version: 1.59.1
@@ -972,8 +972,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@joshuafolkken/kit@0.124.0':
-    resolution: {integrity: sha512-BLd/FjbCS7Xj55BGJQDux4k3tKgu0Hj4dhEasadDe/X6bWaNlRR79hHq9PBj7a5oxx38cVMnjRqluyBuyLzDDg==, tarball: https://npm.pkg.github.com/download/@joshuafolkken/kit/0.124.0/8921bffcccf84169c3d8f877492e52b2033890e8}
+  '@joshuafolkken/kit@0.125.0':
+    resolution: {integrity: sha512-o7DTBm5OTvFaMOlJdkFe5iAFYVXLKZb1yIzLqcJmG7h3HWwXT/YJyIiJQRMsoFNHoBl0N6S7LPNHoUAgy67qYQ==, tarball: https://npm.pkg.github.com/download/@joshuafolkken/kit/0.125.0/6cc85de9c5446dae3bf8d80e374695fba385e2c7}
     engines: {node: '>=22.19.0'}
     hasBin: true
     peerDependencies:
@@ -3651,7 +3651,7 @@ snapshots:
   '@img/sharp-win32-x64@0.34.5':
     optional: true
 
-  '@joshuafolkken/kit@0.124.0(@playwright/test@1.59.1)(svelte@5.55.5(@typescript-eslint/types@8.59.1))':
+  '@joshuafolkken/kit@0.125.0(@playwright/test@1.59.1)(svelte@5.55.5(@typescript-eslint/types@8.59.1))':
     dependencies:
       '@playwright/test': 1.59.1
       js-yaml: 4.1.1
