@@ -11,25 +11,17 @@ const CI_RETRIES = 2
 const VIEWPORT_WIDTH = 1_280
 const VIEWPORT_HEIGHT = 720
 
-const DEV_PORT = 5173
 const PREVIEW_PORT = 4173
 
 const is_ci = Boolean(process.env['CI'])
 
 export default defineConfig({
-	webServer: is_ci
-		? {
-				command: 'pnpm run preview',
-				port: PREVIEW_PORT,
-				timeout: CI_TIMEOUT,
-				reuseExistingServer: false,
-			}
-		: {
-				command: 'pnpm run dev',
-				port: DEV_PORT,
-				timeout: LOCAL_TIMEOUT,
-				reuseExistingServer: true,
-			},
+	webServer: {
+		command: is_ci ? 'pnpm run preview' : 'pnpm run build && pnpm run preview',
+		port: PREVIEW_PORT,
+		timeout: is_ci ? CI_TIMEOUT : LOCAL_TIMEOUT,
+		reuseExistingServer: !is_ci,
+	},
 	testMatch: '**/*.e2e.ts',
 	fullyParallel: true,
 	...(is_ci ? { workers: CI_WORKERS } : {}),
