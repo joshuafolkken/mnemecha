@@ -1,13 +1,13 @@
-import { describe, it, expect } from 'vitest';
-import { messages, base_messages, simon_messages } from './en';
+import { describe, expect, it } from 'vitest'
+import { base_messages, messages, simon_messages } from './en'
 
 const SIMON_SPECIFIC_KEYS = [
 	'game_title',
 	'simon_start',
 	'simon_round',
 	'simon_gameover',
-	'game_application_label'
-] as const;
+	'game_application_label',
+] as const
 
 describe('messages', () => {
 	it('contains all original keys for backward compatibility', () => {
@@ -38,26 +38,26 @@ describe('messages', () => {
 			'controls_look',
 			'controls_action',
 			'controls_jump',
-			'controls_return'
-		];
+			'controls_return',
+		]
 		for (const key of original_keys) {
-			expect(messages).toHaveProperty(key);
+			expect(messages).toHaveProperty(key)
 		}
-	});
-});
+	})
+})
 
 describe('base_messages', () => {
 	it('contains no simon-specific keys', () => {
 		for (const key of SIMON_SPECIFIC_KEYS) {
-			expect(base_messages).not.toHaveProperty(key);
+			expect(base_messages).not.toHaveProperty(key)
 		}
-	});
-});
+	})
+})
 
 describe('simon_messages', () => {
 	it('contains all simon-specific keys', () => {
 		for (const key of SIMON_SPECIFIC_KEYS) {
-			expect(simon_messages).toHaveProperty(key);
+			expect(simon_messages).toHaveProperty(key)
 		}
-	});
-});
+	})
+})

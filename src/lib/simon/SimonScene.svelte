@@ -1,18 +1,18 @@
 <script lang="ts">
-	import SceneObjects from '$lib/game/SceneObjects.svelte';
-	import SimonBoard from '$lib/simon/SimonBoard.svelte';
-	import { simon } from '$lib/simon/simon.svelte';
-	import { score } from '$lib/simon/score.svelte';
-	import { game_state } from '$lib/game/state.svelte';
-	import { messages } from '$lib/messages/en';
-	import type { SceneObjectsMessages } from '$lib/game/scene-objects-messages';
-	import { SCORE_DISPLAY_Z } from '$lib/simon/board-config';
-	import { CREDITS_TEXT, CREDITS_LINE_COUNT } from '$lib/simon/credits';
-	import { make_credits_scroll_bounds } from '$lib/game/credits-config';
-	import { HALF_D } from '$lib/game/room-config';
+	import { make_credits_scroll_bounds } from '$lib/game/credits-config'
+	import { HALF_D } from '$lib/game/room-config'
+	import type { SceneObjectsMessages } from '$lib/game/scene-objects-messages'
+	import SceneObjects from '$lib/game/SceneObjects.svelte'
+	import { game_state } from '$lib/game/state.svelte'
+	import { messages } from '$lib/messages/en'
+	import { SCORE_DISPLAY_Z } from '$lib/simon/board-config'
+	import { CREDITS_LINE_COUNT, CREDITS_TEXT } from '$lib/simon/credits'
+	import { score } from '$lib/simon/score.svelte'
+	import { simon } from '$lib/simon/simon.svelte'
+	import SimonBoard from '$lib/simon/SimonBoard.svelte'
 
 	const { start_z: CREDITS_SCROLL_START_Z, end_z: CREDITS_SCROLL_END_Z } =
-		make_credits_scroll_bounds(CREDITS_LINE_COUNT, HALF_D);
+		make_credits_scroll_bounds(CREDITS_LINE_COUNT, HALF_D)
 
 	let score_data = $derived({
 		high_score: score.high_score,
@@ -20,18 +20,18 @@
 		is_new_high_score: score.is_new_high_score,
 		high_score_round: score.high_score_round,
 		last_cleared_round: score.last_cleared_round,
-		format_score: score.format_score
-	});
+		format_score: score.format_score,
+	})
 	let simon_data = $derived({
 		active_color: simon.active_color,
 		pressed_color: simon.pressed_color,
 		phase: simon.phase,
 		round: simon.round,
 		flash_colors: simon.flash_colors,
-		flash_intensity: simon.flash_intensity
-	});
+		flash_intensity: simon.flash_intensity,
+	})
 
-	let is_alt = $derived(game_state.is_alt);
+	let is_alt = $derived(game_state.is_alt)
 	const scene_messages: SceneObjectsMessages = {
 		game_title: messages.game_title,
 		alt_switch_label: messages.cyber_switch_label,
@@ -39,8 +39,8 @@
 		fps_switch_label: messages.fps_switch_label,
 		score_high_score: messages.score_high_score,
 		score_round: messages.score_round,
-		score_current: messages.score_current
-	};
+		score_current: messages.score_current,
+	}
 </script>
 
 <SceneObjects

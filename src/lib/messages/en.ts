@@ -20,15 +20,15 @@ export const base_messages = {
 	controls_look: 'Look around',
 	controls_action: 'Action',
 	controls_jump: 'Jump',
-	controls_return: 'Return to start'
-} as const;
+	controls_return: 'Return to start',
+} as const
 
 export const simon_messages = {
 	game_title: 'SIMON',
 	simon_start: 'START',
 	simon_round: 'ROUND',
 	simon_gameover: 'GAME OVER',
-	game_application_label: 'Simon game'
-} as const;
+	game_application_label: 'Simon game',
+} as const
 
-export const messages = { ...base_messages, ...simon_messages } as const;
+export const messages = { ...base_messages, ...simon_messages } as const
