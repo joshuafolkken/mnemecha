@@ -7,6 +7,7 @@ const EXPECT_TIMEOUT = 5_000
 const ACTION_TIMEOUT = 5_000
 const NAVIGATION_TIMEOUT = 10_000
 const CI_WORKERS = 2
+const LOCAL_WORKERS = 1
 const CI_RETRIES = 2
 const VIEWPORT_WIDTH = 1_280
 const VIEWPORT_HEIGHT = 720
@@ -24,7 +25,7 @@ export default defineConfig({
 	},
 	testMatch: '**/*.e2e.ts',
 	fullyParallel: true,
-	...(is_ci ? { workers: CI_WORKERS } : {}),
+	workers: is_ci ? CI_WORKERS : LOCAL_WORKERS,
 	retries: is_ci ? CI_RETRIES : 0,
 	timeout: TEST_TIMEOUT,
 	expect: { timeout: EXPECT_TIMEOUT },
