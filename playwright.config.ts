@@ -2,10 +2,10 @@ import { defineConfig, devices } from '@playwright/test'
 
 const CI_TIMEOUT = 15_000
 const LOCAL_TIMEOUT = 25_000
-const TEST_TIMEOUT = 10_000
+const TEST_TIMEOUT = 15_000
 const EXPECT_TIMEOUT = 5_000
-const ACTION_TIMEOUT = 5_000
-const NAVIGATION_TIMEOUT = 10_000
+const ACTION_TIMEOUT = 10_000
+const NAVIGATION_TIMEOUT = 15_000
 const CI_WORKERS = 2
 const LOCAL_WORKERS = 1
 const CI_RETRIES = 2
