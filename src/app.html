@@ -11,8 +11,8 @@
 		<script>
 			if ('serviceWorker' in navigator) {
 				window.addEventListener('load', function () {
-					navigator.serviceWorker.register('/sw.js');
-				});
+					navigator.serviceWorker.register('/sw.js')
+				})
 			}
 		</script>
 		<style>
@@ -170,62 +170,62 @@
 				and .progress text. The Svelte loading module disconnects this observer on mark_ready
 				and snaps the value to 100% — see src/lib/game/loading.svelte.ts.
 			*/
-			(function () {
-				var EXPECTED_TOTAL_BYTES = 8500000;
-				var EXPECTED_FILE_COUNT = 115;
-				var MAX_PRE_READY_PCT = 95;
-				var loaded_bytes = 0;
-				var loaded_files = 0;
-				var seen_names = Object.create(null);
+			;(function () {
+				var EXPECTED_TOTAL_BYTES = 8500000
+				var EXPECTED_FILE_COUNT = 115
+				var MAX_PRE_READY_PCT = 95
+				var loaded_bytes = 0
+				var loaded_files = 0
+				var seen_names = Object.create(null)
 
 				function process_entry(entry) {
-					if (!entry || seen_names[entry.name]) return;
-					seen_names[entry.name] = true;
-					var size = entry.transferSize || entry.encodedBodySize || 0;
-					loaded_bytes += size;
-					loaded_files += 1;
+					if (!entry || seen_names[entry.name]) return
+					seen_names[entry.name] = true
+					var size = entry.transferSize || entry.encodedBodySize || 0
+					loaded_bytes += size
+					loaded_files += 1
 				}
 
 				function compute_pct() {
-					var byte_pct = (loaded_bytes / EXPECTED_TOTAL_BYTES) * 100;
-					var file_pct = (loaded_files / EXPECTED_FILE_COUNT) * 100;
-					var raw = Math.max(byte_pct, file_pct);
-					return Math.floor(Math.min(MAX_PRE_READY_PCT, raw));
+					var byte_pct = (loaded_bytes / EXPECTED_TOTAL_BYTES) * 100
+					var file_pct = (loaded_files / EXPECTED_FILE_COUNT) * 100
+					var raw = Math.max(byte_pct, file_pct)
+					return Math.floor(Math.min(MAX_PRE_READY_PCT, raw))
 				}
 
 				function update_overlay() {
-					var overlay = document.getElementById('static-loading-overlay');
-					if (!overlay) return;
-					var pct = compute_pct();
-					var value = pct + '%';
-					var progress_el = overlay.querySelector('.progress');
-					if (progress_el) progress_el.textContent = value;
-					var bar_el = overlay.querySelector('.bar');
-					if (bar_el) bar_el.value = pct;
+					var overlay = document.getElementById('static-loading-overlay')
+					if (!overlay) return
+					var pct = compute_pct()
+					var value = pct + '%'
+					var progress_el = overlay.querySelector('.progress')
+					if (progress_el) progress_el.textContent = value
+					var bar_el = overlay.querySelector('.bar')
+					if (bar_el) bar_el.value = pct
 				}
 
 				if (globalThis.performance && performance.getEntriesByType) {
-					performance.getEntriesByType('resource').forEach(process_entry);
+					performance.getEntriesByType('resource').forEach(process_entry)
 				}
 
 				if (typeof PerformanceObserver === 'undefined') {
-					update_overlay();
-					return;
+					update_overlay()
+					return
 				}
 
 				try {
 					var observer = new PerformanceObserver(function (list) {
-						list.getEntries().forEach(process_entry);
-						update_overlay();
-					});
-					observer.observe({ type: 'resource' });
+						list.getEntries().forEach(process_entry)
+						update_overlay()
+					})
+					observer.observe({ type: 'resource' })
 					// Key must match OBSERVER_GLOBAL_KEY in src/lib/game/loading.svelte.ts
-					globalThis.__loading_observer = observer;
+					globalThis.__loading_observer = observer
 				} catch (error) {
-					console.warn('Loading progress observer unavailable:', error);
+					console.warn('Loading progress observer unavailable:', error)
 				}
-				update_overlay();
-			})();
+				update_overlay()
+			})()
 		</script>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>

@@ -8,13 +8,13 @@ declare global {
 		// interface PageState {}
 		interface Platform {
 			env: {
-				DB?: D1Database;
-				CACHE?: KVNamespace;
-			};
-			context: ExecutionContext;
-			caches: CacheStorage & { default: Cache };
+				DB?: D1Database
+				CACHE?: KVNamespace
+			}
+			context: ExecutionContext
+			caches: CacheStorage & { default: Cache }
 		}
 	}
 }
 
-export {};
+export {}
