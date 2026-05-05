@@ -36,6 +36,22 @@ describe('game audio', () => {
 		expect(resume).toHaveBeenCalledTimes(1)
 	})
 
+	it('get_audio_context does not throw when resume rejects', async () => {
+		vi.resetModules()
+		const resume = vi.fn().mockImplementation(() => Promise.reject(new Error('autoplay')))
+		vi.stubGlobal(
+			'AudioContext',
+			class {
+				readonly state: AudioContextState = 'suspended'
+				readonly resume = resume
+			},
+		)
+
+		const { audio } = await import('./audio')
+		audio.init_audio()
+		expect(() => audio.get_audio_context()).not.toThrow()
+	})
+
 	it('get_audio_context does not call resume when running', async () => {
 		vi.resetModules()
 		const { ctor, resume } = make_audio_ctx_ctor('running')
