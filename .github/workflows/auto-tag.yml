@@ -61,7 +61,7 @@ jobs:
           SHA: ${{ github.sha }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for attempt in $(seq 1 18); do
+          for attempt in $(seq 1 90); do
             result=$(gh run list --workflow ci.yml --repo "$GITHUB_REPOSITORY" \
               --json headSha,conclusion,status \
               --jq "[.[] | select(.headSha == \"$SHA\")] | .[0] | .conclusion // .status // \"none\"" 2>/dev/null || echo "none")
@@ -77,8 +77,8 @@ jobs:
                 exit 0
                 ;;
             esac
-            echo "CI status: $result (attempt $attempt/18)"
-            sleep 10
+            echo "CI status: $result (attempt $attempt/90)"
+            sleep 20
           done
           echo "passed=false" >> $GITHUB_OUTPUT
           echo "⏱️ Timed out waiting for CI"
