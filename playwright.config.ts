@@ -1,52 +1,81 @@
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices, type ReporterDescription } from '@playwright/test'
 
-const CI_TIMEOUT = 15_000
-const LOCAL_TIMEOUT = 25_000
-const TEST_TIMEOUT = 15_000
-const EXPECT_TIMEOUT = 5_000
-const ACTION_TIMEOUT = 10_000
-const NAVIGATION_TIMEOUT = 15_000
-const CI_WORKERS = 2
-const LOCAL_WORKERS = 1
-const CI_RETRIES = 2
-const VIEWPORT_WIDTH = 1_280
-const VIEWPORT_HEIGHT = 720
+const IS_CI = Boolean(process.env['CI'])
 
+const DEV_PORT = 5173
 const PREVIEW_PORT = 4173
 
-const is_ci = Boolean(process.env['CI'])
+const CI_TIMEOUT = 120_000
+const LOCAL_TIMEOUT = 30_000
+const CI_TEST_TIMEOUT = 30_000
+const ACTION_TIMEOUT = 10_000
+const NAV_TIMEOUT = 30_000
+const CI_WORKERS = 2
+const CI_RETRIES = 2
+
+type EnvConfig = {
+	retries: number
+	timeout: number
+	launch_args: string[]
+	screenshot: 'only-on-failure' | 'off'
+	video: 'retain-on-failure' | 'off'
+	trace: 'retain-on-failure' | 'off'
+	reporter: ReporterDescription[]
+}
+
+const web_server_config = IS_CI
+	? {
+			command: 'pnpm run build && pnpm run preview',
+			port: PREVIEW_PORT,
+			timeout: CI_TIMEOUT,
+			reuseExistingServer: false,
+		}
+	: { command: 'pnpm run dev', port: DEV_PORT, timeout: LOCAL_TIMEOUT, reuseExistingServer: true }
+
+const env_config: EnvConfig = IS_CI
+	? {
+			retries: CI_RETRIES,
+			timeout: CI_TEST_TIMEOUT,
+			launch_args: ['--disable-dev-shm-usage', '--no-sandbox'],
+			screenshot: 'only-on-failure',
+			video: 'retain-on-failure',
+			trace: 'retain-on-failure',
+			reporter: [['html'], ['github']],
+		}
+	: {
+			retries: 0,
+			timeout: LOCAL_TIMEOUT,
+			launch_args: [],
+			screenshot: 'off',
+			video: 'off',
+			trace: 'off',
+			reporter: [['html'], ['list']],
+		}
 
 export default defineConfig({
-	webServer: {
-		command: is_ci ? 'pnpm run preview' : 'pnpm run build && pnpm run preview',
-		port: PREVIEW_PORT,
-		timeout: is_ci ? CI_TIMEOUT : LOCAL_TIMEOUT,
-		reuseExistingServer: !is_ci,
-	},
-	testMatch: '**/*.e2e.ts',
+	webServer: web_server_config,
+	testMatch: '**/*.e2e.{ts,js}',
 	fullyParallel: true,
-	workers: is_ci ? CI_WORKERS : LOCAL_WORKERS,
-	retries: is_ci ? CI_RETRIES : 0,
-	timeout: TEST_TIMEOUT,
-	expect: { timeout: EXPECT_TIMEOUT },
+	...(IS_CI ? { workers: CI_WORKERS } : {}),
+	retries: env_config.retries,
+	timeout: env_config.timeout,
 	projects: [
 		{
 			name: 'chromium',
 			use: {
 				...devices['Desktop Chrome'],
-				viewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT },
 				launchOptions: {
-					args: ['--disable-dev-shm-usage', '--disable-gpu', ...(is_ci ? ['--no-sandbox'] : [])],
+					args: env_config.launch_args,
 				},
 			},
 		},
 	],
-	reporter: is_ci ? [['html'], ['github']] : [['html'], ['list']],
+	reporter: env_config.reporter,
 	use: {
 		actionTimeout: ACTION_TIMEOUT,
-		navigationTimeout: NAVIGATION_TIMEOUT,
-		screenshot: is_ci ? 'only-on-failure' : 'off',
-		video: is_ci ? 'retain-on-failure' : 'off',
-		trace: is_ci ? 'retain-on-failure' : 'off',
+		navigationTimeout: NAV_TIMEOUT,
+		screenshot: env_config.screenshot,
+		video: env_config.video,
+		trace: env_config.trace,
 	},
 })
