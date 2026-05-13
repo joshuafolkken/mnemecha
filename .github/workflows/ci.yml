@@ -95,7 +95,7 @@ jobs:
       - name: Run security audit
         uses: google/osv-scanner-action/osv-scanner-action@c51854704019a247608d928f370c98740469d4b5 # v2.3.5
         with:
-          scan-args: --lockfile=pnpm-lock.yaml
+          scan-args: --lockfile=pnpm-lock.yaml --config=osv-scanner.toml
 
   e2e-detect:
     name: Detect E2E
