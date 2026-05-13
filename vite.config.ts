@@ -1,10 +1,10 @@
-import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vitest/config';
-import { playwright } from '@vitest/browser-playwright';
-import { sveltekit } from '@sveltejs/kit/vite';
-import { SvelteKitPWA } from '@vite-pwa/sveltekit';
+import { sveltekit } from '@sveltejs/kit/vite'
+import tailwindcss from '@tailwindcss/vite'
+import { SvelteKitPWA } from '@vite-pwa/sveltekit'
+import { playwright } from '@vitest/browser-playwright'
+import { defineConfig } from 'vitest/config'
 
-const BRAND_COLOR = '#0d0d12';
+const BRAND_COLOR = '#0d0d12'
 
 const PWA_MANIFEST = {
 	name: 'Simon',
@@ -17,9 +17,9 @@ const PWA_MANIFEST = {
 	icons: [
 		{ src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
 		{ src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
-		{ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }
-	]
-};
+		{ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+	],
+}
 
 export default defineConfig({
 	plugins: [
@@ -29,11 +29,11 @@ export default defineConfig({
 			registerType: 'autoUpdate',
 			injectRegister: null,
 			manifest: PWA_MANIFEST,
-			workbox: { globPatterns: ['**/*.{js,css,html,ico,png,svg,opus,woff2}'] }
-		})
+			workbox: { globPatterns: ['**/*.{js,css,html,ico,png,svg,opus,woff2}'] },
+		}),
 	],
 	server: {
-		allowedHosts: ['.trycloudflare.com']
+		allowedHosts: ['.trycloudflare.com'],
 	},
 	test: {
 		expect: { requireAssertions: true },
@@ -45,11 +45,11 @@ export default defineConfig({
 					browser: {
 						enabled: true,
 						provider: playwright(),
-						instances: [{ browser: 'chromium', headless: true }]
+						instances: [{ browser: 'chromium', headless: true }],
 					},
 					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-					exclude: ['src/lib/server/**']
-				}
+					exclude: ['src/lib/server/**'],
+				},
 			},
 
 			{
@@ -58,9 +58,9 @@ export default defineConfig({
 					name: 'server',
 					environment: 'node',
 					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
-	}
-});
+					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+				},
+			},
+		],
+	},
+})

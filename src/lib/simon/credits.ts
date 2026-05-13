@@ -34,6 +34,8 @@ export const CREDITS_LINES = [
 	'Satou',
 	'@pirategamesdev',
 	'@minotaursmx',
+	'@akikawa922',
+	'JUNKO',
 	'',
 	'',
 	'',
@@ -238,8 +240,8 @@ export const CREDITS_LINES = [
 	'',
 	'',
 	'',
-	'THANK YOU FOR PLAYING !!'
-] as const;
+	'THANK YOU FOR PLAYING !!',
+] as const
 
-export const CREDITS_TEXT = CREDITS_LINES.join('\n');
-export const CREDITS_LINE_COUNT = CREDITS_LINES.length;
+export const CREDITS_TEXT = CREDITS_LINES.join('\n')
+export const CREDITS_LINE_COUNT = CREDITS_LINES.length

@@ -1,13 +1,13 @@
-import adapter from '@sveltejs/adapter-cloudflare';
+import adapter from '@sveltejs/adapter-cloudflare'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	compilerOptions: {
-		runes: true
+		runes: true,
 	},
 	kit: {
-		adapter: adapter()
-	}
-};
+		adapter: adapter({ platformProxy: { persist: false } }),
+	},
+}
 
-export default config;
+export default config
