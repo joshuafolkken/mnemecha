@@ -7,6 +7,7 @@ import SimonScene from './SimonScene.svelte'
 
 vi.mock('$lib/game/SceneObjects.svelte', () => ({ default: function SceneObjects() {} }))
 vi.mock('$lib/simon/SimonBoard.svelte', () => ({ default: function SimonBoard() {} }))
+vi.mock('$lib/simon/HardSimonScene.svelte', () => ({ default: function HardSimonScene() {} }))
 vi.mock('$lib/simon/board-config', () => ({
 	SCORE_DISPLAY_Z: -4.65,
 }))
@@ -42,6 +43,24 @@ vi.mock('$lib/simon/score.svelte', () => ({
 		is_new_high_score: true,
 		high_score_round: 5,
 		last_cleared_round: 3,
+		format_score: String,
+	},
+}))
+vi.mock('$lib/simon/hard-simon.svelte', () => ({
+	hard_simon: {
+		active_item: null,
+		pressed_item: null,
+		phase: 'idle',
+		round: 0,
+		flash_colors: [],
+		flash_intensity: 1,
+	},
+	hard_score: {
+		high_score: 0,
+		current_score: 0,
+		is_new_high_score: false,
+		high_score_round: 0,
+		last_cleared_round: 0,
 		format_score: String,
 	},
 }))

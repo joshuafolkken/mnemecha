@@ -7,6 +7,8 @@
 	import { messages } from '$lib/messages/en'
 	import { SCORE_DISPLAY_Z } from '$lib/simon/board-config'
 	import { CREDITS_LINE_COUNT, CREDITS_TEXT } from '$lib/simon/credits'
+	import { hard_score, hard_simon } from '$lib/simon/hard-simon.svelte'
+	import HardSimonScene from '$lib/simon/HardSimonScene.svelte'
 	import { score } from '$lib/simon/score.svelte'
 	import { simon } from '$lib/simon/simon.svelte'
 	import SimonBoard from '$lib/simon/SimonBoard.svelte'
@@ -31,7 +33,25 @@
 		flash_intensity: simon.flash_intensity,
 	})
 
+	let hard_score_data = $derived({
+		high_score: hard_score.high_score,
+		current_score: hard_score.current_score,
+		is_new_high_score: hard_score.is_new_high_score,
+		high_score_round: hard_score.high_score_round,
+		last_cleared_round: hard_score.last_cleared_round,
+		format_score: hard_score.format_score,
+	})
+	let hard_simon_data = $derived({
+		active_item: hard_simon.active_item,
+		pressed_item: hard_simon.pressed_item,
+		phase: hard_simon.phase,
+		round: hard_simon.round,
+		flash_colors: hard_simon.flash_colors,
+		flash_intensity: hard_simon.flash_intensity,
+	})
+
 	let is_alt = $derived(game_state.is_alt)
+	let is_gameover = $derived(simon.phase === 'gameover' || hard_simon.phase === 'gameover')
 	const scene_messages: SceneObjectsMessages = {
 		game_title: messages.game_title,
 		alt_switch_label: messages.cyber_switch_label,
@@ -47,7 +67,7 @@
 	{score_data}
 	messages={scene_messages}
 	score_display_z={SCORE_DISPLAY_Z}
-	is_gameover={simon.phase === 'gameover'}
+	{is_gameover}
 	credits_text={CREDITS_TEXT}
 	credits_start_z={CREDITS_SCROLL_START_Z}
 	credits_end_z={CREDITS_SCROLL_END_Z}
@@ -59,6 +79,17 @@
 			text_gameover={messages.simon_gameover}
 			text_round={messages.simon_round}
 			text_start={messages.simon_start}
+		/>
+		<HardSimonScene
+			simon_data={hard_simon_data}
+			score_data={hard_score_data}
+			{is_alt}
+			text_gameover={messages.simon_gameover}
+			text_round={messages.simon_round}
+			text_start={messages.simon_start}
+			label_high_score={messages.score_high_score}
+			label_round={messages.score_round}
+			label_current={messages.score_current}
 		/>
 	{/snippet}
 </SceneObjects>
