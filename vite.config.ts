@@ -7,9 +7,9 @@ import { defineConfig } from 'vitest/config'
 const BRAND_COLOR = '#0d0d12'
 
 const PWA_MANIFEST = {
-	name: 'Simon',
-	short_name: 'Simon',
-	description: 'A Simon memory game',
+	name: 'Mnemecha',
+	short_name: 'Mnemecha',
+	description: 'A Mnemecha memory game',
 	start_url: '/',
 	display: 'standalone' as const,
 	background_color: BRAND_COLOR,

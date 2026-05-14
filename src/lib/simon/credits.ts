@@ -1,5 +1,5 @@
 export const CREDITS_LINES = [
-	'SIMON',
+	'MNEMECHA',
 	'CREDITS',
 	'',
 	'',
@@ -47,7 +47,7 @@ export const CREDITS_LINES = [
 	'GAME CONCEPT',
 	'',
 	'',
-	'Simon is inspired by the',
+	'Mnemecha is inspired by the',
 	'Classic Electronic Memory Game',
 	'originally designed by',
 	'Ralph H. Baer',

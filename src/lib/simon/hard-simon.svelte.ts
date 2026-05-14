@@ -1,6 +1,6 @@
 import { game_state } from '$lib/game/state.svelte'
 import { simon_audio } from './audio'
-import { HARD_SCORE_KEY_PREFIX } from './hard-board-config'
+import { HARD_SCORE_KEY_PREFIX, HARD_SCORE_KEY_PREFIX_LEGACY } from './hard-board-config'
 import { create_score, type ScoreInstance } from './score.svelte'
 import { create_engine, type EngineApi } from './simon-engine.svelte'
 import type { ButtonColor, HardBoardIndex, HardSequenceItem, SimonPhase } from './types'
@@ -94,5 +94,5 @@ export function create_hard_simon(score: ScoreInstance): HardSimonApi {
 
 export type HardSimonInstance = HardSimonApi
 
-export const hard_score = create_score(HARD_SCORE_KEY_PREFIX)
+export const hard_score = create_score(HARD_SCORE_KEY_PREFIX, HARD_SCORE_KEY_PREFIX_LEGACY)
 export const hard_simon = create_hard_simon(hard_score)

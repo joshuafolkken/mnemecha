@@ -2,6 +2,9 @@ import type { Handle } from '@sveltejs/kit'
 import { version } from '../package.json'
 
 const APP_VERSION_PLACEHOLDER = '__APP_VERSION__'
+const LEGACY_HOSTNAME = 'simon.joshuafolkken.com'
+const NEW_HOSTNAME = 'mnemecha.joshuafolkken.com'
+const PERMANENT_REDIRECT_STATUS = 301
 const CSP_POLICY = [
 	"default-src 'self'",
 	"script-src 'self' 'unsafe-inline' blob:",
@@ -22,6 +25,15 @@ export function inject_version(html: string): string {
 	return html.replaceAll(APP_VERSION_PLACEHOLDER, version)
 }
 
+export function build_legacy_redirect(original_url: URL): Response {
+	const target = new URL(original_url)
+	target.hostname = NEW_HOSTNAME
+	return new Response(null, {
+		status: PERMANENT_REDIRECT_STATUS,
+		headers: { location: target.toString() },
+	})
+}
+
 function inject_security_headers(response: Response): void {
 	response.headers.set('X-Frame-Options', 'SAMEORIGIN')
 	response.headers.set('X-Content-Type-Options', 'nosniff')
@@ -31,6 +43,9 @@ function inject_security_headers(response: Response): void {
 }
 
 export const handle: Handle = async function handle({ event, resolve }) {
+	if (event.url.hostname === LEGACY_HOSTNAME) {
+		return build_legacy_redirect(event.url)
+	}
 	const response = await resolve(event, {
 		transformPageChunk({ html }) {
 			return inject_version(html)

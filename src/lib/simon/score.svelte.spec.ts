@@ -2,6 +2,7 @@ import {
 	compute_check,
 	create_score,
 	load_stored_data,
+	migrate_legacy_score_keys,
 	score,
 	type StorageKeys,
 } from '$lib/simon/score.svelte'
@@ -17,9 +18,40 @@ const ELAPSED_10S = 10_000
 const ELAPSED_100S = 100_000
 
 const DEFAULT_KEYS: StorageKeys = {
-	score: 'simon_high_score',
-	round: 'simon_high_score_round',
-	check: 'simon_high_score_check',
+	score: 'mnemecha_high_score',
+	round: 'mnemecha_high_score_round',
+	check: 'mnemecha_high_score_check',
+}
+
+const LEGACY_SCORE_KEY = 'simon_high_score'
+const LEGACY_ROUND_KEY = 'simon_high_score_round'
+const LEGACY_CHECK_KEY = 'simon_high_score_check'
+const NEW_SCORE_KEY = 'mnemecha_high_score'
+const NEW_ROUND_KEY = 'mnemecha_high_score_round'
+const NEW_CHECK_KEY = 'mnemecha_high_score_check'
+
+function make_memory_storage(): Storage {
+	const store = new Map<string, string>()
+	return {
+		get length(): number {
+			return store.size
+		},
+		clear(): void {
+			store.clear()
+		},
+		getItem(key: string): string | null {
+			return store.has(key) ? (store.get(key) ?? null) : null
+		},
+		key(index: number): string | null {
+			return Array.from(store.keys())[index] ?? null
+		},
+		removeItem(key: string): void {
+			store.delete(key)
+		},
+		setItem(key: string, value: string): void {
+			store.set(key, value)
+		},
+	}
 }
 
 describe('score', () => {
@@ -288,5 +320,80 @@ describe('create_score isolation', () => {
 		vi.stubGlobal('localStorage', { getItem: () => null, setItem: () => {} })
 		expect(custom.high_score).toBe(0)
 		vi.unstubAllGlobals()
+	})
+})
+
+describe('migrate_legacy_score_keys', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+	})
+
+	it('moves legacy simon_* keys to the new mnemecha_* keys and removes the legacy entries', () => {
+		const storage = make_memory_storage()
+		storage.setItem(LEGACY_SCORE_KEY, '5000')
+		storage.setItem(LEGACY_ROUND_KEY, '3')
+		storage.setItem(LEGACY_CHECK_KEY, '12345')
+		vi.stubGlobal('localStorage', storage)
+
+		migrate_legacy_score_keys('simon', 'mnemecha')
+
+		expect(storage.getItem(NEW_SCORE_KEY)).toBe('5000')
+		expect(storage.getItem(NEW_ROUND_KEY)).toBe('3')
+		expect(storage.getItem(NEW_CHECK_KEY)).toBe('12345')
+		expect(storage.getItem(LEGACY_SCORE_KEY)).toBeNull()
+		expect(storage.getItem(LEGACY_ROUND_KEY)).toBeNull()
+		expect(storage.getItem(LEGACY_CHECK_KEY)).toBeNull()
+	})
+
+	it('does nothing when no legacy keys are present', () => {
+		const storage = make_memory_storage()
+		vi.stubGlobal('localStorage', storage)
+
+		migrate_legacy_score_keys('simon', 'mnemecha')
+
+		expect(storage.getItem(NEW_SCORE_KEY)).toBeNull()
+		expect(storage.length).toBe(0)
+	})
+
+	it('keeps existing new-key values and discards legacy when both prefixes have data', () => {
+		const storage = make_memory_storage()
+		storage.setItem(NEW_SCORE_KEY, '9999')
+		storage.setItem(NEW_ROUND_KEY, '7')
+		storage.setItem(NEW_CHECK_KEY, '54321')
+		storage.setItem(LEGACY_SCORE_KEY, '1000')
+		storage.setItem(LEGACY_ROUND_KEY, '1')
+		storage.setItem(LEGACY_CHECK_KEY, '11111')
+		vi.stubGlobal('localStorage', storage)
+
+		migrate_legacy_score_keys('simon', 'mnemecha')
+
+		expect(storage.getItem(NEW_SCORE_KEY)).toBe('9999')
+		expect(storage.getItem(NEW_ROUND_KEY)).toBe('7')
+		expect(storage.getItem(NEW_CHECK_KEY)).toBe('54321')
+		expect(storage.getItem(LEGACY_SCORE_KEY)).toBeNull()
+		expect(storage.getItem(LEGACY_ROUND_KEY)).toBeNull()
+		expect(storage.getItem(LEGACY_CHECK_KEY)).toBeNull()
+	})
+
+	it('is a no-op when legacy_prefix equals new_prefix', () => {
+		const storage = make_memory_storage()
+		storage.setItem(NEW_SCORE_KEY, '2000')
+		vi.stubGlobal('localStorage', storage)
+
+		migrate_legacy_score_keys('mnemecha', 'mnemecha')
+
+		expect(storage.getItem(NEW_SCORE_KEY)).toBe('2000')
+	})
+
+	it('does not throw when localStorage access throws', () => {
+		vi.stubGlobal('localStorage', {
+			getItem: () => {
+				throw new Error('unavailable')
+			},
+			setItem: () => {},
+			removeItem: () => {},
+		})
+
+		expect(() => migrate_legacy_score_keys('simon', 'mnemecha')).not.toThrow()
 	})
 })

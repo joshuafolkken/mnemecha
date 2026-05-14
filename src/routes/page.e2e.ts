@@ -10,9 +10,14 @@ const LOADING_OVERLAY_TIMEOUT_MS = 8000
 const FULLSCREEN_NOT_CALLED_WAIT_MS = 200
 const TOUCH_PRIMARY_QUERY = '(hover: none) and (pointer: coarse)'
 const READY_PROGRESS_VALUE = 100
-const HIGH_SCORE_STORAGE_KEY = 'simon_high_score'
-const HIGH_SCORE_ROUND_KEY = 'simon_high_score_round'
-const HIGH_SCORE_CHECK_KEY = 'simon_high_score_check'
+const HIGH_SCORE_STORAGE_KEY = 'mnemecha_high_score'
+const HIGH_SCORE_ROUND_KEY = 'mnemecha_high_score_round'
+const HIGH_SCORE_CHECK_KEY = 'mnemecha_high_score_check'
+const LEGACY_HIGH_SCORE_STORAGE_KEY = 'simon_high_score'
+const LEGACY_HIGH_SCORE_ROUND_KEY = 'simon_high_score_round'
+const LEGACY_HIGH_SCORE_CHECK_KEY = 'simon_high_score_check'
+const LEGACY_SAMPLE_SCORE = 4321
+const LEGACY_SAMPLE_ROUND = 2
 const CHECK_SEED = 0x9e3779b9
 const SAMPLE_HIGH_SCORE = 5000
 const SAMPLE_HIGH_ROUND = 3
@@ -76,7 +81,7 @@ test('loading overlay displays Joshua Folkken below the logo', async ({ page }) 
 
 test('loading overlay displays game title below the brand', async ({ page }) => {
 	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] .game-title')).toHaveText('SIMON')
+	await expect(page.locator('[data-testid="loading-overlay"] .game-title')).toHaveText('MNEMECHA')
 })
 
 test('loading overlay displays game version below the brand', async ({ page }) => {
@@ -298,6 +303,59 @@ test('high score persists in localStorage across page reload', async ({ page }) 
 	expect(check_val).toBe(String(stored_check))
 })
 
+test('legacy simon_* high score keys are migrated to mnemecha_* on first load', async ({
+	page,
+}) => {
+	const legacy_check =
+		(Math.imul(LEGACY_SAMPLE_SCORE + 1, CHECK_SEED) ^
+			Math.imul(LEGACY_SAMPLE_ROUND + 1, CHECK_SEED >>> 1)) >>>
+		0
+	await page.goto('/')
+	await page.evaluate(
+		([sk, rk, ck, score, round, check]) => {
+			localStorage.removeItem('mnemecha_high_score')
+			localStorage.removeItem('mnemecha_high_score_round')
+			localStorage.removeItem('mnemecha_high_score_check')
+			localStorage.setItem(sk, String(score))
+			localStorage.setItem(rk, String(round))
+			localStorage.setItem(ck, String(check))
+		},
+		[
+			LEGACY_HIGH_SCORE_STORAGE_KEY,
+			LEGACY_HIGH_SCORE_ROUND_KEY,
+			LEGACY_HIGH_SCORE_CHECK_KEY,
+			LEGACY_SAMPLE_SCORE,
+			LEGACY_SAMPLE_ROUND,
+			legacy_check,
+		] as const,
+	)
+	await page.goto('/')
+	const migrated = await page.evaluate(
+		([new_sk, new_rk, new_ck, old_sk, old_rk, old_ck]) => ({
+			new_score: localStorage.getItem(new_sk),
+			new_round: localStorage.getItem(new_rk),
+			new_check: localStorage.getItem(new_ck),
+			old_score: localStorage.getItem(old_sk),
+			old_round: localStorage.getItem(old_rk),
+			old_check: localStorage.getItem(old_ck),
+		}),
+		[
+			HIGH_SCORE_STORAGE_KEY,
+			HIGH_SCORE_ROUND_KEY,
+			HIGH_SCORE_CHECK_KEY,
+			LEGACY_HIGH_SCORE_STORAGE_KEY,
+			LEGACY_HIGH_SCORE_ROUND_KEY,
+			LEGACY_HIGH_SCORE_CHECK_KEY,
+		] as const,
+	)
+	expect(migrated.new_score).toBe(String(LEGACY_SAMPLE_SCORE))
+	expect(migrated.new_round).toBe(String(LEGACY_SAMPLE_ROUND))
+	expect(migrated.new_check).toBe(String(legacy_check))
+	expect(migrated.old_score).toBeNull()
+	expect(migrated.old_round).toBeNull()
+	expect(migrated.old_check).toBeNull()
+})
+
 test('game scene loads without shadow-related WebGL errors', async ({ page }) => {
 	const errors: string[] = []
 	page.on('pageerror', (err) => errors.push(err.message))
@@ -311,7 +369,7 @@ test('game scene loads without shadow-related WebGL errors', async ({ page }) =>
 	expect(webgl_errors).toHaveLength(0)
 })
 
-test('favicon link points to the Simon icon, not the Svelte logo', async ({ page }) => {
+test('favicon link points to the Mnemecha icon, not the Svelte logo', async ({ page }) => {
 	await page.goto('/')
 	const icon_href = await page.evaluate(() => {
 		const links = document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]')

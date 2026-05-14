@@ -1,6 +1,6 @@
 {
-	"name": "simon",
-	"version": "0.105.0",
+	"name": "mnemecha",
+	"version": "0.106.0",
 	"type": "module",
 	"private": true,
 	"scripts": {

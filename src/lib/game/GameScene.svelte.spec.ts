@@ -15,7 +15,7 @@ const LABEL_MOVE = 'Move'
 const LABEL_LOOK = 'Look'
 const LABEL_ACTION = 'Action'
 const LABEL_RETURN = 'Return'
-const LABEL_GAME = 'Simon game'
+const LABEL_GAME = 'Mnemecha'
 const LABEL_GAME_STARTED = 'Game started'
 const LABEL_PAUSE = 'Pause'
 
