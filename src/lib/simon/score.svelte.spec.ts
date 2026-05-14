@@ -385,6 +385,35 @@ describe('migrate_legacy_score_keys', () => {
 		expect(storage.getItem(NEW_SCORE_KEY)).toBe('2000')
 	})
 
+	it('fills missing new keys from a complete legacy keyset and removes legacy', () => {
+		const storage = make_memory_storage()
+		storage.setItem(NEW_SCORE_KEY, '500')
+		storage.setItem(LEGACY_SCORE_KEY, '5000')
+		storage.setItem(LEGACY_ROUND_KEY, '3')
+		storage.setItem(LEGACY_CHECK_KEY, '12345')
+		vi.stubGlobal('localStorage', storage)
+
+		migrate_legacy_score_keys('simon', 'mnemecha')
+
+		expect(storage.getItem(NEW_SCORE_KEY)).toBe('5000')
+		expect(storage.getItem(NEW_ROUND_KEY)).toBe('3')
+		expect(storage.getItem(NEW_CHECK_KEY)).toBe('12345')
+		expect(storage.getItem(LEGACY_SCORE_KEY)).toBeNull()
+		expect(storage.getItem(LEGACY_ROUND_KEY)).toBeNull()
+		expect(storage.getItem(LEGACY_CHECK_KEY)).toBeNull()
+	})
+
+	it('preserves legacy keys when neither new nor legacy keyset is complete', () => {
+		const storage = make_memory_storage()
+		storage.setItem(NEW_SCORE_KEY, '500')
+		storage.setItem(LEGACY_SCORE_KEY, '5000')
+		vi.stubGlobal('localStorage', storage)
+
+		migrate_legacy_score_keys('simon', 'mnemecha')
+
+		expect(storage.getItem(LEGACY_SCORE_KEY)).toBe('5000')
+	})
+
 	it('does not throw when localStorage access throws', () => {
 		vi.stubGlobal('localStorage', {
 			getItem: () => {

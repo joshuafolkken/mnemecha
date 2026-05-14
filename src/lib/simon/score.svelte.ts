@@ -37,13 +37,25 @@ function remove_legacy_keys(legacy_prefix: string): void {
 	}
 }
 
+function has_complete_keyset(keys: StorageKeys): boolean {
+	return (
+		localStorage.getItem(keys.score) !== null &&
+		localStorage.getItem(keys.round) !== null &&
+		localStorage.getItem(keys.check) !== null
+	)
+}
+
+function run_migration(legacy_prefix: string, new_prefix: string): void {
+	if (!any_legacy_key_present(legacy_prefix)) return
+	const new_keys = build_keys(new_prefix)
+	if (!has_complete_keyset(new_keys)) copy_legacy_to_new(legacy_prefix, new_prefix)
+	if (has_complete_keyset(new_keys)) remove_legacy_keys(legacy_prefix)
+}
+
 export function migrate_legacy_score_keys(legacy_prefix: string, new_prefix: string): void {
 	if (legacy_prefix === new_prefix) return
 	try {
-		if (!any_legacy_key_present(legacy_prefix)) return
-		const has_new = localStorage.getItem(build_keys(new_prefix).score) !== null
-		if (!has_new) copy_legacy_to_new(legacy_prefix, new_prefix)
-		remove_legacy_keys(legacy_prefix)
+		run_migration(legacy_prefix, new_prefix)
 	} catch {
 		// storage not available in this environment
 	}
