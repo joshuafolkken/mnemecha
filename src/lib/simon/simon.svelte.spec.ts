@@ -292,6 +292,12 @@ describe('simon FSM', () => {
 		simon.release()
 		expect(spy).toHaveBeenCalled()
 	})
+
+	it('start() stops any lingering tone before kicking off a new sequence', () => {
+		const spy = vi.spyOn(simon_audio, 'stop_tone')
+		simon.start()
+		expect(spy).toHaveBeenCalled()
+	})
 })
 
 describe('score integration', () => {

@@ -115,6 +115,7 @@ function handle_correct_release<T>(s: EngineState<T>, t: EngineTimers, cfg: Engi
 function start_engine<T>(s: EngineState<T>, t: EngineTimers, cfg: EngineConfig<T>): void {
 	if (s.phase === 'showing' || s.phase === 'player_input') return
 	cancel_restart_timer(t)
+	cfg.stop_tone()
 	cfg.reset_score()
 	s.phase = 'showing'
 	s.round = 1
@@ -129,11 +130,11 @@ function expected_item<T>(s: EngineState<T>, cfg: EngineConfig<T>): T {
 }
 
 function release_engine<T>(s: EngineState<T>, t: EngineTimers, cfg: EngineConfig<T>): void {
-	cfg.stop_tone()
-	const item = s.pressed_item
-	s.pressed_item = null
 	if (s.phase !== 'player_input') return
+	const item = s.pressed_item
 	if (item === null) return
+	cfg.stop_tone()
+	s.pressed_item = null
 	if (cfg.equals(item, expected_item(s, cfg))) {
 		handle_correct_release(s, t, cfg)
 	} else {

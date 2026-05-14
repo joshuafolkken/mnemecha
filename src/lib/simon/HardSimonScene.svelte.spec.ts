@@ -6,9 +6,9 @@ import type { HardSimonBoardData } from './types'
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))
 vi.mock('@threlte/extras', () => ({ Text: function Text() {} }))
-vi.mock('$lib/simon/HardSimonBoard.svelte', () => ({ default: function HardSimonBoard() {} }))
+vi.mock('./HardSimonBoard.svelte', () => ({ default: function HardSimonBoard() {} }))
 vi.mock('$lib/game/ScoreDisplay.svelte', () => ({ default: function ScoreDisplay() {} }))
-vi.mock('$lib/simon/hard-board-config', () => ({
+vi.mock('./hard-board-config', () => ({
 	HARD_BOARD_X_LEFT: -1.95,
 	HARD_BOARD_X_CENTER: 0,
 	HARD_BOARD_X_RIGHT: 1.95,
