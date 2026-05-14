@@ -2,6 +2,8 @@
 	import { device } from '$lib/game/device.svelte'
 	import GameScene from '$lib/game/GameScene.svelte'
 	import { messages } from '$lib/messages/en'
+	import { hard_simon_board_input } from '$lib/simon/hard-simon-board-input'
+	import { hard_simon } from '$lib/simon/hard-simon.svelte'
 	import { simon_board_input } from '$lib/simon/simon-board-input'
 	import { simon } from '$lib/simon/simon.svelte'
 	import SimonScene from '$lib/simon/SimonScene.svelte'
@@ -10,6 +12,11 @@
 		on_press: (color) => simon.press(color),
 		on_release: () => simon.release(),
 		on_start: () => simon.start(),
+	})
+	hard_simon_board_input.configure({
+		on_press: (item) => hard_simon.press(item),
+		on_release: () => hard_simon.release(),
+		on_start: () => hard_simon.start(),
 	})
 
 	let hint_text = $derived(
