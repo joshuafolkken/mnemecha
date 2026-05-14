@@ -4,10 +4,62 @@ const MIN_TIME_COEFF = 0.1
 const CHECK_SEED = 0x9e3779b9
 const SCORE_FORMATTER = new Intl.NumberFormat('en-US')
 
-export const SIMON_SCORE_KEY_PREFIX = 'simon'
+export const MNEMECHA_SCORE_KEY_PREFIX = 'mnemecha'
+export const LEGACY_SCORE_KEY_PREFIX = 'simon'
+
+const SCORE_KEY_SUFFIXES = ['_high_score', '_high_score_round', '_high_score_check'] as const
 
 export type StorageKeys = { score: string; round: string; check: string }
 type RoundData = { elapsed_ms: number; sequence_length: number; round: number }
+
+function build_keys(prefix: string): StorageKeys {
+	return {
+		score: `${prefix}_high_score`,
+		round: `${prefix}_high_score_round`,
+		check: `${prefix}_high_score_check`,
+	}
+}
+
+function any_legacy_key_present(legacy_prefix: string): boolean {
+	return SCORE_KEY_SUFFIXES.some((s) => localStorage.getItem(`${legacy_prefix}${s}`) !== null)
+}
+
+function copy_legacy_to_new(legacy_prefix: string, new_prefix: string): void {
+	for (const suffix of SCORE_KEY_SUFFIXES) {
+		const value = localStorage.getItem(`${legacy_prefix}${suffix}`)
+		if (value !== null) localStorage.setItem(`${new_prefix}${suffix}`, value)
+	}
+}
+
+function remove_legacy_keys(legacy_prefix: string): void {
+	for (const suffix of SCORE_KEY_SUFFIXES) {
+		localStorage.removeItem(`${legacy_prefix}${suffix}`)
+	}
+}
+
+function has_complete_keyset(keys: StorageKeys): boolean {
+	return (
+		localStorage.getItem(keys.score) !== null &&
+		localStorage.getItem(keys.round) !== null &&
+		localStorage.getItem(keys.check) !== null
+	)
+}
+
+function run_migration(legacy_prefix: string, new_prefix: string): void {
+	if (!any_legacy_key_present(legacy_prefix)) return
+	const new_keys = build_keys(new_prefix)
+	if (!has_complete_keyset(new_keys)) copy_legacy_to_new(legacy_prefix, new_prefix)
+	if (has_complete_keyset(new_keys)) remove_legacy_keys(legacy_prefix)
+}
+
+export function migrate_legacy_score_keys(legacy_prefix: string, new_prefix: string): void {
+	if (legacy_prefix === new_prefix) return
+	try {
+		run_migration(legacy_prefix, new_prefix)
+	} catch {
+		// storage not available in this environment
+	}
+}
 
 export function compute_check(value: number, round: number): number {
 	return (Math.imul(value + 1, CHECK_SEED) ^ Math.imul(round + 1, CHECK_SEED >>> 1)) >>> 0
@@ -109,12 +161,12 @@ function make_score_api(s: ScoreState, keys: StorageKeys) {
 	}
 }
 
-export function create_score(key_prefix: string = SIMON_SCORE_KEY_PREFIX) {
-	const keys: StorageKeys = {
-		score: `${key_prefix}_high_score`,
-		round: `${key_prefix}_high_score_round`,
-		check: `${key_prefix}_high_score_check`,
-	}
+export function create_score(
+	key_prefix: string = MNEMECHA_SCORE_KEY_PREFIX,
+	legacy_prefix?: string,
+) {
+	if (legacy_prefix !== undefined) migrate_legacy_score_keys(legacy_prefix, key_prefix)
+	const keys = build_keys(key_prefix)
 	const loaded = load_stored_data(keys)
 	const s = $state<ScoreState>({
 		current_score: 0,
@@ -128,4 +180,4 @@ export function create_score(key_prefix: string = SIMON_SCORE_KEY_PREFIX) {
 
 export type ScoreInstance = ReturnType<typeof create_score>
 
-export const score = create_score()
+export const score = create_score(MNEMECHA_SCORE_KEY_PREFIX, LEGACY_SCORE_KEY_PREFIX)

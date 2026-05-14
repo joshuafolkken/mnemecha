@@ -24,11 +24,11 @@ export const base_messages = {
 } as const
 
 export const simon_messages = {
-	game_title: 'SIMON',
+	game_title: 'MNEMECHA',
 	simon_start: 'START',
 	simon_round: 'ROUND',
 	simon_gameover: 'GAME OVER',
-	game_application_label: 'Simon game',
+	game_application_label: 'Mnemecha',
 } as const
 
 export const messages = { ...base_messages, ...simon_messages } as const
