@@ -71,6 +71,13 @@ describe('credits', () => {
 		it('includes sponsors section', () => {
 			expect(CREDITS_TEXT).toContain('SPONSORS')
 			expect(CREDITS_TEXT).toContain('Incognito')
+			expect(CREDITS_TEXT).toContain('Daisuke')
+		})
+
+		it('includes Special Thanks new contributors after the section header', () => {
+			const special_thanks_block = CREDITS_TEXT.split('SPECIAL THANKS')[1] ?? ''
+			expect(special_thanks_block).toContain('Incognito')
+			expect(special_thanks_block).toContain('Daisuke')
 		})
 
 		it('section headers remain in ALL CAPS', () => {
