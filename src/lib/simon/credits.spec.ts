@@ -19,6 +19,10 @@ describe('credits', () => {
 			expect(CREDITS_TEXT).toContain('@joshuafolkken/kit')
 		})
 
+		it('includes @joshuafolkken/game-kit credit', () => {
+			expect(CREDITS_TEXT).toContain('@joshuafolkken/game-kit')
+		})
+
 		it('includes deployment platform credit', () => {
 			expect(CREDITS_TEXT).toContain('Cloudflare')
 		})
@@ -54,8 +58,8 @@ describe('credits', () => {
 			expect(CREDITS_TEXT).toContain('ESLint')
 		})
 
-		it('credits Claude Sonnet 4.6 as engineering staff', () => {
-			expect(CREDITS_TEXT).toContain('Claude Sonnet 4.6')
+		it('credits both Claude Sonnet 4.6 and Opus 4.7 as engineering staff', () => {
+			expect(CREDITS_TEXT).toContain('Claude Sonnet 4.6, Opus 4.7')
 		})
 
 		it('ends with thank you message', () => {
@@ -78,6 +82,7 @@ describe('credits', () => {
 			const special_thanks_block = CREDITS_TEXT.split('SPECIAL THANKS')[1] ?? ''
 			expect(special_thanks_block).toContain('Incognito')
 			expect(special_thanks_block).toContain('Daisuke')
+			expect(special_thanks_block).toContain('@SHIZUYA_1224')
 		})
 
 		it('section headers remain in ALL CAPS', () => {
