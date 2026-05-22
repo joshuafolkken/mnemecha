@@ -7,7 +7,7 @@
 		"preinstall": "pnpm dlx @aikidosec/safe-chain setup-ci",
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite preview",
+		"preview": "wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
 		"prepare": "pnpm gen && svelte-kit sync",
 		"gen": "pnpm gen:pre && wrangler types",
 		"gen:pre": "node -e \"const fs=require('node:fs');const d='.svelte-kit/cloudflare';if(fs.existsSync(d))fs.readdirSync(d).forEach(f=>f.startsWith('_worker.')&&fs.rmSync(d+'/'+f,{force:true}))\"",
