@@ -1,11 +1,7 @@
 export const base_messages = {
-	press_start: 'PRESS START',
 	cyber_switch_label: 'CYBER',
-	fullscreen_switch_label: 'FULLSCREEN',
-	fps_switch_label: 'FPS',
 	click_to_start: 'CLICK TO START',
 	tap_to_start: 'TAP TO START',
-	sprint_button: 'SPRINT',
 	jump_button: 'JUMP',
 	loading_downloading: 'DOWNLOADING...',
 	loading_initializing: 'INITIALIZING...',
@@ -16,11 +12,6 @@ export const base_messages = {
 	score_round: 'RND',
 	game_started_announcement: 'Game started',
 	pause_button: 'Pause',
-	controls_move: 'Move',
-	controls_look: 'Look around',
-	controls_action: 'Action',
-	controls_jump: 'Jump',
-	controls_return: 'Return to start',
 } as const
 
 export const simon_messages = {

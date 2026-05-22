@@ -1,4 +1,4 @@
-import { HALF_D } from '$lib/game/room-config'
+import { HALF_D } from '@joshuafolkken/game-kit'
 
 export const HARD_BOARD_Y = 1.2
 export const HARD_BOARD_Z_OFFSET = -0.2

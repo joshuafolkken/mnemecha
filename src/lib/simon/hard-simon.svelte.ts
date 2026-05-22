@@ -1,4 +1,4 @@
-import { game_state } from '$lib/game/state.svelte'
+import { game_state } from '@joshuafolkken/game-kit'
 import { simon_audio } from './audio'
 import { HARD_SCORE_KEY_PREFIX, HARD_SCORE_KEY_PREFIX_LEGACY } from './hard-board-config'
 import { create_score, type ScoreInstance } from './score.svelte'

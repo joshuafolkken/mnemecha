@@ -16,16 +16,12 @@ describe('messages', () => {
 	it('contains all original keys for backward compatibility', () => {
 		const original_keys = [
 			'game_title',
-			'press_start',
 			'cyber_switch_label',
-			'fullscreen_switch_label',
-			'fps_switch_label',
 			'click_to_start',
 			'tap_to_start',
 			'simon_start',
 			'simon_round',
 			'simon_gameover',
-			'sprint_button',
 			'jump_button',
 			'loading_downloading',
 			'loading_initializing',
@@ -37,11 +33,6 @@ describe('messages', () => {
 			'game_application_label',
 			'game_started_announcement',
 			'pause_button',
-			'controls_move',
-			'controls_look',
-			'controls_action',
-			'controls_jump',
-			'controls_return',
 		]
 		for (const key of original_keys) {
 			expect(messages).toHaveProperty(key)

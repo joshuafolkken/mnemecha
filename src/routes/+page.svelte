@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { device } from '$lib/game/device.svelte'
-	import GameScene from '$lib/game/GameScene.svelte'
-	import { messages } from '$lib/messages/en'
+	import { device, GameScene } from '@joshuafolkken/game-kit'
+	import { messages } from '$lib/messages'
 	import { hard_simon_board_input } from '$lib/simon/hard-simon-board-input'
 	import { hard_simon } from '$lib/simon/hard-simon.svelte'
 	import { simon_board_input } from '$lib/simon/simon-board-input'
@@ -27,10 +26,6 @@
 <GameScene
 	{hint_text}
 	label_jump={messages.jump_button}
-	label_move={messages.controls_move}
-	label_look={messages.controls_look}
-	label_action={messages.controls_action}
-	label_return={messages.controls_return}
 	label_game={messages.game_application_label}
 	label_game_started={messages.game_started_announcement}
 	label_pause={messages.pause_button}

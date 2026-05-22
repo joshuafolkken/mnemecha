@@ -3,13 +3,14 @@ import tailwindcss from '@tailwindcss/vite'
 import { SvelteKitPWA } from '@vite-pwa/sveltekit'
 import { playwright } from '@vitest/browser-playwright'
 import { defineConfig } from 'vitest/config'
+import { game_config } from './src/lib/game-config'
 
 const BRAND_COLOR = '#0d0d12'
 
 const PWA_MANIFEST = {
-	name: 'Mnemecha',
-	short_name: 'Mnemecha',
-	description: 'A Mnemecha memory game',
+	name: game_config.GAME_NAME_DISPLAY,
+	short_name: game_config.GAME_NAME_DISPLAY,
+	description: game_config.GAME_DESCRIPTION,
 	start_url: '/',
 	display: 'standalone' as const,
 	background_color: BRAND_COLOR,

@@ -113,28 +113,12 @@ test('loading overlay disappears once the scene is ready', async ({ page }) => {
 	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
 })
 
-test('controls overlay is visible before the user clicks', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="controls-overlay"]')).toBeVisible()
-	await expect(page.locator('[data-testid="start-hint"]')).toBeVisible()
-})
-
-test('controls overlay disappears after the game scene is clicked', async ({ page }) => {
-	await page.goto('/')
-	await page.locator('[data-testid="game-scene"]').click()
-	await expect(page.locator('[data-testid="controls-overlay"]')).toHaveCount(0)
-})
-
-test('first click on the game scene does not toggle cyber mode while controls overlay is shown', async ({
-	page,
-}) => {
+test('first click on the game scene does not toggle cyber mode', async ({ page }) => {
 	await page.goto('/')
 	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
-	await expect(page.locator('[data-testid="controls-overlay"]')).toBeVisible()
 	const glow_locator = page.locator('[data-testid="cyber-glow"]')
 	const initial_glow_count = await glow_locator.count()
 	await page.locator('[data-testid="game-scene"]').click()
-	await expect(page.locator('[data-testid="controls-overlay"]')).toHaveCount(0)
 	const after_glow_count = await glow_locator.count()
 	expect(after_glow_count).toBe(initial_glow_count)
 })
@@ -192,7 +176,6 @@ test('fullscreen is NOT requested on desktop devices when start hint is clicked'
 	)
 
 	expect(was_called).toBe(false)
-	await expect(page.locator('[data-testid="controls-overlay"]')).toHaveCount(0)
 })
 
 test('pseudo-fullscreen class is applied when native API is unavailable on touch devices', async ({
@@ -330,6 +313,9 @@ test('legacy simon_* high score keys are migrated to mnemecha_* on first load', 
 		] as const,
 	)
 	await page.goto('/')
+	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible({
+		timeout: LOADING_OVERLAY_TIMEOUT_MS,
+	})
 	const migrated = await page.evaluate(
 		([new_sk, new_rk, new_ck, old_sk, old_rk, old_ck]) => ({
 			new_score: localStorage.getItem(new_sk),

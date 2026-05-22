@@ -1,7 +1,6 @@
 <script lang="ts">
+	import { ScoreDisplay, type ScoreData } from '@joshuafolkken/game-kit'
 	import { T } from '@threlte/core'
-	import type { ScoreData } from '$lib/game/score-display-types'
-	import ScoreDisplay from '$lib/game/ScoreDisplay.svelte'
 	import {
 		HARD_BOARD_X_CENTER,
 		HARD_BOARD_X_LEFT,

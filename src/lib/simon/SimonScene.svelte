@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { make_credits_scroll_bounds } from '$lib/game/credits-config'
-	import { HALF_D } from '$lib/game/room-config'
-	import type { SceneObjectsMessages } from '$lib/game/scene-objects-messages'
-	import SceneObjects from '$lib/game/SceneObjects.svelte'
-	import { game_state } from '$lib/game/state.svelte'
-	import { messages } from '$lib/messages/en'
+	import {
+		credits_scroll,
+		game_state,
+		HALF_D,
+		SceneObjects,
+		type SceneObjectsMessages,
+	} from '@joshuafolkken/game-kit'
+	import { messages } from '$lib/messages'
 	import { SCORE_DISPLAY_Z } from '$lib/simon/board-config'
 	import { CREDITS_LINE_COUNT, CREDITS_TEXT } from '$lib/simon/credits'
 	import { hard_score, hard_simon } from '$lib/simon/hard-simon.svelte'
@@ -14,7 +16,7 @@
 	import SimonBoard from '$lib/simon/SimonBoard.svelte'
 
 	const { start_z: CREDITS_SCROLL_START_Z, end_z: CREDITS_SCROLL_END_Z } =
-		make_credits_scroll_bounds(CREDITS_LINE_COUNT, HALF_D)
+		credits_scroll.make_credits_scroll_bounds(CREDITS_LINE_COUNT, HALF_D)
 
 	let score_data = $derived({
 		high_score: score.high_score,
@@ -55,8 +57,6 @@
 	const scene_messages: SceneObjectsMessages = {
 		game_title: messages.game_title,
 		alt_switch_label: messages.cyber_switch_label,
-		fullscreen_switch_label: messages.fullscreen_switch_label,
-		fps_switch_label: messages.fps_switch_label,
 		score_high_score: messages.score_high_score,
 		score_round: messages.score_round,
 		score_current: messages.score_current,
