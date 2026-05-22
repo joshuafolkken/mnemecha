@@ -1,3 +1,0 @@
-[[IgnoredVulns]]
-id = "GHSA-pxg6-pf52-xh8x"
-reason = "cookie@0.6.0 is a transitive dependency of @sveltejs/kit which declares ^0.6.0; the fix (0.7.0) is outside that range. This game does not parse user-supplied cookies, so the attack surface does not apply."

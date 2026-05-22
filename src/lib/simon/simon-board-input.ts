@@ -1,5 +1,4 @@
-import { pointer_button } from '$lib/game/pointer-button'
-import { session } from '$lib/game/session.svelte'
+import { pointer_button, session } from '@joshuafolkken/game-kit'
 import type { ButtonColor } from './types'
 
 type BoardCallbacks = {

@@ -1,4 +1,4 @@
-import { session } from '$lib/game/session.svelte'
+import { session } from '@joshuafolkken/game-kit'
 import { hard_simon_board_input } from '$lib/simon/hard-simon-board-input'
 import type { HardBoardIndex, HardSequenceItem } from '$lib/simon/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

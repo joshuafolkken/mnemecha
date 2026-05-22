@@ -1,4 +1,4 @@
-import { game_state } from '$lib/game/state.svelte'
+import { game_state } from '@joshuafolkken/game-kit'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { render } from 'vitest-browser-svelte'
 import Page from './+page.svelte'

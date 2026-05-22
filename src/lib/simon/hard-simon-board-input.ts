@@ -1,5 +1,4 @@
-import { pointer_button } from '$lib/game/pointer-button'
-import { session } from '$lib/game/session.svelte'
+import { pointer_button, session } from '@joshuafolkken/game-kit'
 import { HARD_BOARD_CENTER_INDEX } from './hard-board-config'
 import type { ButtonColor, HardBoardIndex, HardSequenceItem } from './types'
 

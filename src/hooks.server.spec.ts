@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs'
 import type { RequestEvent, ResolveOptions } from '@sveltejs/kit'
+import { game_config } from '$lib/game-config'
 import { describe, expect, it, vi } from 'vitest'
-import { build_legacy_redirect, handle, inject_version } from './hooks.server'
+import { build_legacy_redirect, handle, inject_game_name, inject_version } from './hooks.server'
 
 const { version } = JSON.parse(
 	readFileSync(new URL('../package.json', import.meta.url), 'utf-8'),
@@ -36,6 +37,30 @@ describe('inject_version', () => {
 	it('passes through html that has no placeholder', () => {
 		const html = '<p>no placeholder here</p>'
 		expect(inject_version(html)).toBe(html)
+	})
+})
+
+describe('inject_game_name', () => {
+	it('substitutes __GAME_NAME_DISPLAY__ with the title-case brand', () => {
+		const html = '<title>__GAME_NAME_DISPLAY__</title>'
+		expect(inject_game_name(html)).toBe(`<title>${game_config.GAME_NAME_DISPLAY}</title>`)
+	})
+
+	it('substitutes __GAME_NAME_UPPER__ with the upper-case brand', () => {
+		const html = '<p class="game-title">__GAME_NAME_UPPER__</p>'
+		expect(inject_game_name(html)).toBe(`<p class="game-title">${game_config.GAME_NAME_UPPER}</p>`)
+	})
+
+	it('substitutes both placeholders when present', () => {
+		const html = '__GAME_NAME_DISPLAY__ / __GAME_NAME_UPPER__'
+		expect(inject_game_name(html)).toBe(
+			`${game_config.GAME_NAME_DISPLAY} / ${game_config.GAME_NAME_UPPER}`,
+		)
+	})
+
+	it('passes through html that has no placeholders', () => {
+		const html = '<p>plain content</p>'
+		expect(inject_game_name(html)).toBe(html)
 	})
 })
 
@@ -81,6 +106,22 @@ describe('handle', () => {
 		await handle({ event: make_event(), resolve })
 		const result = await captured_transform?.({ html: 'v__APP_VERSION__', done: true })
 		expect(result).toBe(`v${version}`)
+	})
+
+	it('injects game-name placeholders via transformPageChunk', async () => {
+		let captured_transform: ResolveOptions['transformPageChunk'] | undefined
+		const resolve = vi.fn<ResolveFn>().mockImplementation((_event, opts) => {
+			captured_transform = opts?.transformPageChunk
+			return Promise.resolve(new Response(null, { status: 200 }))
+		})
+		await handle({ event: make_event(), resolve })
+		const result = await captured_transform?.({
+			html: '<title>__GAME_NAME_DISPLAY__</title><p>__GAME_NAME_UPPER__</p>',
+			done: true,
+		})
+		expect(result).toBe(
+			`<title>${game_config.GAME_NAME_DISPLAY}</title><p>${game_config.GAME_NAME_UPPER}</p>`,
+		)
 	})
 
 	it(`returns ${PERMANENT_REDIRECT_STATUS} when hostname is the legacy domain`, async () => {
