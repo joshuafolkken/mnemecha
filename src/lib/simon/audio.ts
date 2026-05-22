@@ -1,4 +1,4 @@
-import { audio as game_audio } from '$lib/game/audio'
+import { audio as game_audio } from '@joshuafolkken/game-kit'
 import type { ButtonColor } from './types'
 
 const FREQ: Record<ButtonColor, number> = { green: 415, red: 310, yellow: 252, blue: 209 }

@@ -1,4 +1,4 @@
-import { game_state } from '$lib/game/state.svelte'
+import { game_state } from '@joshuafolkken/game-kit'
 import { simon_audio } from './audio'
 import type { ButtonColor } from './types'
 

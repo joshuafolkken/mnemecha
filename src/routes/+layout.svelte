@@ -1,11 +1,15 @@
 <script lang="ts">
 	import './layout.css'
-	import click_url from '$lib/assets/sound/dragon-studio-distorted-electronic-click-472367.opus'
-	import { loading, OVERLAY_ELEMENT_ID, OVERLAY_HIDDEN_CLASS } from '$lib/game/loading.svelte'
-	import { game_state } from '$lib/game/state.svelte'
-	import { switch_audio } from '$lib/game/switch-audio'
-	import { messages } from '$lib/messages/en'
+	import {
+		game_state,
+		loading,
+		OVERLAY_ELEMENT_ID,
+		OVERLAY_HIDDEN_CLASS,
+		switch_audio,
+	} from '@joshuafolkken/game-kit'
+	import { messages } from '$lib/messages'
 
+	const CLICK_SOUND_URL = '/sounds/click.opus'
 	const LOADING_STATUS_ID = 'loading-status'
 	const LOADING_PROGRESS_SELECTOR = `#${OVERLAY_ELEMENT_ID} .progress`
 	const LOADING_BAR_SELECTOR = `#${OVERLAY_ELEMENT_ID} .bar`
@@ -16,7 +20,7 @@
 		loading_assets: messages.loading_loading_assets,
 		ready: messages.loading_ready,
 	})
-	switch_audio.init(click_url)
+	switch_audio.init(CLICK_SOUND_URL)
 	game_state.set_alt(true)
 	loading.set_step('initializing')
 

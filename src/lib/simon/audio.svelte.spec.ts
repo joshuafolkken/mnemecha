@@ -1,4 +1,4 @@
-import { audio as game_audio } from '$lib/game/audio'
+import { audio as game_audio } from '@joshuafolkken/game-kit'
 import { simon_audio } from '$lib/simon/audio'
 import type { ButtonColor } from '$lib/simon/types'
 import { afterEach, describe, expect, it, vi } from 'vitest'

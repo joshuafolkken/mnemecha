@@ -9,20 +9,19 @@ const SIMON_SPECIFIC_KEYS = [
 	'game_application_label',
 ] as const
 
+const EXPECTED_GAME_TITLE = 'MNEMECHA'
+const EXPECTED_GAME_APPLICATION_LABEL = 'Mnemecha'
+
 describe('messages', () => {
 	it('contains all original keys for backward compatibility', () => {
 		const original_keys = [
 			'game_title',
-			'press_start',
 			'cyber_switch_label',
-			'fullscreen_switch_label',
-			'fps_switch_label',
 			'click_to_start',
 			'tap_to_start',
 			'simon_start',
 			'simon_round',
 			'simon_gameover',
-			'sprint_button',
 			'jump_button',
 			'loading_downloading',
 			'loading_initializing',
@@ -34,11 +33,6 @@ describe('messages', () => {
 			'game_application_label',
 			'game_started_announcement',
 			'pause_button',
-			'controls_move',
-			'controls_look',
-			'controls_action',
-			'controls_jump',
-			'controls_return',
 		]
 		for (const key of original_keys) {
 			expect(messages).toHaveProperty(key)
@@ -59,5 +53,13 @@ describe('simon_messages', () => {
 		for (const key of SIMON_SPECIFIC_KEYS) {
 			expect(simon_messages).toHaveProperty(key)
 		}
+	})
+
+	it('exposes the Mnemecha brand as game_title', () => {
+		expect(simon_messages.game_title).toBe(EXPECTED_GAME_TITLE)
+	})
+
+	it('exposes the Mnemecha brand as game_application_label', () => {
+		expect(simon_messages.game_application_label).toBe(EXPECTED_GAME_APPLICATION_LABEL)
 	})
 })

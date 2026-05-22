@@ -1,4 +1,4 @@
-import type { ScoreData } from '$lib/game/score-display-types'
+import type { ScoreData } from '@joshuafolkken/game-kit'
 import { describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-svelte'
 import HardSimonScene from './HardSimonScene.svelte'
@@ -7,7 +7,7 @@ import type { HardSimonBoardData } from './types'
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))
 vi.mock('@threlte/extras', () => ({ Text: function Text() {} }))
 vi.mock('./HardSimonBoard.svelte', () => ({ default: function HardSimonBoard() {} }))
-vi.mock('$lib/game/ScoreDisplay.svelte', () => ({ default: function ScoreDisplay() {} }))
+vi.mock('@joshuafolkken/game-kit', () => ({ ScoreDisplay: function ScoreDisplay() {} }))
 vi.mock('./hard-board-config', () => ({
 	HARD_BOARD_X_LEFT: -1.95,
 	HARD_BOARD_X_CENTER: 0,

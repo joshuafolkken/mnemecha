@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { fonts } from '@joshuafolkken/game-kit'
 	import { T } from '@threlte/core'
 	import { Text } from '@threlte/extras'
-	import { fonts } from '$lib/game/fonts'
 	import { BOARD_LABEL_Z } from './board-config'
 	import {
 		BACKING_RADIUS,
