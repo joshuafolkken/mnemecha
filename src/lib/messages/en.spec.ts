@@ -4,7 +4,6 @@ import { base_messages, messages, simon_messages } from './en'
 const SIMON_SPECIFIC_KEYS = [
 	'game_title',
 	'simon_start',
-	'simon_round',
 	'simon_gameover',
 	'game_application_label',
 ] as const
@@ -20,7 +19,6 @@ describe('messages', () => {
 			'click_to_start',
 			'tap_to_start',
 			'simon_start',
-			'simon_round',
 			'simon_gameover',
 			'jump_button',
 			'loading_downloading',
@@ -37,6 +35,10 @@ describe('messages', () => {
 		for (const key of original_keys) {
 			expect(messages).toHaveProperty(key)
 		}
+	})
+
+	it('no longer exposes simon_round (board center label renders the round digit only)', () => {
+		expect(messages).not.toHaveProperty('simon_round')
 	})
 })
 
