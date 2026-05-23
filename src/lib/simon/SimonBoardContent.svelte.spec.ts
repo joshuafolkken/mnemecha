@@ -7,6 +7,7 @@ import {
 	ROUND_DIGIT_FONT_SIZE,
 } from './simon-button-config'
 import SimonBoardContent from './SimonBoardContent.svelte'
+import SIMON_BOARD_CONTENT_SOURCE from './SimonBoardContent.svelte?raw'
 import type { ButtonColor } from './types'
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))
@@ -71,5 +72,17 @@ describe('SimonBoardContent', () => {
 			},
 		})
 		expect(container).toBeTruthy()
+	})
+})
+
+describe('SimonBoardContent font axis (regression guard for issue #258)', () => {
+	it('reads font from the CRT-aware helpers — never from the is_alt-parameterized legacy API', () => {
+		// The bug being guarded: fonts.get_font(is_alt) / fonts.get_font_size_multiplier(is_alt)
+		// ties the board font to the CYBER palette flag instead of CRT state, so toggling retro
+		// fails to swap the GAME OVER / ROUND / START font (see issue #258 background).
+		expect(SIMON_BOARD_CONTENT_SOURCE).toMatch(/fonts\.get_active_font\(\)/)
+		expect(SIMON_BOARD_CONTENT_SOURCE).toMatch(/fonts\.get_active_font_size_multiplier\(\)/)
+		expect(SIMON_BOARD_CONTENT_SOURCE).not.toMatch(/fonts\.get_font\s*\(/)
+		expect(SIMON_BOARD_CONTENT_SOURCE).not.toMatch(/fonts\.get_font_size_multiplier\s*\(/)
 	})
 })
