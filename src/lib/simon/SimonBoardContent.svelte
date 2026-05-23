@@ -52,8 +52,8 @@
 	let emissive_intensity = $derived(
 		(is_alt ? CYBER_EMISSIVE_INTENSITY : EMISSIVE_INTENSITY) * flash_intensity,
 	)
-	let current_font = $derived(fonts.get_font(is_alt))
-	let current_font_size = $derived(base_font_size * fonts.get_font_size_multiplier(is_alt))
+	let current_font = $derived(fonts.get_active_font())
+	let current_font_size = $derived(base_font_size * fonts.get_active_font_size_multiplier())
 </script>
 
 <T.Mesh position.z={BACKING_Z}>
