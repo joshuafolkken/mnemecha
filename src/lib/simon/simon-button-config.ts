@@ -11,7 +11,11 @@ export const THETA_LENGTH = Math.PI / 2 - BUTTON_GAP * 2
 export const BACKING_RADIUS = 0.85
 export const CENTER_RADIUS = 0.22
 export const BACKING_Z = -0.01
-export const FONT_SIZE = 0.08
+export const FONT_SIZE = 0.13
+export const MULTILINE_FONT_SIZE = 0.16
+export const ROUND_DIGIT_FONT_SIZE = 0.2
+export const MULTILINE_LINE_HEIGHT = 1.4
+export const SINGLE_LINE_HEIGHT = 1
 export const EMISSIVE_INTENSITY = 0.8
 export const CYBER_EMISSIVE_INTENSITY = 1.5
 

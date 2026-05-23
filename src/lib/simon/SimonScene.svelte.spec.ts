@@ -26,7 +26,6 @@ vi.mock('$lib/messages', () => ({
 		score_round: 'RND',
 		score_current: 'SCORE',
 		simon_gameover: 'GAME OVER',
-		simon_round: 'ROUND',
 		simon_start: 'START',
 	},
 }))

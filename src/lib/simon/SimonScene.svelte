@@ -77,7 +77,6 @@
 			{simon_data}
 			{is_alt}
 			text_gameover={messages.simon_gameover}
-			text_round={messages.simon_round}
 			text_start={messages.simon_start}
 		/>
 		<HardSimonScene
@@ -85,7 +84,6 @@
 			score_data={hard_score_data}
 			{is_alt}
 			text_gameover={messages.simon_gameover}
-			text_round={messages.simon_round}
 			text_start={messages.simon_start}
 			label_high_score={messages.score_high_score}
 			label_round={messages.score_round}

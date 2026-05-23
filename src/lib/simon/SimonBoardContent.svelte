@@ -14,9 +14,9 @@
 		CIRCLE_SEGMENTS,
 		CYBER_EMISSIVE_INTENSITY,
 		EMISSIVE_INTENSITY,
-		FONT_SIZE,
 		INNER_RADIUS,
 		OUTER_RADIUS,
+		SINGLE_LINE_HEIGHT,
 		THETA_LENGTH,
 		THETA_SEGMENTS,
 		THETA_START,
@@ -29,6 +29,8 @@
 		is_alt: boolean
 		flash_intensity: number
 		center_text: string
+		base_font_size: number
+		line_height?: number
 		is_color_lit: (color: ButtonColor) => boolean
 		on_button_pointer_down: (e: PointerDownEvent, color: ButtonColor) => void
 		on_button_release: () => void
@@ -39,6 +41,8 @@
 		is_alt,
 		flash_intensity,
 		center_text,
+		base_font_size,
+		line_height = SINGLE_LINE_HEIGHT,
 		is_color_lit,
 		on_button_pointer_down,
 		on_button_release,
@@ -49,7 +53,7 @@
 		(is_alt ? CYBER_EMISSIVE_INTENSITY : EMISSIVE_INTENSITY) * flash_intensity,
 	)
 	let current_font = $derived(fonts.get_font(is_alt))
-	let current_font_size = $derived(FONT_SIZE * fonts.get_font_size_multiplier(is_alt))
+	let current_font_size = $derived(base_font_size * fonts.get_font_size_multiplier(is_alt))
 </script>
 
 <T.Mesh position.z={BACKING_Z}>
@@ -89,6 +93,7 @@
 		text={center_text}
 		font={current_font}
 		fontSize={current_font_size}
+		lineHeight={line_height}
 		color="#ffffff"
 		anchorX="center"
 		anchorY="middle"

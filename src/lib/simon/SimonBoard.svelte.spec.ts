@@ -21,7 +21,6 @@ function make_simon_data(overrides: Partial<SimonBoardData> = {}): SimonBoardDat
 const BOARD_TEXT_PROPS = {
 	is_alt: false,
 	text_gameover: 'GAME OVER',
-	text_round: 'ROUND',
 	text_start: 'START',
 }
 

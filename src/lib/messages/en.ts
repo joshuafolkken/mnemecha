@@ -17,7 +17,6 @@ export const base_messages = {
 export const simon_messages = {
 	game_title: 'MNEMECHA',
 	simon_start: 'START',
-	simon_round: 'ROUND',
 	simon_gameover: 'GAME OVER',
 	game_application_label: 'Mnemecha',
 } as const
