@@ -20,7 +20,7 @@
 		THETA_LENGTH,
 		THETA_SEGMENTS,
 		THETA_START,
-	} from './simon-button-config'
+	} from './button-config'
 	import type { ButtonColor } from './types'
 
 	type PointerDownEvent = { nativeEvent: { button: number } }

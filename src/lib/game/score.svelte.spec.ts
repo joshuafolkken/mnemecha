@@ -5,7 +5,7 @@ import {
 	migrate_legacy_score_keys,
 	score,
 	type StorageKeys,
-} from '$lib/simon/score.svelte'
+} from '$lib/game/score.svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const ROUND_1 = 1

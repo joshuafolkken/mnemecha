@@ -1,6 +1,6 @@
 import { audio as game_audio } from '@joshuafolkken/game-kit'
-import { simon_audio } from '$lib/simon/audio'
-import type { ButtonColor } from '$lib/simon/types'
+import { simon_audio } from '$lib/game/audio'
+import type { ButtonColor } from '$lib/game/types'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const ALL_COLORS: ButtonColor[] = ['green', 'red', 'yellow', 'blue']

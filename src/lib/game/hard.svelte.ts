@@ -1,8 +1,8 @@
 import { game_state } from '@joshuafolkken/game-kit'
 import { simon_audio } from './audio'
+import { create_engine, type EngineApi } from './engine.svelte'
 import { HARD_SCORE_KEY_PREFIX, HARD_SCORE_KEY_PREFIX_LEGACY } from './hard-board-config'
 import { create_score, type ScoreInstance } from './score.svelte'
-import { create_engine, type EngineApi } from './simon-engine.svelte'
 import type { ButtonColor, HardBoardIndex, HardSequenceItem, SimonPhase } from './types'
 
 const ALL_COLORS: readonly ButtonColor[] = ['green', 'red', 'yellow', 'blue']

@@ -1,6 +1,6 @@
 import { session } from '@joshuafolkken/game-kit'
-import { hard_simon_board_input } from '$lib/simon/hard-simon-board-input'
-import type { HardBoardIndex, HardSequenceItem } from '$lib/simon/types'
+import { hard_simon_board_input } from '$lib/game/hard-board-input'
+import type { HardBoardIndex, HardSequenceItem } from '$lib/game/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const LEFT_BUTTON = 0

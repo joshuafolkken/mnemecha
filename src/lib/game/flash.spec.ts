@@ -11,7 +11,7 @@ import {
 	run_victory_flash,
 	type FlashState,
 	type FlashTimers,
-} from './simon-flash'
+} from './flash'
 import type { ButtonColor } from './types'
 
 const COLORS: ButtonColor[] = ['green', 'red', 'yellow', 'blue']

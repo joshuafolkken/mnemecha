@@ -1,9 +1,9 @@
 import { credits_scroll } from '@joshuafolkken/game-kit'
+import { score } from '$lib/game/score.svelte'
 import { messages } from '$lib/messages'
-import { score } from '$lib/simon/score.svelte'
 import { describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-svelte'
-import SimonScene from './SimonScene.svelte'
+import SimonScene from './Scene.svelte'
 
 vi.mock('@joshuafolkken/game-kit', () => ({
 	SceneObjects: function SceneObjects() {},
@@ -13,9 +13,9 @@ vi.mock('@joshuafolkken/game-kit', () => ({
 	},
 	HALF_D: 5,
 }))
-vi.mock('$lib/simon/SimonBoard.svelte', () => ({ default: function SimonBoard() {} }))
-vi.mock('$lib/simon/HardSimonScene.svelte', () => ({ default: function HardSimonScene() {} }))
-vi.mock('$lib/simon/board-config', () => ({
+vi.mock('$lib/game/Board.svelte', () => ({ default: function SimonBoard() {} }))
+vi.mock('$lib/game/HardScene.svelte', () => ({ default: function HardSimonScene() {} }))
+vi.mock('$lib/game/board-config', () => ({
 	SCORE_DISPLAY_Z: -4.65,
 }))
 vi.mock('$lib/messages', () => ({
@@ -29,7 +29,7 @@ vi.mock('$lib/messages', () => ({
 		simon_start: 'START',
 	},
 }))
-vi.mock('$lib/simon/simon.svelte', () => ({
+vi.mock('$lib/game/game.svelte', () => ({
 	simon: {
 		active_color: null,
 		pressed_color: null,
@@ -39,7 +39,7 @@ vi.mock('$lib/simon/simon.svelte', () => ({
 		flash_intensity: 1,
 	},
 }))
-vi.mock('$lib/simon/score.svelte', () => ({
+vi.mock('$lib/game/score.svelte', () => ({
 	score: {
 		high_score: 42,
 		current_score: 7,
@@ -49,7 +49,7 @@ vi.mock('$lib/simon/score.svelte', () => ({
 		format_score: String,
 	},
 }))
-vi.mock('$lib/simon/hard-simon.svelte', () => ({
+vi.mock('$lib/game/hard.svelte', () => ({
 	hard_simon: {
 		active_item: null,
 		pressed_item: null,
@@ -67,7 +67,7 @@ vi.mock('$lib/simon/hard-simon.svelte', () => ({
 		format_score: String,
 	},
 }))
-vi.mock('$lib/simon/credits', () => ({
+vi.mock('$lib/game/credits', () => ({
 	CREDITS_TEXT: 'Credits',
 	CREDITS_LINE_COUNT: 1,
 }))

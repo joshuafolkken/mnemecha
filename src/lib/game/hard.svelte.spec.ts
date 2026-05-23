@@ -1,13 +1,8 @@
-import { simon_audio } from '$lib/simon/audio'
-import {
-	create_hard_simon,
-	HARD_BUTTON_POOL,
-	hard_score,
-	hard_simon,
-} from '$lib/simon/hard-simon.svelte'
-import { create_score } from '$lib/simon/score.svelte'
-import { ERROR_BEEP_MS, RESTART_DELAY_MS } from '$lib/simon/simon-engine.svelte'
-import type { ButtonColor, HardSequenceItem } from '$lib/simon/types'
+import { simon_audio } from '$lib/game/audio'
+import { ERROR_BEEP_MS, RESTART_DELAY_MS } from '$lib/game/engine.svelte'
+import { create_hard_simon, HARD_BUTTON_POOL, hard_score, hard_simon } from '$lib/game/hard.svelte'
+import { create_score } from '$lib/game/score.svelte'
+import type { ButtonColor, HardSequenceItem } from '$lib/game/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const ALL_COLORS: ButtonColor[] = ['green', 'red', 'yellow', 'blue']

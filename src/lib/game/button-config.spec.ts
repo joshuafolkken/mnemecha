@@ -5,7 +5,7 @@ import {
 	MULTILINE_LINE_HEIGHT,
 	ROUND_DIGIT_FONT_SIZE,
 	SINGLE_LINE_HEIGHT,
-} from './simon-button-config'
+} from './button-config'
 
 describe('board center label font sizes', () => {
 	it('FONT_SIZE pins the single-line START size at 0.13', () => {
