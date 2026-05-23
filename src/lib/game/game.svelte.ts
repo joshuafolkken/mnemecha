@@ -1,6 +1,5 @@
 import { game_state } from '@joshuafolkken/game-kit'
 import { simon_audio } from './audio'
-import { score as default_score, type ScoreInstance } from './score.svelte'
 import {
 	create_engine,
 	ERROR_BEEP_MS,
@@ -12,7 +11,8 @@ import {
 	STEP_MS_14_20,
 	STEP_MS_21_PLUS,
 	type EngineApi,
-} from './simon-engine.svelte'
+} from './engine.svelte'
+import { score as default_score, type ScoreInstance } from './score.svelte'
 import type { ButtonColor, SimonPhase } from './types'
 
 export {

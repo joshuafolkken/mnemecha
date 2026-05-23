@@ -6,7 +6,7 @@ import {
 	MULTILINE_LINE_HEIGHT,
 	ROUND_DIGIT_FONT_SIZE,
 	SINGLE_LINE_HEIGHT,
-} from './simon-button-config'
+} from './button-config'
 
 const SAMPLE_ROUND = 7
 

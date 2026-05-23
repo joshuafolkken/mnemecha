@@ -1,4 +1,4 @@
-import { cancel_flash, run_victory_flash, type FlashState, type FlashTimers } from './simon-flash'
+import { cancel_flash, run_victory_flash, type FlashState, type FlashTimers } from './flash'
 import type { ButtonColor, SimonPhase } from './types'
 
 export const STEP_MS_1_5 = 500

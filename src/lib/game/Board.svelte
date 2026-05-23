@@ -2,8 +2,8 @@
 	import { T } from '@threlte/core'
 	import { board_center_label } from './board-center-label'
 	import { BOARD_Y, BOARD_Z } from './board-config'
-	import { simon_board_input } from './simon-board-input'
-	import SimonBoardContent from './SimonBoardContent.svelte'
+	import { simon_board_input } from './board-input'
+	import SimonBoardContent from './BoardContent.svelte'
 	import type { ButtonColor, SimonBoardData } from './types'
 
 	interface Props {

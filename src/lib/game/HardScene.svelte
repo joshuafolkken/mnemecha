@@ -9,7 +9,7 @@
 		HARD_BOARD_Z,
 		HARD_SCORE_DISPLAY_Z,
 	} from './hard-board-config'
-	import HardSimonBoard from './HardSimonBoard.svelte'
+	import HardSimonBoard from './HardBoard.svelte'
 	import type { HardBoardIndex, HardSimonBoardData } from './types'
 
 	interface Props {
