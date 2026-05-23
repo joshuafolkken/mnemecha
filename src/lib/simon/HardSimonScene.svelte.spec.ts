@@ -42,7 +42,6 @@ function make_score_data(): ScoreData {
 const SCENE_PROPS = {
 	is_alt: false,
 	text_gameover: 'GAME OVER',
-	text_round: 'ROUND',
 	text_start: 'START',
 	label_high_score: 'HI',
 	label_round: 'RND',

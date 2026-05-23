@@ -33,6 +33,10 @@ describe('SCORE_DISPLAY_Z_OFFSET', () => {
 	it('is positive (score display floats in front of board)', () => {
 		expect(SCORE_DISPLAY_Z_OFFSET).toBeGreaterThan(0)
 	})
+
+	it('matches the game-kit 0.53 default that pulls the scoreboard forward (0.4)', () => {
+		expect(SCORE_DISPLAY_Z_OFFSET).toBe(0.4)
+	})
 })
 
 describe('SCORE_DISPLAY_Z', () => {

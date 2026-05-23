@@ -17,7 +17,6 @@
 		score_data: ScoreData
 		is_alt: boolean
 		text_gameover: string
-		text_round: string
 		text_start: string
 		label_high_score: string
 		label_round: string
@@ -29,7 +28,6 @@
 		score_data,
 		is_alt,
 		text_gameover,
-		text_round,
 		text_start,
 		label_high_score,
 		label_round,
@@ -51,7 +49,6 @@
 				{simon_data}
 				{is_alt}
 				{text_gameover}
-				{text_round}
 				{text_start}
 			/>
 		</T.Group>
