@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-svelte'
+import SimonBoardContent from './BoardContent.svelte'
+import SIMON_BOARD_CONTENT_SOURCE from './BoardContent.svelte?raw'
 import {
 	FONT_SIZE,
 	MULTILINE_FONT_SIZE,
 	MULTILINE_LINE_HEIGHT,
 	ROUND_DIGIT_FONT_SIZE,
-} from './simon-button-config'
-import SimonBoardContent from './SimonBoardContent.svelte'
-import SIMON_BOARD_CONTENT_SOURCE from './SimonBoardContent.svelte?raw'
+} from './button-config'
 import type { ButtonColor } from './types'
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))

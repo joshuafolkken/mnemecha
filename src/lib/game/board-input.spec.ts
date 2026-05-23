@@ -1,6 +1,6 @@
 import { session } from '@joshuafolkken/game-kit'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { simon_board_input } from './simon-board-input'
+import { simon_board_input } from './board-input'
 import type { ButtonColor } from './types'
 
 const LEFT_BUTTON = 0

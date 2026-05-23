@@ -1,5 +1,4 @@
-import { simon_audio } from '$lib/simon/audio'
-import { create_score, score } from '$lib/simon/score.svelte'
+import { simon_audio } from '$lib/game/audio'
 import {
 	FLASH_BURST_CYCLES,
 	FLASH_BURST_OFF_MS,
@@ -7,7 +6,7 @@ import {
 	FLASH_CASCADE_FWD_MS,
 	FLASH_CASCADE_REV_MS,
 	FLASH_FINALE_MS,
-} from '$lib/simon/simon-flash'
+} from '$lib/game/flash'
 import {
 	create_simon,
 	ERROR_BEEP_MS,
@@ -16,8 +15,9 @@ import {
 	RESTART_DELAY_MS,
 	simon,
 	STEP_MS_1_5,
-} from '$lib/simon/simon.svelte'
-import type { ButtonColor } from '$lib/simon/types'
+} from '$lib/game/game.svelte'
+import { create_score, score } from '$lib/game/score.svelte'
+import type { ButtonColor } from '$lib/game/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const ALL_COLORS: ButtonColor[] = ['green', 'red', 'yellow', 'blue']

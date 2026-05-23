@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { T } from '@threlte/core'
 	import { board_center_label } from './board-center-label'
+	import SimonBoardContent from './BoardContent.svelte'
 	import { HARD_BOARD_CENTER_INDEX } from './hard-board-config'
-	import { hard_simon_board_input } from './hard-simon-board-input'
-	import SimonBoardContent from './SimonBoardContent.svelte'
+	import { hard_simon_board_input } from './hard-board-input'
 	import type { ButtonColor, HardBoardIndex, HardSimonBoardData } from './types'
 
 	interface Props {

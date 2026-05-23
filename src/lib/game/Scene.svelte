@@ -6,14 +6,14 @@
 		SceneObjects,
 		type SceneObjectsMessages,
 	} from '@joshuafolkken/game-kit'
+	import { SCORE_DISPLAY_Z } from '$lib/game/board-config'
+	import SimonBoard from '$lib/game/Board.svelte'
+	import { CREDITS_LINE_COUNT, CREDITS_TEXT } from '$lib/game/credits'
+	import { simon } from '$lib/game/game.svelte'
+	import { hard_score, hard_simon } from '$lib/game/hard.svelte'
+	import HardSimonScene from '$lib/game/HardScene.svelte'
+	import { score } from '$lib/game/score.svelte'
 	import { messages } from '$lib/messages'
-	import { SCORE_DISPLAY_Z } from '$lib/simon/board-config'
-	import { CREDITS_LINE_COUNT, CREDITS_TEXT } from '$lib/simon/credits'
-	import { hard_score, hard_simon } from '$lib/simon/hard-simon.svelte'
-	import HardSimonScene from '$lib/simon/HardSimonScene.svelte'
-	import { score } from '$lib/simon/score.svelte'
-	import { simon } from '$lib/simon/simon.svelte'
-	import SimonBoard from '$lib/simon/SimonBoard.svelte'
 
 	const { start_z: CREDITS_SCROLL_START_Z, end_z: CREDITS_SCROLL_END_Z } =
 		credits_scroll.make_credits_scroll_bounds(CREDITS_LINE_COUNT, HALF_D)

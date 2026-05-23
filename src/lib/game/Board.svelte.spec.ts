@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-svelte'
-import SimonBoard from './SimonBoard.svelte'
+import SimonBoard from './Board.svelte'
 import type { SimonBoardData } from './types'
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))

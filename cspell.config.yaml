@@ -3,7 +3,7 @@ import:
   - "@joshuafolkken/kit/cspell/sveltekit"
 ignorePaths:
   - "**/credits-config.ts"
-  - "**/simon/credits.ts"
+  - "**/game/credits.ts"
 words:
   - Mnemecha
   - MNEMECHA
