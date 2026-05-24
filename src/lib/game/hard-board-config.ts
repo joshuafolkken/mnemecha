@@ -11,7 +11,7 @@ export const HARD_BOARD_X_RIGHT = HARD_BOARD_SPACING_X
 
 export const HARD_BOARD_CENTER_INDEX = 1
 
-export const HARD_SCORE_DISPLAY_Z_OFFSET = -0.15
+export const HARD_SCORE_DISPLAY_Z_OFFSET = -0.6
 export const HARD_SCORE_DISPLAY_Z = HALF_D + HARD_SCORE_DISPLAY_Z_OFFSET
 
 export const HARD_SCORE_KEY_PREFIX = 'mnemecha_hard'
