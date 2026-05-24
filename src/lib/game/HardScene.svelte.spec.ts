@@ -14,7 +14,7 @@ vi.mock('./hard-board-config', () => ({
 	HARD_BOARD_X_RIGHT: 1.95,
 	HARD_BOARD_Y: 1.2,
 	HARD_BOARD_Z: 4.8,
-	HARD_SCORE_DISPLAY_Z: 4.85,
+	HARD_SCORE_DISPLAY_Z: 4.4,
 }))
 
 function make_simon_data(): HardSimonBoardData {
