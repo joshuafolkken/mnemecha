@@ -6,9 +6,28 @@
 
 Stack: TypeScript · pnpm · SvelteKit · Vitest · Playwright · TailwindCSS · Drizzle · better-auth · Paraglide · MCP
 
+## Communication
+
+- **Answer opinion-seeking questions from a neutral standpoint.** When the user asks a leading or preference-shaped question — e.g. "how about X?" ("〜〜ではどうか？"), "wouldn't Y be better?" ("〜〜の方はどうか？"), "isn't Z the right call?" — do not reflexively agree or tailor the answer to the phrasing. Weigh the actual merits and respond impartially: state the trade-offs honestly, recommend the option you genuinely judge best (even when it differs from the one the user hinted at), and explain why. Agreement must be earned by the facts, not assumed from how the question is asked.
+
+### Decision autonomy (minimize confirmation stops)
+
+When you reach a decision point, classify it into one of three tiers and act accordingly. The goal is to stop and ask **only** when the choice genuinely needs the user's judgment — not at every fork.
+
+- **Tier A — reversible implementation / design choices** (a library pick where one option is clearly superior, naming, file layout, test approach, refactor shape). If one option is clearly better on the merits, **select it and proceed without asking.** When the point is one you would normally surface for confirmation, log the decision so the user can audit or override it later (see "Logging auto-decisions" below).
+- **Tier B — genuine toss-up.** The top two options are both sound and the margin is narrow. **This is the only tier that stops** — ask the user (use `AskUserQuestion` where available), presenting the close candidates and their trade-offs.
+- **Tier C — irreversible / shared-state / out-of-scope actions** (merge, branch delete, force push, destructive ops, repo-settings changes, anything outside the stated task scope, `devEngines` / `pnpm.overrides` edits). **Out of scope for this policy.** Always require explicit user instruction — never auto-decide, even when one option looks clearly better. The existing safety rules (`node_modules/@joshuafolkken/kit/prompts/collaboration-workflow.md` → "指示されていない行動は取らない", the `devEngines` / `pnpm.overrides` protections above) take precedence.
+
+**Criterion for A vs B:** ask only when the margin is narrow **and** the decision is hard to reverse or has lasting architectural impact. "I'm in doubt" alone is not a reason to stop — a clearly-superior option is selected automatically even if some uncertainty remains, and a narrow-margin but cheaply-reversible choice is also made automatically (pick one, log it, move on).
+
+**Logging auto-decisions:** when you auto-decide a Tier A point that would normally warrant confirmation, record the candidates and rationale:
+
+- Inside an Issue-driven workflow (`kickoff` / `halfrun` / `fullrun` / `queue`): post an Issue comment — `gh issue comment <N> --body "..."` — listing the chosen option, the rejected alternatives, and why the chosen option is clearly superior.
+- Outside any Issue (a plain conversational task): surface the same as a one-line "Auto-decided: `<choice>` over `<alt>` because `<reason>`" note in your reply.
+
 ## Environment Variables
 
-The following variables are required for `scripts-ai/` functionality. Store them in a `.env` file at the project root (loaded automatically by the AI scripts). See [docs/scripts-ai.md](./docs/scripts-ai.md) for setup instructions including how to obtain these values.
+The following variables are required for `scripts-ai/` functionality. Store them in a `.env` file at the project root (loaded automatically by the AI scripts). See [docs/scripts-ai.md](https://github.com/joshuafolkken/kit/blob/main/docs/scripts-ai.md) for setup instructions including how to obtain these values.
 
 | Variable             | Purpose                                               |
 | -------------------- | ----------------------------------------------------- |
@@ -28,13 +47,14 @@ GitHub operations use the `gh` CLI. Authenticate once with `gh auth login`; no a
 
 ### Functions & exports
 
-- Use `function` syntax, not arrow functions
+- Use `function` syntax, not arrow functions. Exception: in SvelteKit route files, the named route handlers (`GET`/`POST`/`PUT`/`DELETE`/`PATCH`/`OPTIONS`/`HEAD`/`load`/`actions`/`fallback`) may use the typed-const arrow idiom (`export const load: PageLoad = async () => {}`) — it preserves generated `PageData` / `LayoutData` type inference. Any other exported arrow const in a route file is still flagged.
 - Multiple functions in a file: group into a namespace object `export { my_module }` (constants exempt)
 - No `export default`
 
 ### Files
 
 - Svelte: `PascalCase.svelte` / `PascalCase.svelte.ts` · TypeScript: `kebab-case.ts` · Route files: exception
+- `scripts/` is grouped into subdirectories (`init/`, `josh/`, `version/`, `sync/`, `git/`, `issue/`, `overrides/`). Relative parent-directory imports (`../`) are banned by ESLint (`no-restricted-imports`). For cross-directory imports inside `scripts/`, use the `#scripts/*` subpath import (mapped via `package.json` `imports`), e.g. `import { schema } from '#scripts/schemas'`. Same-directory and into-subdirectory imports stay relative (`./sibling`, `./group/file`).
 
 ### Quality limits
 
@@ -62,6 +82,12 @@ GitHub operations use the `gh` CLI. Authenticate once with `gh auth login`; no a
 - **NEVER** remove or modify entries in `pnpm.overrides` without explicit user approval.
 - After running `pnpm update`, `josh latest`, or any dependency-update command, verify that `pnpm.overrides` is unchanged **and** that `devDependencies` versions still respect the overrides. If any entry was removed, modified, or bumped past an override, restore it immediately.
 - **NEVER** modify the `devEngines` field in `package.json` without explicit user confirmation. `devEngines` pins the required development toolchain (e.g. pnpm version); silently changing it can break CI or other contributors' environments. After any dependency-update command, verify `devEngines` is unchanged. If it was modified, restore it immediately and ask the user before making any change.
+
+## Package-First Development
+
+- Before building any system or feature, do NOT write original code first — check whether a well-maintained existing package already solves the problem.
+- Prefer modern, actively-maintained packages. Evaluate candidates on maintenance/activity, popularity, bundle size, TypeScript support, license, and fit. **If one package is clearly the best fit, select it and proceed** (Tier A — log the choice and rationale per "Decision autonomy"). **Only when two or more candidates are genuinely close**, present about three options ranked in a comparison table and let the user choose.
+- For existing code as well, proactively propose replacing hand-rolled implementations with a suitable package when it improves maintainability.
 
 ## Code Change Rules
 
@@ -149,6 +175,15 @@ Before every `git commit` — including follow-up commits on the same branch —
 - For issue-driven proposal/plan/execution/notification flow, follow `node_modules/@joshuafolkken/kit/prompts/collaboration-workflow.md`
 
 ### Shorthand Commands
+
+#### Explicit invocation required (MANDATORY)
+
+Never start a `kickoff` / `halfrun` / `fullrun` / `queue` workflow (including their `#N` and `new` variants) unless the user has typed the keyword in the **current turn's prompt**.
+
+- Conversational requests like "implement X", "fix Y", "open a PR for Z" are **NOT** implicit invocations. Even if the task clearly fits one of these workflows, do not infer authorization from the request shape.
+- Do **NOT** ask confirmation questions like "May I proceed with `halfrun new`?" or "Shall I run `fullrun`?". A confirmation prompt is not an acceptable substitute for explicit invocation.
+- Instead, **prompt the user to type the command themselves**. Use the exact phrasing: "Please run \`<command>\` to start this task." For example: "Please run \`halfrun new\` to start this task." or "Please run \`fullrun #412\` to execute this Issue." The user must type the command on the next turn.
+- This rule applies even when the user has previously authorized a related workflow in an earlier turn. Each invocation must be re-typed by the user in the current turn.
 
 #### `kickoff` — Planning phase only (plan → Issue → Telegram notify → stop)
 
@@ -291,6 +326,7 @@ Never send `completion` Telegram notifications manually with `pnpm josh notify -
 
 - Applies to the initial PR and every follow-up commit (CodeRabbit fixes, re-review iterations, merges from main, etc.) — re-run `pnpm josh followup "<title> #<N>" --merge --notify-message "Implemented <title>:\n- <change1>\n- <change2>\n..."` each time you want to notify completion (notification is sent right before the merge).
 - `pnpm josh notify` remains the right tool for `planning`, `confirmation`, `kickoff_retry`, and `failure` notifications (no automated alternative exists for those).
+- **Project version is surfaced at completion.** When `pnpm josh followup` finishes, it prints the consumer project's version as the final console line (`📦 project version: <v>`, read from the project's own `package.json` — the value `josh bump` increments, **not** the kit tool's version) and includes the same line in the `completion` Telegram body. The just-shipped version is therefore visible at the end of every completed `fullrun` / `queue`. Surface it as the closing line of your completion summary.
 
 #### Mid-workflow stop notification (`confirmation`)
 

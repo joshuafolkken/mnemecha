@@ -22,7 +22,7 @@ jobs:
       image: ${{ steps.resolve.outputs.image }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Resolve image
         id: resolve
@@ -43,7 +43,7 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
@@ -86,14 +86,16 @@ jobs:
       - name: Run prettier check
         run: pnpm exec prettier --check .
 
+      # Build before eslint so generated outputs exist for type-aware linting.
+      # The same build output is reused by the size check below.
+      - name: Build
+        run: pnpm build
+
       - name: Run eslint check
         run: pnpm exec eslint . --cache --cache-strategy content
 
       - name: Run unit tests
-        run: pnpm exec vitest run
-
-      - name: Build for size check
-        run: pnpm build
+        run: pnpm josh test:unit
 
       - name: Check bundle size
         run: pnpm size-limit
@@ -106,7 +108,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Run security audit
         uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
@@ -123,7 +125,7 @@ jobs:
       enabled: ${{ steps.check.outputs.enabled }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Check for Playwright config
         id: check
@@ -153,7 +155,7 @@ jobs:
       BETTER_AUTH_URL: http://localhost:4173
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8

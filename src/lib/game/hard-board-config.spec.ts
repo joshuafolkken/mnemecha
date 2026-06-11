@@ -11,6 +11,7 @@ import {
 describe('HARD_BOARD_Z_OFFSET', () => {
 	it('places the board the same distance from the back wall as Normal mode', () => {
 		const normal_wall_to_board = HALF_D + BOARD_Z
+
 		expect(-HARD_BOARD_Z_OFFSET).toBeCloseTo(normal_wall_to_board)
 	})
 })
@@ -18,11 +19,13 @@ describe('HARD_BOARD_Z_OFFSET', () => {
 describe('HARD_SCORE_DISPLAY_Z_OFFSET', () => {
 	it('places the scoreboard the same distance from the back wall as Normal mode', () => {
 		const normal_wall_to_score = HALF_D + SCORE_DISPLAY_Z
+
 		expect(-HARD_SCORE_DISPLAY_Z_OFFSET).toBeCloseTo(normal_wall_to_score)
 	})
 
 	it('keeps the scoreboard in front of the board by the Normal-mode offset', () => {
 		const hard_board_to_score = HARD_BOARD_Z - HARD_SCORE_DISPLAY_Z
+
 		expect(hard_board_to_score).toBeCloseTo(SCORE_DISPLAY_Z_OFFSET)
 	})
 })

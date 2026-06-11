@@ -9,16 +9,16 @@
 	import { SCORE_DISPLAY_Z } from '$lib/game/board-config'
 	import SimonBoard from '$lib/game/Board.svelte'
 	import { CREDITS_LINE_COUNT, CREDITS_TEXT } from '$lib/game/credits'
-	import { simon } from '$lib/game/game.svelte'
-	import { hard_score, hard_simon } from '$lib/game/hard.svelte'
+	import { simon } from '$lib/game/Game.svelte'
+	import { hard_score, hard_simon } from '$lib/game/Hard.svelte'
 	import HardSimonScene from '$lib/game/HardScene.svelte'
-	import { score } from '$lib/game/score.svelte'
+	import { score } from '$lib/game/Score.svelte'
 	import { messages } from '$lib/messages'
 
 	const { start_z: CREDITS_SCROLL_START_Z, end_z: CREDITS_SCROLL_END_Z } =
 		credits_scroll.make_credits_scroll_bounds(CREDITS_LINE_COUNT, HALF_D)
 
-	let score_data = $derived({
+	const score_data = $derived({
 		high_score: score.high_score,
 		current_score: score.current_score,
 		is_new_high_score: score.is_new_high_score,
@@ -26,7 +26,7 @@
 		last_cleared_round: score.last_cleared_round,
 		format_score: score.format_score,
 	})
-	let simon_data = $derived({
+	const simon_data = $derived({
 		active_color: simon.active_color,
 		pressed_color: simon.pressed_color,
 		phase: simon.phase,
@@ -35,7 +35,7 @@
 		flash_intensity: simon.flash_intensity,
 	})
 
-	let hard_score_data = $derived({
+	const hard_score_data = $derived({
 		high_score: hard_score.high_score,
 		current_score: hard_score.current_score,
 		is_new_high_score: hard_score.is_new_high_score,
@@ -43,7 +43,7 @@
 		last_cleared_round: hard_score.last_cleared_round,
 		format_score: hard_score.format_score,
 	})
-	let hard_simon_data = $derived({
+	const hard_simon_data = $derived({
 		active_item: hard_simon.active_item,
 		pressed_item: hard_simon.pressed_item,
 		phase: hard_simon.phase,
@@ -52,8 +52,8 @@
 		flash_intensity: hard_simon.flash_intensity,
 	})
 
-	let is_alt = $derived(game_state.is_alt)
-	let is_gameover = $derived(simon.phase === 'gameover' || hard_simon.phase === 'gameover')
+	const is_alt = $derived(game_state.is_alt)
+	const is_gameover = $derived(simon.phase === 'gameover' || hard_simon.phase === 'gameover')
 	const scene_messages: SceneObjectsMessages = {
 		game_title: messages.game_title,
 		alt_switch_label: messages.cyber_switch_label,

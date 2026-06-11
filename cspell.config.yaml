@@ -1,9 +1,7 @@
-version: "0.2"
+version: '0.2'
 import:
-  - "@joshuafolkken/kit/cspell/sveltekit"
+  - '@joshuafolkken/game-kit/cspell/game'
 ignorePaths:
-  - "**/credits-config.ts"
-  - "**/game/credits.ts"
 words:
   - Mnemecha
   - MNEMECHA

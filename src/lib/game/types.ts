@@ -5,7 +5,7 @@ export interface SimonBoardData {
 	pressed_color: ButtonColor | null
 	phase: string
 	round: number
-	flash_colors: readonly ButtonColor[]
+	flash_colors: ReadonlyArray<ButtonColor>
 	flash_intensity: number
 }
 
@@ -23,6 +23,6 @@ export interface HardSimonBoardData {
 	pressed_item: HardSequenceItem | null
 	phase: string
 	round: number
-	flash_colors: readonly ButtonColor[]
+	flash_colors: ReadonlyArray<ButtonColor>
 	flash_intensity: number
 }
