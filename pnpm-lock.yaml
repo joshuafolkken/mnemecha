@@ -225,11 +225,11 @@ importers:
         specifier: ^4.7.1
         version: 4.7.1(prettier@3.8.4)
       '@joshuafolkken/game-kit':
-        specifier: ^0.154.0
-        version: 0.154.0(@threlte/core@8.5.16(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0))(@threlte/extras@9.21.0(@types/three@0.184.1)(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0)
+        specifier: ^0.155.0
+        version: 0.155.0(@threlte/core@8.5.16(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0))(@threlte/extras@9.21.0(@types/three@0.184.1)(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0)
       '@joshuafolkken/kit':
-        specifier: ^0.249.0
-        version: 0.249.0(@playwright/test@1.60.0)(@typescript-eslint/utils@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.1(jiti@2.7.0))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(typescript@6.0.3)
+        specifier: ^0.252.0
+        version: 0.252.0(@playwright/test@1.60.0)(@typescript-eslint/utils@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.1(jiti@2.7.0))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(typescript@6.0.3)
       '@playwright/test':
         specifier: ^1.60.0
         version: 1.60.0
@@ -1725,8 +1725,8 @@ packages:
     resolution: {integrity: sha512-AokJm4tuBHillT+FpMtxQ60n8ObyXBatq7jD2/JA9dxbDDokKQm8KMht5ibGzLVU9IJDIKK4TPKgMHEYMn3lMg==}
     engines: {node: '>=18'}
 
-  '@joshuafolkken/game-kit@0.154.0':
-    resolution: {integrity: sha512-L5tRbRzwUGan8dr9ZHxW45wLmVqUILey/w6bCDIgX66qu18zQ5vg/NBGg5Eu4y+kS3tBgQ89PRT+etcao9s9pA==, tarball: https://npm.pkg.github.com/download/@joshuafolkken/game-kit/0.154.0/1f4615618726adc4201d7da30385432caa6fdb3b}
+  '@joshuafolkken/game-kit@0.155.0':
+    resolution: {integrity: sha512-zDHxeRUAA7IGd7uApVJWf1SvtdjuLdvoZekOc309BY/nsG/jPVx1JL1z4orlSKtItl8ax5ib7O7WeO7YSfzTiQ==, tarball: https://npm.pkg.github.com/download/@joshuafolkken/game-kit/0.155.0/efbb4005d67729ebfd3d3bccb2f0d3a33c0fc0be}
     hasBin: true
     peerDependencies:
       '@threlte/core': '>=8.0.0'
@@ -1734,8 +1734,8 @@ packages:
       svelte: ^5.0.0
       three: '>=0.180.0'
 
-  '@joshuafolkken/kit@0.249.0':
-    resolution: {integrity: sha512-KKX2+bXSFScJNn4xl0J8zJA0QWSwVw0W9uSuNoDVFqkhn8i4ONNjVblRz3//eCGzmMq2SGpo17ytHMloz7k0LQ==, tarball: https://npm.pkg.github.com/download/@joshuafolkken/kit/0.249.0/d20fb3f0c78209307eba02e7d0b113360ca72dc8}
+  '@joshuafolkken/kit@0.252.0':
+    resolution: {integrity: sha512-BCmSOenMYorBL8PeURqu5EKktsxzq8ZOcR5zPuLHk+4ntsS5OCMKdKQ+bpGXgeJRGPtjUz5opnURFKAfZojNOw==, tarball: https://npm.pkg.github.com/download/@joshuafolkken/kit/0.252.0/12ac46d68b5c9bab41aa1c1148afac66f6464539}
     engines: {node: '>=22.19.0'}
     hasBin: true
     peerDependencies:
@@ -4411,6 +4411,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  semver@7.8.4:
+    resolution: {integrity: sha512-rUCObTnP32Q08R2uuIrt7r9PlEonuTmtuXYcW6s5kjdlj3xbnwe+21yXptAUYcMAABLkYYTtnmzb3w3EDZfueA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   serialize-javascript@7.0.5:
     resolution: {integrity: sha512-F4LcB0UqUl1zErq+1nYEEzSHJnIwb3AF2XWB94b+afhrekOUijwooAYqFyRbjYkm2PAKBabx6oYv/xDxNi8IBw==}
     engines: {node: '>=20.0.0'}
@@ -6420,14 +6425,14 @@ snapshots:
 
   '@isaacs/cliui@9.0.0': {}
 
-  '@joshuafolkken/game-kit@0.154.0(@threlte/core@8.5.16(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0))(@threlte/extras@9.21.0(@types/three@0.184.1)(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0)':
+  '@joshuafolkken/game-kit@0.155.0(@threlte/core@8.5.16(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0))(@threlte/extras@9.21.0(@types/three@0.184.1)(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0)':
     dependencies:
       '@threlte/core': 8.5.16(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0)
       '@threlte/extras': 9.21.0(@types/three@0.184.1)(svelte@5.56.3(@typescript-eslint/types@8.61.0))(three@0.184.0)
       svelte: 5.56.3(@typescript-eslint/types@8.61.0)
       three: 0.184.0
 
-  '@joshuafolkken/kit@0.249.0(@playwright/test@1.60.0)(@typescript-eslint/utils@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.1(jiti@2.7.0))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(typescript@6.0.3)':
+  '@joshuafolkken/kit@0.252.0(@playwright/test@1.60.0)(@typescript-eslint/utils@8.61.0(eslint@10.4.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.1(jiti@2.7.0))(svelte@5.56.3(@typescript-eslint/types@8.61.0))(typescript@6.0.3)':
     dependencies:
       '@eslint/compat': 2.1.0(eslint@10.4.1(jiti@2.7.0))
       '@eslint/js': 10.0.1(eslint@10.4.1(jiti@2.7.0))
@@ -6444,7 +6449,7 @@ snapshots:
       globals: 17.6.0
       js-yaml: 4.2.0
       ora: 9.4.0
-      semver: 7.8.3
+      semver: 7.8.4
       strip-json-comments: 5.0.3
       svelte: 5.56.3(@typescript-eslint/types@8.61.0)
       tsx: 4.22.4
@@ -9110,6 +9115,8 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.8.3: {}
+
+  semver@7.8.4: {}
 
   serialize-javascript@7.0.5: {}
 
