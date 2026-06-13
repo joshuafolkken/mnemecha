@@ -89,6 +89,7 @@ function register_section_tests(): void {
 		expect(special_thanks_block).toContain('Incognito')
 		expect(special_thanks_block).toContain('Daisuke')
 		expect(special_thanks_block).toContain('@SHIZUYA_1224')
+		expect(special_thanks_block).toContain('@armeria_game')
 	})
 
 	it('section headers remain in ALL CAPS', () => {

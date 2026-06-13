@@ -46,6 +46,7 @@ export const CREDITS_LINES = [
 	'JUNKO',
 	'Daisuke',
 	'@SHIZUYA_1224',
+	'@armeria_game',
 	'',
 	'',
 	'',
