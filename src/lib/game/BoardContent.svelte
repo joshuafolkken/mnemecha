@@ -23,7 +23,12 @@
 	} from './button-config'
 	import type { ButtonColor } from './types'
 
-	type PointerDownEvent = { nativeEvent: { button: number } }
+	interface PointerDownEvent {
+		nativeEvent: { button: number }
+	}
+
+	const BACKING_ROUGHNESS = 0.8
+	const CENTER_ROUGHNESS = 0.5
 
 	interface Props {
 		is_alt: boolean
@@ -37,7 +42,7 @@
 		on_center_click: () => void
 	}
 
-	let {
+	const {
 		is_alt,
 		flash_intensity,
 		center_text,
@@ -49,22 +54,24 @@
 		on_center_click,
 	}: Props = $props()
 
-	let emissive_intensity = $derived(
+	const emissive_intensity = $derived(
 		(is_alt ? CYBER_EMISSIVE_INTENSITY : EMISSIVE_INTENSITY) * flash_intensity,
 	)
-	let current_font = $derived(fonts.get_active_font())
-	let current_font_size = $derived(base_font_size * fonts.get_active_font_size_multiplier())
+	const current_font = $derived(fonts.get_active_font())
+	const current_font_size = $derived(base_font_size * fonts.get_active_font_size_multiplier())
 </script>
 
 <T.Mesh position.z={BACKING_Z}>
 	<T.CircleGeometry args={[BACKING_RADIUS, BACKING_SEGMENTS]} />
-	<T.MeshStandardMaterial color="#111111" roughness={0.8} />
+	<T.MeshStandardMaterial color="#111111" roughness={BACKING_ROUGHNESS} />
 </T.Mesh>
 
 {#each BUTTON_CONFIGS as btn (btn.color)}
 	<T.Group rotation.z={btn.rotation}>
 		<T.Mesh
-			onpointerdown={(e: PointerDownEvent) => on_button_pointer_down(e, btn.color)}
+			onpointerdown={(e: PointerDownEvent) => {
+				on_button_pointer_down(e, btn.color)
+			}}
 			onpointerup={on_button_release}
 			onpointerleave={on_button_release}
 		>
@@ -73,10 +80,10 @@
 			/>
 			{@const lit = btn_lit_color(btn, is_alt)}
 			{@const dim = btn_dim_color(btn, is_alt)}
-			{@const active = is_color_lit(btn.color)}
+			{@const is_active = is_color_lit(btn.color)}
 			<T.MeshStandardMaterial
-				color={active ? lit : dim}
-				emissive={active ? lit : '#000000'}
+				color={is_active ? lit : dim}
+				emissive={is_active ? lit : '#000000'}
 				emissiveIntensity={emissive_intensity}
 			/>
 		</T.Mesh>
@@ -85,7 +92,7 @@
 
 <T.Mesh onclick={on_center_click}>
 	<T.CircleGeometry args={[CENTER_RADIUS, CIRCLE_SEGMENTS]} />
-	<T.MeshStandardMaterial color="#222222" roughness={0.5} />
+	<T.MeshStandardMaterial color="#222222" roughness={CENTER_ROUGHNESS} />
 </T.Mesh>
 
 <T.Group position={[0, 0, BOARD_LABEL_Z]}>

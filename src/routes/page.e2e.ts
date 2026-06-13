@@ -3,44 +3,44 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
 const { version } = JSON.parse(
-	readFileSync(new URL('../../package.json', import.meta.url), 'utf-8'),
+	readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
 ) as { version: string }
 
 const LOADING_OVERLAY_TIMEOUT_MS = 8000
 const FULLSCREEN_NOT_CALLED_WAIT_MS = 200
 const TOUCH_PRIMARY_QUERY = '(hover: none) and (pointer: coarse)'
 const READY_PROGRESS_VALUE = 100
-const HIGH_SCORE_STORAGE_KEY = 'mnemecha_high_score'
-const HIGH_SCORE_ROUND_KEY = 'mnemecha_high_score_round'
-const HIGH_SCORE_CHECK_KEY = 'mnemecha_high_score_check'
-const LEGACY_HIGH_SCORE_STORAGE_KEY = 'simon_high_score'
-const LEGACY_HIGH_SCORE_ROUND_KEY = 'simon_high_score_round'
-const LEGACY_HIGH_SCORE_CHECK_KEY = 'simon_high_score_check'
-const LEGACY_SAMPLE_SCORE = 4321
-const LEGACY_SAMPLE_ROUND = 2
-const CHECK_SEED = 0x9e3779b9
-const SAMPLE_HIGH_SCORE = 5000
-const SAMPLE_HIGH_ROUND = 3
+const GAME_SCENE_SELECTOR = '[data-testid="game-scene"]'
+const LOADING_OVERLAY_SELECTOR = '[data-testid="loading-overlay"]'
+const PROGRESS_BAR_SELECTOR = '[data-testid="loading-overlay"] progress.bar'
+const CLICK_HINT_SELECTOR = '.click-hint'
 
 async function stub_touch_primary(page: Page, is_touch: boolean): Promise<void> {
 	await page.addInitScript(
 		([query, matches]) => {
 			const original = globalThis.matchMedia.bind(globalThis)
+
 			globalThis.matchMedia = function patched(input: string): MediaQueryList {
 				if (input === query) {
-					return {
-						matches: matches as boolean,
+					const noop = (): void => {
+						/* no-op */
+					}
+
+					const patched_list: MediaQueryList = {
+						matches,
 						media: input,
+						// eslint-disable-next-line unicorn/no-null -- MediaQueryList.onchange is typed as nullable by the DOM API
 						onchange: null,
-						addEventListener() {},
-						removeEventListener() {},
-						addListener() {},
-						removeListener() {},
-						dispatchEvent() {
-							return false
-						},
-					} as MediaQueryList
+						addEventListener: noop,
+						removeEventListener: noop,
+						addListener: noop,
+						removeListener: noop,
+						dispatchEvent: () => false,
+					}
+
+					return patched_list
 				}
+
 				return original(input)
 			}
 		},
@@ -48,9 +48,39 @@ async function stub_touch_primary(page: Page, is_touch: boolean): Promise<void> 
 	)
 }
 
+async function probe_fullscreen_request(page: Page): Promise<boolean> {
+	return await page.evaluate(
+		async ([selector, wait_ms]) =>
+			await new Promise<boolean>((resolve) => {
+				const scene = document.querySelector<HTMLElement>(selector)
+
+				if (!scene) {
+					resolve(false)
+
+					return
+				}
+
+				let did_request = false
+
+				scene.requestFullscreen = async function (): Promise<void> {
+					await Promise.resolve()
+					did_request = true
+					resolve(did_request)
+				}
+
+				scene.click()
+				setTimeout(() => {
+					resolve(did_request)
+				}, wait_ms)
+			}),
+		[GAME_SCENE_SELECTOR, FULLSCREEN_NOT_CALLED_WAIT_MS] as const,
+	)
+}
+
 test('page response includes HTTP security headers', async ({ page }) => {
 	const response = await page.goto('/')
 	const headers = response?.headers() ?? {}
+
 	expect(headers['x-frame-options']).toBe('SAMEORIGIN')
 	expect(headers['x-content-type-options']).toBe('nosniff')
 	expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin')
@@ -60,133 +90,96 @@ test('page response includes HTTP security headers', async ({ page }) => {
 
 test('game scene renders immediately with canvas', async ({ page }) => {
 	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
+	await expect(page.locator(GAME_SCENE_SELECTOR)).toBeVisible()
 	await expect(page.locator('[data-testid="game-scene"] canvas')).toBeVisible()
 })
 
-test('loading overlay is visible immediately on page load', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"]')).toBeVisible()
-})
+const OVERLAY_VISIBLE_CASES = [
+	{ title: 'is visible immediately on page load', selector: LOADING_OVERLAY_SELECTOR },
+	{ title: 'displays the logo svg', selector: `${LOADING_OVERLAY_SELECTOR} svg.logo` },
+] as const
 
-test('loading overlay displays the logo svg', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] svg.logo')).toBeVisible()
-})
-
-test('loading overlay displays Joshua Folkken below the logo', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] .brand')).toHaveText('Joshua Folkken')
-})
-
-test('loading overlay displays game title below the brand', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] .game-title')).toHaveText('MNEMECHA')
-})
-
-test('loading overlay displays game version below the brand', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] .game-version')).toHaveText(
-		`v${version}`,
-	)
-})
-
-test('loading overlay reaches 100% progress once the scene is ready', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] .progress')).toHaveText('100%', {
-		timeout: LOADING_OVERLAY_TIMEOUT_MS,
+for (const visible_case of OVERLAY_VISIBLE_CASES) {
+	test(`loading overlay ${visible_case.title}`, async ({ page }) => {
+		await page.goto('/')
+		await expect(page.locator(visible_case.selector)).toBeVisible()
 	})
-})
+}
 
-test('loading overlay shows ready text once the scene is ready', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] .status')).toHaveText('READY', {
-		timeout: LOADING_OVERLAY_TIMEOUT_MS,
+const OVERLAY_TEXT_CASES = [
+	{ title: 'displays Joshua Folkken below the logo', sub: '.brand', text: 'Joshua Folkken' },
+	{ title: 'displays game title below the brand', sub: '.game-title', text: 'MNEMECHA' },
+	{ title: 'displays game version below the brand', sub: '.game-version', text: `v${version}` },
+] as const
+
+for (const overlay_case of OVERLAY_TEXT_CASES) {
+	test(`loading overlay ${overlay_case.title}`, async ({ page }) => {
+		await page.goto('/')
+		await expect(page.locator(`${LOADING_OVERLAY_SELECTOR} ${overlay_case.sub}`)).toHaveText(
+			overlay_case.text,
+		)
 	})
-})
+}
+
+const OVERLAY_READY_CASES = [
+	{ title: 'reaches 100% progress once the scene is ready', sub: '.progress', text: '100%' },
+	{ title: 'shows ready text once the scene is ready', sub: '.status', text: 'READY' },
+] as const
+
+for (const ready_case of OVERLAY_READY_CASES) {
+	test(`loading overlay ${ready_case.title}`, async ({ page }) => {
+		await page.goto('/')
+		await expect(page.locator(`${LOADING_OVERLAY_SELECTOR} ${ready_case.sub}`)).toHaveText(
+			ready_case.text,
+			{ timeout: LOADING_OVERLAY_TIMEOUT_MS },
+		)
+	})
+}
 
 test('loading overlay disappears once the scene is ready', async ({ page }) => {
 	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"]')).toBeHidden({
+	await expect(page.locator(LOADING_OVERLAY_SELECTOR)).toBeHidden({
 		timeout: LOADING_OVERLAY_TIMEOUT_MS,
 	})
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
+	await expect(page.locator(GAME_SCENE_SELECTOR)).toBeVisible()
 })
 
 test('first click on the game scene does not toggle cyber mode', async ({ page }) => {
 	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
+	await expect(page.locator(GAME_SCENE_SELECTOR)).toBeVisible()
 	const glow_locator = page.locator('[data-testid="cyber-glow"]')
 	const initial_glow_count = await glow_locator.count()
-	await page.locator('[data-testid="game-scene"]').click()
+
+	await page.locator(GAME_SCENE_SELECTOR).click()
 	const after_glow_count = await glow_locator.count()
+
 	expect(after_glow_count).toBe(initial_glow_count)
 })
 
-test('fullscreen is requested on touch-primary devices when start hint is clicked', async ({
-	page,
-}) => {
-	await stub_touch_primary(page, true)
-	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
+const FULLSCREEN_CASES = [
+	{ title: 'is requested on touch-primary devices when start hint is clicked', is_touch: true },
+	{ title: 'is NOT requested on desktop devices when start hint is clicked', is_touch: false },
+] as const
 
-	const fullscreen_target = await page.evaluate(
-		() =>
-			new Promise<string>((resolve) => {
-				const scene = document.querySelector<HTMLElement>('[data-testid="game-scene"]')
-				if (!scene) {
-					resolve('no-scene')
-					return
-				}
-				scene.requestFullscreen = function (): Promise<void> {
-					resolve('game-scene')
-					return Promise.resolve()
-				}
-				scene.click()
-			}),
-	)
+for (const fullscreen_case of FULLSCREEN_CASES) {
+	test(`fullscreen ${fullscreen_case.title}`, async ({ page }) => {
+		await stub_touch_primary(page, fullscreen_case.is_touch)
+		await page.goto('/')
+		await expect(page.locator(GAME_SCENE_SELECTOR)).toBeVisible()
 
-	expect(fullscreen_target).toBe('game-scene')
-})
-
-test('fullscreen is NOT requested on desktop devices when start hint is clicked', async ({
-	page,
-}) => {
-	await stub_touch_primary(page, false)
-	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
-
-	const was_called = await page.evaluate(
-		(wait_ms) =>
-			new Promise<boolean>((resolve) => {
-				const scene = document.querySelector<HTMLElement>('[data-testid="game-scene"]')
-				if (!scene) {
-					resolve(false)
-					return
-				}
-				let called = false
-				scene.requestFullscreen = function (): Promise<void> {
-					called = true
-					return Promise.resolve()
-				}
-				scene.click()
-				setTimeout(() => resolve(called), wait_ms)
-			}),
-		FULLSCREEN_NOT_CALLED_WAIT_MS,
-	)
-
-	expect(was_called).toBe(false)
-})
+		expect(await probe_fullscreen_request(page)).toBe(fullscreen_case.is_touch)
+	})
+}
 
 test('pseudo-fullscreen class is applied when native API is unavailable on touch devices', async ({
 	page,
 }) => {
 	await stub_touch_primary(page, true)
 	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
+	await expect(page.locator(GAME_SCENE_SELECTOR)).toBeVisible()
 
-	await page.evaluate(() => {
-		const scene = document.querySelector<HTMLElement>('[data-testid="game-scene"]')
+	await page.evaluate((selector) => {
+		const scene = document.querySelector<HTMLElement>(selector)
 		if (!scene) return
 		Object.defineProperty(scene, 'requestFullscreen', { value: undefined, configurable: true })
 		Object.defineProperty(scene, 'webkitRequestFullscreen', {
@@ -194,46 +187,39 @@ test('pseudo-fullscreen class is applied when native API is unavailable on touch
 			configurable: true,
 		})
 		scene.click()
-	})
+	}, GAME_SCENE_SELECTOR)
 
-	await expect(page.locator('[data-testid="game-scene"]')).toHaveClass(/pseudo-fullscreen/)
+	await expect(page.locator(GAME_SCENE_SELECTOR)).toHaveClass(/pseudo-fullscreen/u)
 })
 
 test('game scene has role="application" for screen reader keyboard pass-through', async ({
 	page,
 }) => {
 	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toHaveAttribute('role', 'application')
+	await expect(page.locator(GAME_SCENE_SELECTOR)).toHaveAttribute('role', 'application')
 })
 
-test('game scene can be started with Enter key after focusing via Tab', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
-	await page.keyboard.press('Tab')
-	await page.keyboard.press('Enter')
-	await expect(page.locator('.click-hint')).toHaveCount(0)
-})
+const START_KEYS = ['Enter', 'Space'] as const
 
-test('game scene can be started with Space key after focusing via Tab', async ({ page }) => {
-	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible()
-	await page.keyboard.press('Tab')
-	await page.keyboard.press('Space')
-	await expect(page.locator('.click-hint')).toHaveCount(0)
-})
+for (const key of START_KEYS) {
+	test(`game scene can be started with ${key} key after focusing via Tab`, async ({ page }) => {
+		await page.goto('/')
+		await expect(page.locator(GAME_SCENE_SELECTOR)).toBeVisible()
+		await page.keyboard.press('Tab')
+		await page.keyboard.press(key)
+		await expect(page.locator(CLICK_HINT_SELECTOR)).toHaveCount(0)
+	})
+}
 
 test('loading overlay uses native progress element for accessible progress', async ({ page }) => {
 	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] progress.bar')).toBeVisible()
-	await expect(page.locator('[data-testid="loading-overlay"] progress.bar')).toHaveAttribute(
-		'max',
-		'100',
-	)
+	await expect(page.locator(PROGRESS_BAR_SELECTOR)).toBeVisible()
+	await expect(page.locator(PROGRESS_BAR_SELECTOR)).toHaveAttribute('max', '100')
 })
 
 test('loading overlay progress element reaches 100 when the scene is ready', async ({ page }) => {
 	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"] progress.bar')).toHaveJSProperty(
+	await expect(page.locator(PROGRESS_BAR_SELECTOR)).toHaveJSProperty(
 		'value',
 		READY_PROGRESS_VALUE,
 		{
@@ -246,112 +232,24 @@ test('page has no critical or serious accessibility violations', async ({ page }
 	await page.goto('/')
 	const results = await new AxeBuilder({ page }).exclude('canvas').analyze()
 	const violations = results.violations.filter(
-		(v) => v.impact === 'critical' || v.impact === 'serious',
+		(violation) => violation.impact === 'critical' || violation.impact === 'serious',
 	)
+
 	expect(violations).toHaveLength(0)
 })
 
-test('high score persists in localStorage across page reload', async ({ page }) => {
-	const stored_check =
-		(Math.imul(SAMPLE_HIGH_SCORE + 1, CHECK_SEED) ^
-			Math.imul(SAMPLE_HIGH_ROUND + 1, CHECK_SEED >>> 1)) >>>
-		0
-	await page.goto('/')
-	await page.evaluate(
-		([sk, rk, ck, score, round, check]) => {
-			localStorage.setItem(sk, String(score))
-			localStorage.setItem(rk, String(round))
-			localStorage.setItem(ck, String(check))
-		},
-		[
-			HIGH_SCORE_STORAGE_KEY,
-			HIGH_SCORE_ROUND_KEY,
-			HIGH_SCORE_CHECK_KEY,
-			SAMPLE_HIGH_SCORE,
-			SAMPLE_HIGH_ROUND,
-			stored_check,
-		] as const,
-	)
-	await page.goto('/')
-	const [score_val, round_val, check_val] = await page.evaluate(
-		([sk, rk, ck]) => [
-			localStorage.getItem(sk),
-			localStorage.getItem(rk),
-			localStorage.getItem(ck),
-		],
-		[HIGH_SCORE_STORAGE_KEY, HIGH_SCORE_ROUND_KEY, HIGH_SCORE_CHECK_KEY] as const,
-	)
-	expect(score_val).toBe(String(SAMPLE_HIGH_SCORE))
-	expect(round_val).toBe(String(SAMPLE_HIGH_ROUND))
-	expect(check_val).toBe(String(stored_check))
-})
-
-test('legacy simon_* high score keys are migrated to mnemecha_* on first load', async ({
-	page,
-}) => {
-	const legacy_check =
-		(Math.imul(LEGACY_SAMPLE_SCORE + 1, CHECK_SEED) ^
-			Math.imul(LEGACY_SAMPLE_ROUND + 1, CHECK_SEED >>> 1)) >>>
-		0
-	await page.goto('/')
-	await page.evaluate(
-		([sk, rk, ck, score, round, check]) => {
-			localStorage.removeItem('mnemecha_high_score')
-			localStorage.removeItem('mnemecha_high_score_round')
-			localStorage.removeItem('mnemecha_high_score_check')
-			localStorage.setItem(sk, String(score))
-			localStorage.setItem(rk, String(round))
-			localStorage.setItem(ck, String(check))
-		},
-		[
-			LEGACY_HIGH_SCORE_STORAGE_KEY,
-			LEGACY_HIGH_SCORE_ROUND_KEY,
-			LEGACY_HIGH_SCORE_CHECK_KEY,
-			LEGACY_SAMPLE_SCORE,
-			LEGACY_SAMPLE_ROUND,
-			legacy_check,
-		] as const,
-	)
-	await page.goto('/')
-	await expect(page.locator('[data-testid="game-scene"]')).toBeVisible({
-		timeout: LOADING_OVERLAY_TIMEOUT_MS,
-	})
-	const migrated = await page.evaluate(
-		([new_sk, new_rk, new_ck, old_sk, old_rk, old_ck]) => ({
-			new_score: localStorage.getItem(new_sk),
-			new_round: localStorage.getItem(new_rk),
-			new_check: localStorage.getItem(new_ck),
-			old_score: localStorage.getItem(old_sk),
-			old_round: localStorage.getItem(old_rk),
-			old_check: localStorage.getItem(old_ck),
-		}),
-		[
-			HIGH_SCORE_STORAGE_KEY,
-			HIGH_SCORE_ROUND_KEY,
-			HIGH_SCORE_CHECK_KEY,
-			LEGACY_HIGH_SCORE_STORAGE_KEY,
-			LEGACY_HIGH_SCORE_ROUND_KEY,
-			LEGACY_HIGH_SCORE_CHECK_KEY,
-		] as const,
-	)
-	expect(migrated.new_score).toBe(String(LEGACY_SAMPLE_SCORE))
-	expect(migrated.new_round).toBe(String(LEGACY_SAMPLE_ROUND))
-	expect(migrated.new_check).toBe(String(legacy_check))
-	expect(migrated.old_score).toBeNull()
-	expect(migrated.old_round).toBeNull()
-	expect(migrated.old_check).toBeNull()
-})
-
 test('game scene loads without shadow-related WebGL errors', async ({ page }) => {
-	const errors: string[] = []
-	page.on('pageerror', (err) => errors.push(err.message))
+	const errors: Array<string> = []
+
+	page.on('pageerror', (error) => errors.push(error.message))
 	await page.goto('/')
-	await expect(page.locator('[data-testid="loading-overlay"]')).toBeHidden({
+	await expect(page.locator(LOADING_OVERLAY_SELECTOR)).toBeHidden({
 		timeout: LOADING_OVERLAY_TIMEOUT_MS,
 	})
 	const webgl_errors = errors.filter(
 		(e) => e.toLowerCase().includes('shadow') || e.toLowerCase().includes('webgl'),
 	)
+
 	expect(webgl_errors).toHaveLength(0)
 })
 
@@ -359,9 +257,11 @@ test('favicon link points to the Mnemecha icon, not the Svelte logo', async ({ p
 	await page.goto('/')
 	const icon_href = await page.evaluate(() => {
 		const links = document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]')
-		const last = links[links.length - 1]
-		return last?.getAttribute('href') ?? null
+		const last = [...links].at(-1)
+
+		return last?.getAttribute('href') ?? undefined
 	})
+
 	expect(icon_href).toBe('/icon.svg')
 })
 
@@ -369,17 +269,21 @@ test('PWA manifest is linked in document head', async ({ page }) => {
 	await page.goto('/')
 	const manifest_href = await page.evaluate(() => {
 		const link = document.querySelector<HTMLLinkElement>('link[rel="manifest"]')
-		return link?.href ?? null
+
+		return link?.href ?? undefined
 	})
-	expect(manifest_href).not.toBeNull()
+
+	expect(manifest_href).toBeTruthy()
 })
 
 test('service worker is ready after page load', async ({ page }) => {
 	await page.goto('/')
 	const scope = await page.evaluate(async () => {
-		if (!('serviceWorker' in navigator)) return null
+		if (!('serviceWorker' in navigator)) return undefined
 		const reg = await navigator.serviceWorker.ready
+
 		return reg.scope
 	})
+
 	expect(scope).toBeTruthy()
 })

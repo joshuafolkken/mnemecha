@@ -1,6 +1,6 @@
 {
 	"name": "mnemecha",
-	"version": "0.113.0",
+	"version": "0.114.0",
 	"type": "module",
 	"private": true,
 	"scripts": {
@@ -8,69 +8,71 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
-		"prepare": "pnpm gen && svelte-kit sync",
+		"prepare": "pnpm prepare:gen && pnpm prepare:sync && pnpm prepare:lefthook && pnpm prepare:gh-packages",
 		"gen": "pnpm gen:pre && wrangler types",
 		"gen:pre": "node -e \"const fs=require('node:fs');const d='.svelte-kit/cloudflare';if(fs.existsSync(d))fs.readdirSync(d).forEach(f=>f.startsWith('_worker.')&&fs.rmSync(d+'/'+f,{force:true}))\"",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"postinstall": "lefthook install && tsx node_modules/@joshuafolkken/kit/scripts/fix-gh-packages.ts",
 		"josh": "josh",
-		"size-limit": "size-limit"
-	},
-	"dependencies": {
-		"@threlte/core": "^8.5.15",
-		"@threlte/extras": "^9.20.0",
-		"three": "^0.184.0"
+		"size-limit": "size-limit",
+		"prepare:gen": "[ ! -f wrangler.jsonc ] || pnpm gen",
+		"prepare:sync": "svelte-kit sync || echo ''",
+		"prepare:lefthook": "[ -n \"$CI\" ] || ! command -v lefthook >/dev/null 2>&1 || lefthook install",
+		"prepare:gh-packages": "[ -n \"$CI\" ] || ! command -v tsx >/dev/null 2>&1 || tsx node_modules/@joshuafolkken/kit/scripts/fix-gh-packages.ts"
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.11.3",
 		"@eslint/compat": "^2.1.0",
 		"@eslint/js": "^10.0.1",
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.1",
-		"@joshuafolkken/game-kit": "^0.54.0",
-		"@joshuafolkken/kit": "^0.182.0",
+		"@joshuafolkken/game-kit": "^0.155.0",
+		"@joshuafolkken/kit": "^0.252.0",
 		"@playwright/test": "^1.60.0",
 		"@size-limit/file": "^12.1.0",
 		"@size-limit/preset-app": "^12.1.0",
 		"@sveltejs/adapter-cloudflare": "^7.2.8",
-		"@sveltejs/kit": "^2.60.1",
+		"@sveltejs/kit": "^2.64.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@tailwindcss/forms": "^0.5.11",
-		"@tailwindcss/typography": "^0.5.19",
+		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.0",
-		"@types/node": "^25.9.1",
+		"@threlte/core": "^8.5.16",
+		"@threlte/extras": "^9.21.0",
+		"@types/node": "^25.9.2",
 		"@types/three": "^0.184.1",
 		"@vite-pwa/sveltekit": "^1.1.0",
-		"@vitest/browser-playwright": "^4.1.7",
-		"cspell": "^10.0.0",
-		"eslint": "^10.4.0",
+		"@vitest/browser-playwright": "^4.1.8",
+		"cspell": "^10.0.1",
+		"eslint": "^10.4.1",
 		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-svelte": "^3.17.1",
+		"eslint-plugin-svelte": "^3.19.0",
 		"globals": "^17.6.0",
-		"lefthook": "^2.1.8",
+		"lefthook": "^2.1.9",
 		"playwright": "^1.60.0",
-		"prettier": "^3.8.3",
-		"prettier-plugin-svelte": "^4.0.1",
+		"prettier": "^3.8.4",
+		"prettier-plugin-svelte": "^4.1.0",
 		"prettier-plugin-tailwindcss": "^0.8.0",
 		"rollup-plugin-visualizer": "^7.0.1",
 		"size-limit": "^12.1.0",
-		"svelte": "^5.55.9",
-		"svelte-check": "^4.4.8",
+		"svelte": "^5.56.3",
+		"svelte-check": "^4.6.0",
 		"tailwindcss": "^4.3.0",
-		"tsx": "^4.22.3",
+		"three": "^0.184.0",
+		"tsx": "^4.22.4",
 		"typescript": "^6.0.3",
-		"typescript-eslint": "^8.59.4",
-		"vite": "^8.0.14",
+		"typescript-eslint": "^8.61.0",
+		"vite": "^8.0.16",
 		"vite-plugin-pwa": "^1.3.0",
-		"vitest": "^4.1.7",
+		"vitest": "^4.1.8",
 		"vitest-browser-svelte": "^2.1.1",
 		"workbox-build": "^7.4.1",
-		"wrangler": "^4.94.0"
+		"workbox-window": "^7.4.1",
+		"wrangler": "^4.99.0"
 	},
-	"packageManager": "pnpm@11.2.2+sha512.36e6621fad506178936455e70247b8808ef4ec25797a9f437a93281a020484e2607f6a469a22e982987c3dbb8866e3071514ab10a4a1749e06edcd1ec118436f",
+	"packageManager": "pnpm@11.5.3+sha512.7ac1c919341c213a34dc0d02afb7143c5c26ac26ee8c4782deea821b8ac64d2134a081fd8941dae6e29bbb48f58dfc2b7fbceeccc07cb2f09d219d342a4969ed",
 	"devEngines": {
 		"packageManager": {
 			"name": "pnpm",
-			"version": ">=11.0.0-0",
+			"version": "11.5.3",
 			"onFail": "error"
 		}
 	},
@@ -79,19 +81,5 @@
 			"path": ".svelte-kit/output/client/_app/immutable/**/*.js",
 			"limit": "1000 kB"
 		}
-	],
-	"pnpm": {
-		"overrides": {
-			"serialize-javascript": ">=7.0.5"
-		},
-		"onlyBuiltDependencies": [
-			"sharp",
-			"workerd",
-			"esbuild"
-		],
-		"ignoredBuiltDependencies": [
-			"@joshuafolkken/kit",
-			"lefthook"
-		]
-	}
+	]
 }

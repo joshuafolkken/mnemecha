@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { render } from 'vitest-browser-svelte'
 import Page from './+page.svelte'
 
+const CYBER_GLOW_SELECTOR = '[data-testid="cyber-glow"]'
+
 describe('Home page', () => {
 	beforeEach(() => {
 		if (game_state.is_alt) game_state.toggle_alt()
@@ -14,12 +16,14 @@ describe('Home page', () => {
 
 	it('does not render cyber-glow in normal mode', () => {
 		const { container } = render(Page)
-		expect(container.querySelector('[data-testid="cyber-glow"]')).toBeNull()
+
+		expect(container.querySelector(CYBER_GLOW_SELECTOR)).toBeNull()
 	})
 
 	it('renders cyber-glow when cyber mode is active', () => {
 		game_state.toggle_alt()
 		const { container } = render(Page)
-		expect(container.querySelector('[data-testid="cyber-glow"]')).toBeTruthy()
+
+		expect(container.querySelector(CYBER_GLOW_SELECTOR)).toBeTruthy()
 	})
 })

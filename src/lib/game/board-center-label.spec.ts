@@ -18,6 +18,7 @@ describe('board_center_label.get_center_text', () => {
 			text_gameover: 'GAME OVER',
 			text_start: 'START',
 		})
+
 		expect(text).toBe('START')
 	})
 
@@ -28,6 +29,7 @@ describe('board_center_label.get_center_text', () => {
 			text_gameover: 'GAME OVER',
 			text_start: 'START',
 		})
+
 		expect(text).toBe(String(SAMPLE_ROUND))
 	})
 
@@ -38,6 +40,7 @@ describe('board_center_label.get_center_text', () => {
 			text_gameover: 'GAME OVER',
 			text_start: 'START',
 		})
+
 		expect(text).toBe('GAME\nOVER')
 	})
 
@@ -48,6 +51,7 @@ describe('board_center_label.get_center_text', () => {
 			text_gameover: 'GAMEOVER',
 			text_start: 'START',
 		})
+
 		expect(text).toBe('GAMEOVER')
 	})
 })

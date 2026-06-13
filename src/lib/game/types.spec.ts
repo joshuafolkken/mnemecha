@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { ButtonColor, SimonBoardData } from './types'
 
-const ALL_BUTTON_COLORS: ButtonColor[] = ['green', 'red', 'yellow', 'blue']
+const ALL_BUTTON_COLORS: Array<ButtonColor> = ['green', 'red', 'yellow', 'blue']
 
 describe('simon types', () => {
 	it('ButtonColor covers all four expected colors', () => {
@@ -21,6 +21,7 @@ describe('simon types', () => {
 			flash_colors: [],
 			flash_intensity: 1,
 		}
+
 		expect(data.phase).toBe('idle')
 		expect(data.pressed_color).toBe('green')
 	})

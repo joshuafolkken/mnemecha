@@ -11,7 +11,12 @@ import {
 import type { ButtonColor } from './types'
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))
-vi.mock('@threlte/extras', () => ({ Text: function Text() {} }))
+vi.mock('@threlte/extras', () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'Text'
+	Text: function Text() {
+		/* no-op */
+	},
+}))
 
 function lit_none(): boolean {
 	return false
@@ -31,13 +36,15 @@ const BASE_PROPS = {
 describe('SimonBoardContent', () => {
 	it('renders without error with default callbacks', () => {
 		const { container } = render(SimonBoardContent, { props: BASE_PROPS })
+
 		expect(container).toBeTruthy()
 	})
 
 	it('renders without error when a color is lit', () => {
 		const { container } = render(SimonBoardContent, {
-			props: { ...BASE_PROPS, is_color_lit: (c: ButtonColor) => c === 'green' },
+			props: { ...BASE_PROPS, is_color_lit: (color: ButtonColor) => color === 'green' },
 		})
+
 		expect(container).toBeTruthy()
 	})
 
@@ -45,6 +52,7 @@ describe('SimonBoardContent', () => {
 		const { container } = render(SimonBoardContent, {
 			props: { ...BASE_PROPS, is_alt: true, flash_intensity: 2.5 },
 		})
+
 		expect(container).toBeTruthy()
 	})
 
@@ -52,6 +60,7 @@ describe('SimonBoardContent', () => {
 		const { container } = render(SimonBoardContent, {
 			props: { ...BASE_PROPS, center_text: '' },
 		})
+
 		expect(container).toBeTruthy()
 	})
 
@@ -59,6 +68,7 @@ describe('SimonBoardContent', () => {
 		const { container } = render(SimonBoardContent, {
 			props: { ...BASE_PROPS, center_text: '3', base_font_size: ROUND_DIGIT_FONT_SIZE },
 		})
+
 		expect(container).toBeTruthy()
 	})
 
@@ -71,6 +81,7 @@ describe('SimonBoardContent', () => {
 				line_height: MULTILINE_LINE_HEIGHT,
 			},
 		})
+
 		expect(container).toBeTruthy()
 	})
 })
@@ -80,9 +91,9 @@ describe('SimonBoardContent font axis (regression guard for issue #258)', () => 
 		// The bug being guarded: fonts.get_font(is_alt) / fonts.get_font_size_multiplier(is_alt)
 		// ties the board font to the CYBER palette flag instead of CRT state, so toggling retro
 		// fails to swap the GAME OVER / ROUND / START font (see issue #258 background).
-		expect(SIMON_BOARD_CONTENT_SOURCE).toMatch(/fonts\.get_active_font\(\)/)
-		expect(SIMON_BOARD_CONTENT_SOURCE).toMatch(/fonts\.get_active_font_size_multiplier\(\)/)
-		expect(SIMON_BOARD_CONTENT_SOURCE).not.toMatch(/fonts\.get_font\s*\(/)
-		expect(SIMON_BOARD_CONTENT_SOURCE).not.toMatch(/fonts\.get_font_size_multiplier\s*\(/)
+		expect(SIMON_BOARD_CONTENT_SOURCE).toMatch(/fonts\.get_active_font\(\)/u)
+		expect(SIMON_BOARD_CONTENT_SOURCE).toMatch(/fonts\.get_active_font_size_multiplier\(\)/u)
+		expect(SIMON_BOARD_CONTENT_SOURCE).not.toMatch(/fonts\.get_font\s*\(/u)
+		expect(SIMON_BOARD_CONTENT_SOURCE).not.toMatch(/fonts\.get_font_size_multiplier\s*\(/u)
 	})
 })

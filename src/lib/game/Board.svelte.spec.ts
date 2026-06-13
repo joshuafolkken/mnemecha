@@ -4,7 +4,12 @@ import SimonBoard from './Board.svelte'
 import type { SimonBoardData } from './types'
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))
-vi.mock('@threlte/extras', () => ({ Text: function Text() {} }))
+vi.mock('@threlte/extras', () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'Text'
+	Text: function Text() {
+		/* no-op */
+	},
+}))
 
 function make_simon_data(overrides: Partial<SimonBoardData> = {}): SimonBoardData {
 	return {
@@ -29,6 +34,7 @@ describe('SimonBoard', () => {
 		const { container } = render(SimonBoard, {
 			props: { simon_data: make_simon_data(), ...BOARD_TEXT_PROPS },
 		})
+
 		expect(container).toBeTruthy()
 	})
 
@@ -36,6 +42,7 @@ describe('SimonBoard', () => {
 		const { container } = render(SimonBoard, {
 			props: { simon_data: make_simon_data({ active_color: 'green' }), ...BOARD_TEXT_PROPS },
 		})
+
 		expect(container).toBeTruthy()
 	})
 
@@ -43,6 +50,7 @@ describe('SimonBoard', () => {
 		const { container } = render(SimonBoard, {
 			props: { simon_data: make_simon_data({ phase: 'gameover' }), ...BOARD_TEXT_PROPS },
 		})
+
 		expect(container).toBeTruthy()
 	})
 
@@ -50,6 +58,7 @@ describe('SimonBoard', () => {
 		const { container } = render(SimonBoard, {
 			props: { simon_data: make_simon_data({ phase: 'showing', round: 3 }), ...BOARD_TEXT_PROPS },
 		})
+
 		expect(container).toBeTruthy()
 	})
 
@@ -60,6 +69,7 @@ describe('SimonBoard', () => {
 				...BOARD_TEXT_PROPS,
 			},
 		})
+
 		expect(container).toBeTruthy()
 	})
 })
