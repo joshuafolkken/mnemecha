@@ -6,6 +6,10 @@
 	import SimonBoardContent from './BoardContent.svelte'
 	import type { ButtonColor, SimonBoardData } from './types'
 
+	interface PointerDownEvent {
+		nativeEvent: { button: number }
+	}
+
 	interface Props {
 		simon_data: SimonBoardData
 		is_alt: boolean
@@ -13,7 +17,7 @@
 		text_start: string
 	}
 
-	let { simon_data, is_alt, text_gameover, text_start }: Props = $props()
+	const { simon_data, is_alt, text_gameover, text_start }: Props = $props()
 
 	function is_color_lit(color: ButtonColor): boolean {
 		return (
@@ -23,7 +27,7 @@
 		)
 	}
 
-	let center_text = $derived(
+	const center_text = $derived(
 		board_center_label.get_center_text({
 			phase: simon_data.phase,
 			round: simon_data.round,
@@ -31,10 +35,10 @@
 			text_start,
 		}),
 	)
-	let center_base_font_size = $derived(
+	const center_base_font_size = $derived(
 		board_center_label.get_center_base_font_size(simon_data.phase, simon_data.round),
 	)
-	let center_line_height = $derived(board_center_label.get_center_line_height(simon_data.phase))
+	const center_line_height = $derived(board_center_label.get_center_line_height(simon_data.phase))
 </script>
 
 <T.Group position={[0, BOARD_Y, BOARD_Z]}>
@@ -45,8 +49,14 @@
 		base_font_size={center_base_font_size}
 		line_height={center_line_height}
 		{is_color_lit}
-		on_button_pointer_down={(e, color) => simon_board_input.on_button_pointer_down(e, color)}
-		on_button_release={() => simon_board_input.on_button_release()}
-		on_center_click={() => simon_board_input.on_center_click()}
+		on_button_pointer_down={(e: PointerDownEvent, color: ButtonColor) => {
+			simon_board_input.on_button_pointer_down(e, color)
+		}}
+		on_button_release={() => {
+			simon_board_input.on_button_release()
+		}}
+		on_center_click={() => {
+			simon_board_input.on_center_click()
+		}}
 	/>
 </T.Group>

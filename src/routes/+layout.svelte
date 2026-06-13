@@ -8,6 +8,11 @@
 		switch_audio,
 	} from '@joshuafolkken/game-kit'
 	import { messages } from '$lib/messages'
+	import type { Snippet } from 'svelte'
+
+	interface Props {
+		children: Snippet
+	}
 
 	const CLICK_SOUND_URL = '/sounds/click.opus'
 	const LOADING_STATUS_ID = 'loading-status'
@@ -25,12 +30,12 @@
 	loading.set_step('initializing')
 
 	$effect(() => {
-		const el = document.getElementById(LOADING_STATUS_ID)
+		const el = document.querySelector(`#${LOADING_STATUS_ID}`)
 		if (el) el.textContent = loading.status_text
 	})
 
 	$effect(() => {
-		const overlay = document.getElementById(OVERLAY_ELEMENT_ID)
+		const overlay = document.querySelector(`#${OVERLAY_ELEMENT_ID}`)
 		if (overlay) overlay.classList.toggle(OVERLAY_HIDDEN_CLASS, !loading.is_visible)
 	})
 
@@ -41,7 +46,7 @@
 		if (bar) bar.value = loading.progress_value
 	})
 
-	let { children } = $props()
+	const { children }: Props = $props()
 </script>
 
 <svelte:head>

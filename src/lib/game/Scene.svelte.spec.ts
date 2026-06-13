@@ -1,20 +1,33 @@
 import { credits_scroll } from '@joshuafolkken/game-kit'
-import { score } from '$lib/game/score.svelte'
+import { score } from '$lib/game/Score.svelte'
 import { messages } from '$lib/messages'
 import { describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-svelte'
 import SimonScene from './Scene.svelte'
 
 vi.mock('@joshuafolkken/game-kit', () => ({
-	SceneObjects: function SceneObjects() {},
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'SceneObjects'
+	SceneObjects: function SceneObjects() {
+		/* no-op */
+	},
 	game_state: { is_alt: false },
 	credits_scroll: {
 		make_credits_scroll_bounds: vi.fn(() => ({ start_z: 10, end_z: -10 })),
 	},
 	HALF_D: 5,
 }))
-vi.mock('$lib/game/Board.svelte', () => ({ default: function SimonBoard() {} }))
-vi.mock('$lib/game/HardScene.svelte', () => ({ default: function HardSimonScene() {} }))
+vi.mock('$lib/game/Board.svelte', () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'SimonBoard'
+	default: function SimonBoard() {
+		/* no-op */
+	},
+}))
+vi.mock('$lib/game/HardScene.svelte', () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'HardSimonScene'
+	default: function HardSimonScene() {
+		/* no-op */
+	},
+}))
 vi.mock('$lib/game/board-config', () => ({
 	SCORE_DISPLAY_Z: -4.65,
 }))
@@ -29,7 +42,7 @@ vi.mock('$lib/messages', () => ({
 		simon_start: 'START',
 	},
 }))
-vi.mock('$lib/game/game.svelte', () => ({
+vi.mock('$lib/game/Game.svelte', () => ({
 	simon: {
 		active_color: null,
 		pressed_color: null,
@@ -39,7 +52,7 @@ vi.mock('$lib/game/game.svelte', () => ({
 		flash_intensity: 1,
 	},
 }))
-vi.mock('$lib/game/score.svelte', () => ({
+vi.mock('$lib/game/Score.svelte', () => ({
 	score: {
 		high_score: 42,
 		current_score: 7,
@@ -49,7 +62,7 @@ vi.mock('$lib/game/score.svelte', () => ({
 		format_score: String,
 	},
 }))
-vi.mock('$lib/game/hard.svelte', () => ({
+vi.mock('$lib/game/Hard.svelte', () => ({
 	hard_simon: {
 		active_item: null,
 		pressed_item: null,
@@ -75,6 +88,7 @@ vi.mock('$lib/game/credits', () => ({
 describe('SimonScene', () => {
 	it('renders without error', () => {
 		const { container } = render(SimonScene)
+
 		expect(container).toBeTruthy()
 	})
 

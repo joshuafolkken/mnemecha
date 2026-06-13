@@ -1,4 +1,4 @@
-export const base_messages = {
+const base_messages = {
 	cyber_switch_label: 'CYBER',
 	click_to_start: 'CLICK TO START',
 	tap_to_start: 'TAP TO START',
@@ -14,11 +14,13 @@ export const base_messages = {
 	pause_button: 'Pause',
 } as const
 
-export const simon_messages = {
+const simon_messages = {
 	game_title: 'MNEMECHA',
 	simon_start: 'START',
 	simon_gameover: 'GAME OVER',
 	game_application_label: 'Mnemecha',
 } as const
 
-export const messages = { ...base_messages, ...simon_messages } as const
+const messages = { ...base_messages, ...simon_messages } as const
+
+export { base_messages, simon_messages, messages }

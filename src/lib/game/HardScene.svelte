@@ -23,7 +23,7 @@
 		label_current: string
 	}
 
-	let {
+	const {
 		simon_data,
 		score_data,
 		is_alt,
@@ -34,10 +34,11 @@
 		label_current,
 	}: Props = $props()
 
+	const RIGHT_BOARD_INDEX = 2
 	const BOARD_POSITIONS = [
 		{ index: 0 as HardBoardIndex, x: HARD_BOARD_X_LEFT },
 		{ index: 1 as HardBoardIndex, x: HARD_BOARD_X_CENTER },
-		{ index: 2 as HardBoardIndex, x: HARD_BOARD_X_RIGHT },
+		{ index: RIGHT_BOARD_INDEX as HardBoardIndex, x: HARD_BOARD_X_RIGHT },
 	] as const
 </script>
 

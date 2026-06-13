@@ -1,24 +1,26 @@
 allowBuilds:
-  '@tailwindcss/oxide': true
+  '@joshuafolkken/game-kit': true
+  '@joshuafolkken/kit': true
   esbuild: true
   lefthook: true
-  sharp: true
   unrs-resolver: true
+  sharp: true
   workerd: true
-  '@joshuafolkken/kit': false # project postinstall handles lefthook install
-  '@joshuafolkken/game-kit': true
 
 # Security fixes often require same-day vite releases; minimum-release-age in .npmrc would block them.
-# `@types/node` and `tsx` are also excluded so routine Dependabot-style bumps are not
-# delayed by the minimum-release-age window.
+# @joshuafolkken/* packages are first-party — the supply-chain age policy is overkill for self-published utility packages.
 minimumReleaseAgeExclude:
+  - vite
   - '@joshuafolkken/kit'
   - '@joshuafolkken/game-kit'
-  - vite
-  - '@types/node'
-  - tsx
-  - prettier-plugin-svelte@4.0.1
 
 overrides:
-  svelte: ^5.55.7
-  devalue: ^5.8.1
+  cookie: ^0.7.0
+  serialize-javascript: '>=7.0.5'
+  ws: '>=8.20.1'
+
+# pnpm >=11.5 re-verifies every lockfile entry against the registry at install time.
+# On clean CI without a usable token for private @joshuafolkken/* GitHub Packages this
+# fails (ERR_PNPM_TARBALL_URL_MISMATCH). trustLockfile skips that install-time re-check
+# for the already-committed lockfile; minimum-release-age still applies at resolution time.
+trustLockfile: true

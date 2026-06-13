@@ -4,7 +4,12 @@ import HardSimonBoard from './HardBoard.svelte'
 import type { HardBoardIndex, HardSimonBoardData } from './types'
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))
-vi.mock('@threlte/extras', () => ({ Text: function Text() {} }))
+vi.mock('@threlte/extras', () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'Text'
+	Text: function Text() {
+		/* no-op */
+	},
+}))
 
 const CENTER_INDEX: HardBoardIndex = 1
 const LEFT_INDEX: HardBoardIndex = 0
@@ -28,87 +33,53 @@ const BOARD_TEXT_PROPS = {
 	text_start: 'START',
 }
 
+function expect_renders(
+	board_index: HardBoardIndex,
+	overrides: Partial<HardSimonBoardData> = {},
+): void {
+	const { container } = render(HardSimonBoard, {
+		props: {
+			board_index,
+			simon_data: make_simon_data(overrides),
+			...BOARD_TEXT_PROPS,
+		},
+	})
+
+	expect(container).toBeTruthy()
+}
+
 describe('HardSimonBoard', () => {
 	it('renders the center board without error in idle state', () => {
-		const { container } = render(HardSimonBoard, {
-			props: {
-				board_index: CENTER_INDEX,
-				simon_data: make_simon_data(),
-				...BOARD_TEXT_PROPS,
-			},
-		})
-		expect(container).toBeTruthy()
+		expect_renders(CENTER_INDEX)
 	})
 
 	it('renders the left board without error in idle state', () => {
-		const { container } = render(HardSimonBoard, {
-			props: {
-				board_index: LEFT_INDEX,
-				simon_data: make_simon_data(),
-				...BOARD_TEXT_PROPS,
-			},
-		})
-		expect(container).toBeTruthy()
+		expect_renders(LEFT_INDEX)
 	})
 
 	it('renders the right board without error in idle state', () => {
-		const { container } = render(HardSimonBoard, {
-			props: {
-				board_index: RIGHT_INDEX,
-				simon_data: make_simon_data(),
-				...BOARD_TEXT_PROPS,
-			},
-		})
-		expect(container).toBeTruthy()
+		expect_renders(RIGHT_INDEX)
 	})
 
 	it('renders when a (board_index, color) tuple is active', () => {
-		const { container } = render(HardSimonBoard, {
-			props: {
-				board_index: CENTER_INDEX,
-				simon_data: make_simon_data({
-					active_item: { board_index: CENTER_INDEX, color: 'green' },
-				}),
-				...BOARD_TEXT_PROPS,
-			},
+		expect_renders(CENTER_INDEX, {
+			active_item: { board_index: CENTER_INDEX, color: 'green' },
 		})
-		expect(container).toBeTruthy()
 	})
 
 	it('renders without error in gameover phase', () => {
-		const { container } = render(HardSimonBoard, {
-			props: {
-				board_index: CENTER_INDEX,
-				simon_data: make_simon_data({ phase: 'gameover' }),
-				...BOARD_TEXT_PROPS,
-			},
-		})
-		expect(container).toBeTruthy()
+		expect_renders(CENTER_INDEX, { phase: 'gameover' })
 	})
 
 	it('renders without error during round_complete with flash colors', () => {
-		const { container } = render(HardSimonBoard, {
-			props: {
-				board_index: LEFT_INDEX,
-				simon_data: make_simon_data({
-					phase: 'round_complete',
-					flash_colors: ['green', 'red', 'yellow', 'blue'],
-					flash_intensity: 2.5,
-				}),
-				...BOARD_TEXT_PROPS,
-			},
+		expect_renders(LEFT_INDEX, {
+			phase: 'round_complete',
+			flash_colors: ['green', 'red', 'yellow', 'blue'],
+			flash_intensity: 2.5,
 		})
-		expect(container).toBeTruthy()
 	})
 
 	it('renders without error when round is in progress', () => {
-		const { container } = render(HardSimonBoard, {
-			props: {
-				board_index: CENTER_INDEX,
-				simon_data: make_simon_data({ phase: 'showing', round: 5 }),
-				...BOARD_TEXT_PROPS,
-			},
-		})
-		expect(container).toBeTruthy()
+		expect_renders(CENTER_INDEX, { phase: 'showing', round: 5 })
 	})
 })

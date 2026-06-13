@@ -32,6 +32,7 @@ describe('messages', () => {
 			'game_started_announcement',
 			'pause_button',
 		]
+
 		for (const key of original_keys) {
 			expect(messages).toHaveProperty(key)
 		}

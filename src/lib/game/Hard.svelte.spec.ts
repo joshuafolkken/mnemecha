@@ -1,38 +1,43 @@
 import { simon_audio } from '$lib/game/audio'
-import { ERROR_BEEP_MS, RESTART_DELAY_MS } from '$lib/game/engine.svelte'
-import { create_hard_simon, HARD_BUTTON_POOL, hard_score, hard_simon } from '$lib/game/hard.svelte'
-import { create_score } from '$lib/game/score.svelte'
+import { ERROR_BEEP_MS, RESTART_DELAY_MS } from '$lib/game/Engine.svelte'
+import { create_hard_simon, HARD_BUTTON_POOL, hard_score, hard_simon } from '$lib/game/Hard.svelte'
+import { create_score } from '$lib/game/Score.svelte'
 import type { ButtonColor, HardSequenceItem } from '$lib/game/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const ALL_COLORS: ButtonColor[] = ['green', 'red', 'yellow', 'blue']
+const ALL_COLORS: Array<ButtonColor> = ['green', 'red', 'yellow', 'blue']
 const EXPECTED_POOL_SIZE = 12
 const BOARD_COUNT = 3
 const REPEAT_LOOKUP_TRIES = 200
 
-function seq_at(i: number): HardSequenceItem {
-	const item = hard_simon.sequence[i]
-	if (!item) throw new Error(`hard sequence index ${String(i)} out of range`)
+function seq_at(index: number): HardSequenceItem {
+	const item = hard_simon.sequence[index]
+	if (!item) throw new Error(`hard sequence index ${String(index)} out of range`)
+
 	return item
 }
 
 function wrong_item(item: HardSequenceItem): HardSequenceItem {
-	const other_color = ALL_COLORS.find((c) => c !== item.color) ?? 'red'
+	const other_color = ALL_COLORS.find((color) => color !== item.color) ?? 'red'
+
 	return { board_index: item.board_index, color: other_color }
 }
 
-describe('hard simon FSM', () => {
-	beforeEach(() => {
-		vi.useFakeTimers()
-		hard_simon.reset()
-	})
+function setup_hard_simon(): void {
+	vi.useFakeTimers()
+	hard_simon.reset()
+}
 
-	afterEach(() => {
-		vi.clearAllTimers()
-		vi.useRealTimers()
-		vi.restoreAllMocks()
-		hard_simon.reset()
-	})
+function teardown_hard_simon(): void {
+	vi.clearAllTimers()
+	vi.useRealTimers()
+	vi.restoreAllMocks()
+	hard_simon.reset()
+}
+
+describe('hard simon FSM', () => {
+	beforeEach(setup_hard_simon)
+	afterEach(teardown_hard_simon)
 
 	it('starts in idle phase with empty sequence and round 0', () => {
 		expect(hard_simon.phase).toBe('idle')
@@ -66,6 +71,20 @@ describe('hard simon FSM', () => {
 		expect(hard_simon.sequence).toHaveLength(2)
 	})
 
+	it('reset() returns to idle state', async () => {
+		hard_simon.start()
+		await vi.runAllTimersAsync()
+		hard_simon.reset()
+		expect(hard_simon.phase).toBe('idle')
+		expect(hard_simon.sequence).toHaveLength(0)
+		expect(hard_simon.round).toBe(0)
+	})
+})
+
+describe('hard simon FSM errors and tones', () => {
+	beforeEach(setup_hard_simon)
+	afterEach(teardown_hard_simon)
+
 	it('wrong-color press + release triggers gameover', async () => {
 		hard_simon.start()
 		await vi.runAllTimersAsync()
@@ -79,6 +98,7 @@ describe('hard simon FSM', () => {
 		await vi.runAllTimersAsync()
 		const target = seq_at(0)
 		const wrong_board = ((target.board_index + 1) % BOARD_COUNT) as HardSequenceItem['board_index']
+
 		hard_simon.press({ board_index: wrong_board, color: target.color })
 		hard_simon.release()
 		expect(hard_simon.phase).toBe('gameover')
@@ -86,6 +106,7 @@ describe('hard simon FSM', () => {
 
 	it('wrong press plays error tone', async () => {
 		const spy = vi.spyOn(simon_audio, 'play_error_tone')
+
 		hard_simon.start()
 		await vi.runAllTimersAsync()
 		hard_simon.press(wrong_item(seq_at(0)))
@@ -95,20 +116,13 @@ describe('hard simon FSM', () => {
 
 	it('press() starts tone for pressed color', async () => {
 		const spy = vi.spyOn(simon_audio, 'start_tone')
+
 		hard_simon.start()
 		await vi.runAllTimersAsync()
 		const target = seq_at(0)
+
 		hard_simon.press(target)
 		expect(spy).toHaveBeenCalledWith(target.color, false)
-	})
-
-	it('reset() returns to idle state', async () => {
-		hard_simon.start()
-		await vi.runAllTimersAsync()
-		hard_simon.reset()
-		expect(hard_simon.phase).toBe('idle')
-		expect(hard_simon.sequence).toHaveLength(0)
-		expect(hard_simon.round).toBe(0)
 	})
 })
 
@@ -121,8 +135,11 @@ describe('hard simon pool', () => {
 		const seen = new Set<string>()
 		for (const item of HARD_BUTTON_POOL) seen.add(`${String(item.board_index)}:${item.color}`)
 		expect(seen.size).toBe(EXPECTED_POOL_SIZE)
-		for (let b = 0; b < BOARD_COUNT; b++) {
-			for (const c of ALL_COLORS) expect(seen.has(`${String(b)}:${c}`)).toBe(true)
+
+		for (let board_index = 0; board_index < BOARD_COUNT; board_index++) {
+			for (const color of ALL_COLORS) {
+				expect(seen.has(`${String(board_index)}:${color}`)).toBe(true)
+			}
 		}
 	})
 
@@ -131,12 +148,14 @@ describe('hard simon pool', () => {
 		const score_a = create_score('hard_pool_test')
 		const sim = create_hard_simon(score_a)
 		const seen = new Set<string>()
-		for (let i = 0; i < REPEAT_LOOKUP_TRIES; i++) {
+
+		for (let index = 0; index < REPEAT_LOOKUP_TRIES; index++) {
 			sim.reset()
 			sim.start()
-			const item = sim.sequence[0]
+			const [item] = sim.sequence
 			if (item) seen.add(`${String(item.board_index)}:${item.color}`)
 		}
+
 		sim.reset()
 		vi.useRealTimers()
 		expect(seen.size).toBe(EXPECTED_POOL_SIZE)
@@ -144,20 +163,12 @@ describe('hard simon pool', () => {
 })
 
 describe('hard simon score isolation', () => {
-	beforeEach(() => {
-		vi.useFakeTimers()
-		hard_simon.reset()
-	})
-
-	afterEach(() => {
-		vi.clearAllTimers()
-		vi.useRealTimers()
-		vi.restoreAllMocks()
-		hard_simon.reset()
-	})
+	beforeEach(setup_hard_simon)
+	afterEach(teardown_hard_simon)
 
 	it('hard_score is a distinct instance from any other score', () => {
 		const other = create_score('different_prefix')
+
 		expect(hard_score).not.toBe(other)
 	})
 
@@ -195,11 +206,12 @@ describe('create_hard_simon isolation', () => {
 	it('two instances do not share phase state', () => {
 		const score_a = create_score('hard_iso_a')
 		const score_b = create_score('hard_iso_b')
-		const a = create_hard_simon(score_a)
-		const b = create_hard_simon(score_b)
-		a.start()
-		expect(a.phase).toBe('showing')
-		expect(b.phase).toBe('idle')
-		a.reset()
+		const simon_a = create_hard_simon(score_a)
+		const simon_b = create_hard_simon(score_b)
+
+		simon_a.start()
+		expect(simon_a.phase).toBe('showing')
+		expect(simon_b.phase).toBe('idle')
+		simon_a.reset()
 	})
 })

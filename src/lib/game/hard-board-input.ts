@@ -2,16 +2,22 @@ import { pointer_button, session } from '@joshuafolkken/game-kit'
 import { HARD_BOARD_CENTER_INDEX } from './hard-board-config'
 import type { ButtonColor, HardBoardIndex, HardSequenceItem } from './types'
 
-type HardBoardCallbacks = {
+interface HardBoardCallbacks {
 	on_press: (item: HardSequenceItem) => void
 	on_release: () => void
 	on_start: () => void
 }
 
 let board_callbacks: HardBoardCallbacks = {
-	on_press: () => {},
-	on_release: () => {},
-	on_start: () => {},
+	on_press: () => {
+		/* no-op */
+	},
+	on_release: () => {
+		/* no-op */
+	},
+	on_start: () => {
+		/* no-op */
+	},
 }
 
 function configure(cbs: HardBoardCallbacks): void {

@@ -5,9 +5,24 @@ import HardSimonScene from './HardScene.svelte'
 import type { HardSimonBoardData } from './types'
 
 vi.mock('@threlte/core', () => ({ T: {}, useTask: vi.fn() }))
-vi.mock('@threlte/extras', () => ({ Text: function Text() {} }))
-vi.mock('./HardBoard.svelte', () => ({ default: function HardSimonBoard() {} }))
-vi.mock('@joshuafolkken/game-kit', () => ({ ScoreDisplay: function ScoreDisplay() {} }))
+vi.mock('@threlte/extras', () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'Text'
+	Text: function Text() {
+		/* no-op */
+	},
+}))
+vi.mock('./HardBoard.svelte', () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'HardSimonBoard'
+	default: function HardSimonBoard() {
+		/* no-op */
+	},
+}))
+vi.mock('@joshuafolkken/game-kit', () => ({
+	// eslint-disable-next-line @typescript-eslint/naming-convention -- mocks external component export 'ScoreDisplay'
+	ScoreDisplay: function ScoreDisplay() {
+		/* no-op */
+	},
+}))
 vi.mock('./hard-board-config', () => ({
 	HARD_BOARD_X_LEFT: -1.95,
 	HARD_BOARD_X_CENTER: 0,
@@ -57,11 +72,12 @@ describe('HardSimonScene', () => {
 				...SCENE_PROPS,
 			},
 		})
+
 		expect(container).toBeTruthy()
 	})
 
 	it('renders without error when score is non-zero', () => {
-		const score_data = { ...make_score_data(), current_score: 1_000, high_score: 5_000 }
+		const score_data = { ...make_score_data(), current_score: 1000, high_score: 5000 }
 		const { container } = render(HardSimonScene, {
 			props: {
 				simon_data: make_simon_data(),
@@ -69,6 +85,7 @@ describe('HardSimonScene', () => {
 				...SCENE_PROPS,
 			},
 		})
+
 		expect(container).toBeTruthy()
 	})
 })
