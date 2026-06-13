@@ -1,6 +1,6 @@
 {
 	"name": "mnemecha",
-	"version": "0.117.0",
+	"version": "0.118.0",
 	"type": "module",
 	"private": true,
 	"scripts": {

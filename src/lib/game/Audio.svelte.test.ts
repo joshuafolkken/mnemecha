@@ -22,7 +22,7 @@ interface MockOscNode {
 }
 
 interface MockContext {
-	ctx: Record<string, unknown>
+	ctx: AudioContext
 	gain_node: MockGainNode
 	osc_node: MockOscNode
 }
@@ -47,7 +47,7 @@ function make_mock_ctx(): MockContext {
 		createGain: vi.fn().mockReturnValue(gain_node),
 		destination: {},
 		currentTime: 0,
-	}
+	} as unknown as AudioContext
 
 	return { ctx, gain_node, osc_node }
 }
@@ -92,7 +92,7 @@ function setup_audio_environment(): MockContext {
 	vi.spyOn(game_audio, 'init_audio').mockImplementation(() => {
 		/* no-op */
 	})
-	vi.spyOn(game_audio, 'get_audio_context').mockReturnValue(mock.ctx as unknown as AudioContext)
+	vi.spyOn(game_audio, 'get_audio_context').mockReturnValue(mock.ctx)
 
 	return mock
 }
