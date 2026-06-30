@@ -1,55 +1,10 @@
 version: '0.2'
 import:
   - '@joshuafolkken/game-kit/cspell/game'
-ignorePaths:
-words:
-  - Mnemecha
-  - MNEMECHA
-  - mnemecha
-  - armeria
-  - Baer
-  - coeff
-  - COEFF
-  - BAER
-  - Boisclair
-  - BOISCLAIR
-  - codeman
-  - CODEMAN
-  - Daisuke
-  - docstrings
-  - gameover
-  - languagetool
-  - McInerney
-  - MCINERNEY
-  - metalness
-  - METALNESS
-  - multicriteria
-  - mrdoob
-  - MRDOOB
-  - nipplejs
-  - Pixabay
-  - PIXABAY
-  - oncreate
-  - Orbitron
-  - raycaster
-  - Raycaster
-  - shellcheck
-  - SHIZUYA
-  - Stylesheet
-  - spacebar
-  - sveltekit
-  - tailwindlabs
-  - TAILWINDLABS
-  - threlte
-  - trycloudflare
-  - SAMEORIGIN
-  - unstub
-  - WASD
-  - yoannmoinet
-  - YOANNMOINET
-  - esac
-  - GHSA
-  - narratively
-  - sandboxed
-  - sveltejs
-  - Vulns
+dictionaryDefinitions:
+  - name: project-words
+    path: ./project-words.txt
+    addWords: true
+dictionaries:
+  - project-words
+ignorePaths: []
