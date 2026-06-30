@@ -8,20 +8,22 @@ interface HardBoardCallbacks {
 	on_start: () => void
 }
 
-let board_callbacks: HardBoardCallbacks = {
-	on_press: () => {
-		/* no-op */
-	},
-	on_release: () => {
-		/* no-op */
-	},
-	on_start: () => {
-		/* no-op */
+const board_state: { callbacks: HardBoardCallbacks } = {
+	callbacks: {
+		on_press: () => {
+			/* no-op */
+		},
+		on_release: () => {
+			/* no-op */
+		},
+		on_start: () => {
+			/* no-op */
+		},
 	},
 }
 
 function configure(cbs: HardBoardCallbacks): void {
-	board_callbacks = cbs
+	board_state.callbacks = cbs
 }
 
 function on_button_pointer_down(
@@ -31,18 +33,18 @@ function on_button_pointer_down(
 ): void {
 	if (!session.is_session_started) return
 	if (!pointer_button.is_left_click(e)) return
-	board_callbacks.on_press({ board_index, color })
+	board_state.callbacks.on_press({ board_index, color })
 }
 
 function on_button_release(): void {
 	if (!session.is_session_started) return
-	board_callbacks.on_release()
+	board_state.callbacks.on_release()
 }
 
 function on_center_click(board_index: HardBoardIndex): void {
 	if (!session.is_session_started) return
 	if (board_index !== HARD_BOARD_CENTER_INDEX) return
-	board_callbacks.on_start()
+	board_state.callbacks.on_start()
 }
 
 export const hard_simon_board_input = {

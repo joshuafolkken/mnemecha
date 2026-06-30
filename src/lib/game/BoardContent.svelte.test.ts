@@ -18,7 +18,7 @@ vi.mock('@threlte/extras', () => ({
 	},
 }))
 
-function lit_none(): boolean {
+function is_none_lit(): boolean {
 	return false
 }
 
@@ -27,7 +27,7 @@ const BASE_PROPS = {
 	flash_intensity: 1,
 	center_text: 'START',
 	base_font_size: FONT_SIZE,
-	is_color_lit: lit_none,
+	is_color_lit: is_none_lit,
 	on_button_pointer_down: vi.fn(),
 	on_button_release: vi.fn(),
 	on_center_click: vi.fn(),

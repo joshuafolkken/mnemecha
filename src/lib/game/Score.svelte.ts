@@ -30,7 +30,7 @@ function build_keys(prefix: string): StorageKeys {
 	}
 }
 
-function any_legacy_key_present(legacy_prefix: string): boolean {
+function has_legacy_key(legacy_prefix: string): boolean {
 	return SCORE_KEY_SUFFIXES.some(
 		(suffix) => localStorage.getItem(`${legacy_prefix}${suffix}`) !== null,
 	)
@@ -58,7 +58,7 @@ function has_complete_keyset(keys: StorageKeys): boolean {
 }
 
 function run_migration(legacy_prefix: string, new_prefix: string): void {
-	if (!any_legacy_key_present(legacy_prefix)) return
+	if (!has_legacy_key(legacy_prefix)) return
 	const new_keys = build_keys(new_prefix)
 	if (!has_complete_keyset(new_keys)) copy_legacy_to_new(legacy_prefix, new_prefix)
 	if (has_complete_keyset(new_keys)) remove_legacy_keys(legacy_prefix)
