@@ -112,7 +112,7 @@ function describe_calculate_time_coefficient(): void {
 		})
 
 		it('returns MIN_TIME_COEFF (0.1) when avg seconds is very large', () => {
-			expect(score.calculate_time_coefficient(ELAPSED_100S, SEQ_1)).toBeCloseTo(0.1)
+			expect(score.calculate_time_coefficient(ELAPSED_100S, SEQ_1)).toBeCloseTo(0.1, 5)
 		})
 
 		it('normalizes by sequence length so longer rounds are not unfairly penalized', () => {
