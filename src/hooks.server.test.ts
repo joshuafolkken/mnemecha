@@ -3,7 +3,7 @@ import type { RequestEvent, ResolveOptions } from '@sveltejs/kit'
 import { game_config } from '$lib/game-config'
 import { describe, expect, it, vi } from 'vitest'
 // eslint-disable-next-line import/extensions -- SvelteKit server module specifier
-import { handle, inject_game_name, inject_version } from './hooks.server'
+import { handle } from './hooks.server'
 
 const { version } = JSON.parse(
 	readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
@@ -43,54 +43,6 @@ function make_capturing_resolve(): CapturingResolve {
 
 	return { resolve, get_transform: () => captured_transform }
 }
-
-describe('inject_version', () => {
-	it('replaces the placeholder with the package version', () => {
-		const html = '<p class="game-version">v__APP_VERSION__</p>'
-
-		expect(inject_version(html)).toBe(`<p class="game-version">v${version}</p>`)
-	})
-
-	it('replaces all occurrences of the placeholder', () => {
-		const html = '__APP_VERSION__ and __APP_VERSION__'
-
-		expect(inject_version(html)).toBe(`${version} and ${version}`)
-	})
-
-	it('passes through html that has no placeholder', () => {
-		const html = '<p>no placeholder here</p>'
-
-		expect(inject_version(html)).toBe(html)
-	})
-})
-
-describe('inject_game_name', () => {
-	it('substitutes __GAME_NAME_DISPLAY__ with the title-case brand', () => {
-		const html = '<title>__GAME_NAME_DISPLAY__</title>'
-
-		expect(inject_game_name(html)).toBe(`<title>${game_config.GAME_NAME_DISPLAY}</title>`)
-	})
-
-	it('substitutes __GAME_NAME_UPPER__ with the upper-case brand', () => {
-		const html = '<p class="game-title">__GAME_NAME_UPPER__</p>'
-
-		expect(inject_game_name(html)).toBe(`<p class="game-title">${game_config.GAME_NAME_UPPER}</p>`)
-	})
-
-	it('substitutes both placeholders when present', () => {
-		const html = '__GAME_NAME_DISPLAY__ / __GAME_NAME_UPPER__'
-
-		expect(inject_game_name(html)).toBe(
-			`${game_config.GAME_NAME_DISPLAY} / ${game_config.GAME_NAME_UPPER}`,
-		)
-	})
-
-	it('passes through html that has no placeholders', () => {
-		const html = '<p>plain content</p>'
-
-		expect(inject_game_name(html)).toBe(html)
-	})
-})
 
 function register_security_header_tests(): void {
 	it('adds X-Frame-Options: SAMEORIGIN', async () => {

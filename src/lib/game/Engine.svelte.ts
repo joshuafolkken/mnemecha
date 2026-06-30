@@ -61,8 +61,8 @@ function pick_random<T>(pool: ReadonlyArray<T>, fallback: T): T {
 	return pool[index] ?? fallback
 }
 
-function add_to_sequence<T>(state: EngineState<T>, cfg: EngineConfig<T>): void {
-	state.sequence.push(pick_random(cfg.pool, cfg.fallback))
+function add_to_sequence<T>(state: EngineState<T>, config: EngineConfig<T>): void {
+	state.sequence.push(pick_random(config.pool, config.fallback))
 }
 
 function cancel_restart_timer(t: EngineTimers): void {
@@ -73,7 +73,7 @@ function cancel_restart_timer(t: EngineTimers): void {
 async function run_show<T>(
 	state: EngineState<T>,
 	t: EngineTimers,
-	cfg: EngineConfig<T>,
+	config: EngineConfig<T>,
 	gen: number,
 ): Promise<void> {
 	const step_ms = get_step_ms(state.sequence.length)
@@ -83,7 +83,7 @@ async function run_show<T>(
 	for (const item of state.sequence) {
 		if (gen !== t.show_gen) return
 		state.active_item = item
-		cfg.play_show_tone(item, on_ms)
+		config.play_show_tone(item, on_ms)
 		await delay(on_ms)
 		if (gen !== t.show_gen) return
 		state.active_item = null
@@ -96,87 +96,91 @@ async function run_show<T>(
 	state.position = 0
 }
 
-function start_next_round<T>(state: EngineState<T>, t: EngineTimers, cfg: EngineConfig<T>): void {
+function start_next_round<T>(
+	state: EngineState<T>,
+	t: EngineTimers,
+	config: EngineConfig<T>,
+): void {
 	t.restart_timer = null
 	cancel_flash(state, t)
 	state.round += 1
-	add_to_sequence(state, cfg)
+	add_to_sequence(state, config)
 	t.show_gen += 1
-	void run_show(state, t, cfg, t.show_gen)
+	void run_show(state, t, config, t.show_gen)
 }
 
 function schedule_next_round<T>(
 	state: EngineState<T>,
 	t: EngineTimers,
-	cfg: EngineConfig<T>,
+	config: EngineConfig<T>,
 ): void {
 	cancel_restart_timer(t)
 	cancel_flash(state, t)
 	state.phase = 'showing'
-	void run_victory_flash(state, t, cfg.victory_flash_colors, t.flash_gen)
+	void run_victory_flash(state, t, config.victory_flash_colors, t.flash_gen)
 	t.restart_timer = setTimeout(() => {
-		start_next_round(state, t, cfg)
+		start_next_round(state, t, config)
 	}, RESTART_DELAY_MS)
 }
 
 function handle_correct_release<T>(
 	state: EngineState<T>,
 	t: EngineTimers,
-	cfg: EngineConfig<T>,
+	config: EngineConfig<T>,
 ): void {
 	state.position += 1
 	if (state.position < state.sequence.length) return
-	cfg.add_score(Date.now() - t.input_start_ms, state.sequence.length, state.round)
+	config.add_score(Date.now() - t.input_start_ms, state.sequence.length, state.round)
 	state.phase = 'round_complete'
-	schedule_next_round(state, t, cfg)
+	schedule_next_round(state, t, config)
 }
 
-function start_engine<T>(state: EngineState<T>, t: EngineTimers, cfg: EngineConfig<T>): void {
+function start_engine<T>(state: EngineState<T>, t: EngineTimers, config: EngineConfig<T>): void {
 	if (state.phase === 'showing' || state.phase === 'player_input') return
 	cancel_restart_timer(t)
-	cfg.stop_tone()
-	cfg.reset_score()
+	config.stop_tone()
+	config.reset_score()
 	state.phase = 'showing'
 	state.round = 1
 	state.sequence = []
-	add_to_sequence(state, cfg)
+	add_to_sequence(state, config)
 	t.show_gen += 1
-	void run_show(state, t, cfg, t.show_gen)
+	void run_show(state, t, config, t.show_gen)
 }
 
-function expected_item<T>(state: EngineState<T>, cfg: EngineConfig<T>): T {
-	return state.sequence[state.position] ?? cfg.fallback
+function expected_item<T>(state: EngineState<T>, config: EngineConfig<T>): T {
+	return state.sequence[state.position] ?? config.fallback
 }
 
-function release_engine<T>(state: EngineState<T>, t: EngineTimers, cfg: EngineConfig<T>): void {
+function release_engine<T>(state: EngineState<T>, t: EngineTimers, config: EngineConfig<T>): void {
 	if (state.phase !== 'player_input') return
 	const item = state.pressed_item
 	if (item === null) return
-	cfg.stop_tone()
+	config.stop_tone()
 	state.pressed_item = null
 
-	if (cfg.equals(item, expected_item(state, cfg))) {
-		handle_correct_release(state, t, cfg)
+	if (config.equals(item, expected_item(state, config))) {
+		handle_correct_release(state, t, config)
 	} else {
-		cfg.play_error_tone(ERROR_BEEP_MS)
+		config.play_error_tone(ERROR_BEEP_MS)
 		state.phase = 'gameover'
 	}
 }
 
-function press_engine<T>(state: EngineState<T>, cfg: EngineConfig<T>, item: T): void {
+function press_engine<T>(state: EngineState<T>, config: EngineConfig<T>, item: T): void {
 	if (state.phase !== 'player_input') return
 	if (state.pressed_item !== null) return
 	state.pressed_item = item
-	cfg.start_press_tone(item)
+	config.start_press_tone(item)
 }
 
-function reset_engine<T>(state: EngineState<T>, t: EngineTimers, cfg: EngineConfig<T>): void {
+function reset_engine<T>(state: EngineState<T>, t: EngineTimers, config: EngineConfig<T>): void {
 	t.show_gen += 1
-	cfg.stop_tone()
+	config.stop_tone()
 	state.pressed_item = null
 	cancel_restart_timer(t)
 	cancel_flash(state, t)
-	cfg.reset_score()
+	config.reset_score()
 	state.phase = 'idle'
 	state.sequence = []
 	state.position = 0
@@ -203,7 +207,7 @@ export interface EngineApi<T> {
 function make_engine_api<T>(
 	state: EngineState<T>,
 	t: EngineTimers,
-	cfg: EngineConfig<T>,
+	config: EngineConfig<T>,
 ): EngineApi<T> {
 	return {
 		get phase() {
@@ -231,21 +235,21 @@ function make_engine_api<T>(
 			return state.flash_intensity
 		},
 		start: (): void => {
-			start_engine(state, t, cfg)
+			start_engine(state, t, config)
 		},
 		press: (item: T): void => {
-			press_engine(state, cfg, item)
+			press_engine(state, config, item)
 		},
 		release: (): void => {
-			release_engine(state, t, cfg)
+			release_engine(state, t, config)
 		},
 		reset: (): void => {
-			reset_engine(state, t, cfg)
+			reset_engine(state, t, config)
 		},
 	}
 }
 
-function create_engine<T>(cfg: EngineConfig<T>): EngineApi<T> {
+function create_engine<T>(config: EngineConfig<T>): EngineApi<T> {
 	const state = $state<EngineState<T>>({
 		phase: 'idle',
 		sequence: [],
@@ -258,7 +262,7 @@ function create_engine<T>(cfg: EngineConfig<T>): EngineApi<T> {
 	})
 	const t: EngineTimers = { show_gen: 0, flash_gen: 0, restart_timer: null, input_start_ms: 0 }
 
-	return make_engine_api(state, t, cfg)
+	return make_engine_api(state, t, config)
 }
 
 export { create_engine }

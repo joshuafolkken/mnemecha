@@ -156,7 +156,7 @@ function register_credits_text_tests(): void {
 
 function register_line_count_tests(): void {
 	it('is a positive integer', () => {
-		expect(Number.isInteger(CREDITS_LINE_COUNT)).toBe(true)
+		expect(Number.isSafeInteger(CREDITS_LINE_COUNT)).toBe(true)
 		expect(CREDITS_LINE_COUNT).toBeGreaterThan(0)
 	})
 

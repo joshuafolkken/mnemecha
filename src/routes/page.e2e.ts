@@ -18,9 +18,9 @@ const CLICK_HINT_SELECTOR = '.click-hint'
 async function stub_touch_primary(page: Page, is_touch: boolean): Promise<void> {
 	await page.addInitScript(
 		([query, matches]) => {
-			const original = globalThis.matchMedia.bind(globalThis)
+			const original = matchMedia.bind(globalThis)
 
-			globalThis.matchMedia = function patched(input: string): MediaQueryList {
+			const patched_match_media = function patched(input: string): MediaQueryList {
 				if (input === query) {
 					const noop = (): void => {
 						/* no-op */
@@ -43,6 +43,12 @@ async function stub_touch_primary(page: Page, is_touch: boolean): Promise<void> 
 
 				return original(input)
 			}
+
+			Object.defineProperty(globalThis, 'matchMedia', {
+				configurable: true,
+				value: patched_match_media,
+				writable: true,
+			})
 		},
 		[TOUCH_PRIMARY_QUERY, is_touch] as const,
 	)
@@ -181,10 +187,12 @@ test('pseudo-fullscreen class is applied when native API is unavailable on touch
 	await page.evaluate((selector) => {
 		const scene = document.querySelector<HTMLElement>(selector)
 		if (!scene) return
-		Object.defineProperty(scene, 'requestFullscreen', { value: undefined, configurable: true })
-		Object.defineProperty(scene, 'webkitRequestFullscreen', {
-			value: undefined,
-			configurable: true,
+		Object.defineProperties(scene, {
+			requestFullscreen: { value: undefined, configurable: true },
+			webkitRequestFullscreen: {
+				value: undefined,
+				configurable: true,
+			},
 		})
 		scene.click()
 	}, GAME_SCENE_SELECTOR)
@@ -241,7 +249,9 @@ test('page has no critical or serious accessibility violations', async ({ page }
 test('game scene loads without shadow-related WebGL errors', async ({ page }) => {
 	const errors: Array<string> = []
 
-	page.on('pageerror', (error) => errors.push(error.message))
+	page.on('pageerror', (error) => {
+		errors.push(error.message)
+	})
 	await page.goto('/')
 	await expect(page.locator(LOADING_OVERLAY_SELECTOR)).toBeHidden({
 		timeout: LOADING_OVERLAY_TIMEOUT_MS,

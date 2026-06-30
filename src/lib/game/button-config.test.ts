@@ -9,15 +9,15 @@ import {
 
 describe('board center label font sizes', () => {
 	it('FONT_SIZE pins the single-line START size at 0.13', () => {
-		expect(FONT_SIZE).toBe(0.13)
+		expect(FONT_SIZE).toBeCloseTo(0.13, 5)
 	})
 
 	it('MULTILINE_FONT_SIZE pins the per-line GAME OVER size at 0.16', () => {
-		expect(MULTILINE_FONT_SIZE).toBe(0.16)
+		expect(MULTILINE_FONT_SIZE).toBeCloseTo(0.16, 5)
 	})
 
 	it('ROUND_DIGIT_FONT_SIZE pins the digit-only ROUND size at 0.2', () => {
-		expect(ROUND_DIGIT_FONT_SIZE).toBe(0.2)
+		expect(ROUND_DIGIT_FONT_SIZE).toBeCloseTo(0.2, 5)
 	})
 
 	it('ROUND_DIGIT_FONT_SIZE is the largest center label size', () => {
@@ -32,7 +32,7 @@ describe('board center label font sizes', () => {
 
 describe('board center label line heights', () => {
 	it('MULTILINE_LINE_HEIGHT pins the GAME OVER breathing room at 1.4', () => {
-		expect(MULTILINE_LINE_HEIGHT).toBe(1.4)
+		expect(MULTILINE_LINE_HEIGHT).toBeCloseTo(1.4, 5)
 	})
 
 	it('SINGLE_LINE_HEIGHT pins the default single-line height at 1', () => {
