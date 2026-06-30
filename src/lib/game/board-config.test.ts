@@ -9,7 +9,7 @@ import {
 
 describe('BOARD_LABEL_Z', () => {
 	it('floats text in front of the board backing (0.05)', () => {
-		expect(BOARD_LABEL_Z).toBe(0.05)
+		expect(BOARD_LABEL_Z).toBeCloseTo(0.05, 5)
 	})
 
 	it('is positive (in front of board face)', () => {
@@ -35,7 +35,7 @@ describe('SCORE_DISPLAY_Z_OFFSET', () => {
 	})
 
 	it('matches the game-kit 0.53 default that pulls the scoreboard forward (0.4)', () => {
-		expect(SCORE_DISPLAY_Z_OFFSET).toBe(0.4)
+		expect(SCORE_DISPLAY_Z_OFFSET).toBeCloseTo(0.4, 5)
 	})
 })
 

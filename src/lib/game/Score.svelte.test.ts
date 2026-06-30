@@ -44,7 +44,7 @@ function make_memory_storage(): Storage {
 			return store.has(key) ? (store.get(key) ?? null) : null
 		},
 		key(index: number): string | null {
-			return [...store.keys()][index] ?? null
+			return store.keys().toArray()[index] ?? null
 		},
 		removeItem(key: string): void {
 			store.delete(key)
@@ -112,7 +112,7 @@ function describe_calculate_time_coefficient(): void {
 		})
 
 		it('returns MIN_TIME_COEFF (0.1) when avg seconds is very large', () => {
-			expect(score.calculate_time_coefficient(ELAPSED_100S, SEQ_1)).toBe(0.1)
+			expect(score.calculate_time_coefficient(ELAPSED_100S, SEQ_1)).toBeCloseTo(0.1, 5)
 		})
 
 		it('normalizes by sequence length so longer rounds are not unfairly penalized', () => {
@@ -415,7 +415,7 @@ function describe_migrate_move_and_skip(): void {
 		migrate_legacy_score_keys('simon', 'mnemecha')
 
 		expect(storage.getItem(NEW_SCORE_KEY)).toBeNull()
-		expect(storage.length).toBe(0)
+		expect(storage).toHaveLength(0)
 	})
 
 	it('keeps existing new-key values and discards legacy when both prefixes have data', () => {

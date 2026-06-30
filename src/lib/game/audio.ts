@@ -10,7 +10,7 @@ const GAIN_FLOOR = 0.001
 const NORMAL_WAVE: OscillatorType = 'sine'
 const CYBER_WAVE: OscillatorType = 'square'
 
-let active_osc: OscillatorNode | null = null
+const tone_state: { active_osc: OscillatorNode | null } = { active_osc: null }
 
 interface OscGraph {
 	osc: OscillatorNode
@@ -35,15 +35,15 @@ function create_osc_graph(freq: number, is_alt: boolean): OscGraph | null {
 }
 
 function stop_tone(): void {
-	if (!active_osc) return
+	if (!tone_state.active_osc) return
 
 	try {
-		active_osc.stop()
+		tone_state.active_osc.stop()
 	} catch {
 		// already stopped
 	}
 
-	active_osc = null
+	tone_state.active_osc = null
 }
 
 function start_tone_raw(freq: number, is_alt: boolean): void {
@@ -51,7 +51,7 @@ function start_tone_raw(freq: number, is_alt: boolean): void {
 	const nodes = create_osc_graph(freq, is_alt)
 	if (!nodes) return
 	nodes.osc.start(nodes.ctx.currentTime)
-	active_osc = nodes.osc
+	tone_state.active_osc = nodes.osc
 }
 
 function play_raw_tone(freq: number, duration_ms: number, is_alt: boolean): void {

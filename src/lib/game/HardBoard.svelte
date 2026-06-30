@@ -24,8 +24,9 @@
 
 	function is_color_lit(color: ButtonColor): boolean {
 		const active = simon_data.active_item
-		const pressed = simon_data.pressed_item
 		if (active?.board_index === board_index && active.color === color) return true
+
+		const pressed = simon_data.pressed_item
 		if (pressed?.board_index === board_index && pressed.color === color) return true
 
 		return simon_data.flash_colors.includes(color)
