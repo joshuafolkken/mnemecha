@@ -34,46 +34,46 @@ const BASE_PROPS = {
 }
 
 describe('SimonBoardContent', () => {
-	it('renders without error with default callbacks', () => {
-		const { container } = render(SimonBoardContent, { props: BASE_PROPS })
+	it('renders without error with default callbacks', async () => {
+		const { container } = await render(SimonBoardContent, { props: BASE_PROPS })
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error when a color is lit', () => {
-		const { container } = render(SimonBoardContent, {
+	it('renders without error when a color is lit', async () => {
+		const { container } = await render(SimonBoardContent, {
 			props: { ...BASE_PROPS, is_color_lit: (color: ButtonColor) => color === 'green' },
 		})
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error in cyber/alt mode', () => {
-		const { container } = render(SimonBoardContent, {
+	it('renders without error in cyber/alt mode', async () => {
+		const { container } = await render(SimonBoardContent, {
 			props: { ...BASE_PROPS, is_alt: true, flash_intensity: 2.5 },
 		})
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error with an empty center text', () => {
-		const { container } = render(SimonBoardContent, {
+	it('renders without error with an empty center text', async () => {
+		const { container } = await render(SimonBoardContent, {
 			props: { ...BASE_PROPS, center_text: '' },
 		})
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error with the digit-only ROUND configuration', () => {
-		const { container } = render(SimonBoardContent, {
+	it('renders without error with the digit-only ROUND configuration', async () => {
+		const { container } = await render(SimonBoardContent, {
 			props: { ...BASE_PROPS, center_text: '3', base_font_size: ROUND_DIGIT_FONT_SIZE },
 		})
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error with multi-line GAME OVER and breathing line-height', () => {
-		const { container } = render(SimonBoardContent, {
+	it('renders without error with multi-line GAME OVER and breathing line-height', async () => {
+		const { container } = await render(SimonBoardContent, {
 			props: {
 				...BASE_PROPS,
 				center_text: 'GAME\nOVER',

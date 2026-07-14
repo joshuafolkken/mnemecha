@@ -1,0 +1,5 @@
+version: '0.2'
+# Project-specific cspell config — owned by this project. jgame sync never overwrites this file,
+# so ignorePaths added here survive every dependency bump (game-kit#385). cspell.config.yaml
+# imports it, and cspell unions ignorePaths across the config and its imports.
+ignorePaths: []
