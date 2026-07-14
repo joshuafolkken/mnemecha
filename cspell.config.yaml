@@ -1,6 +1,7 @@
 version: '0.2'
 import:
   - '@joshuafolkken/game-kit/cspell/game'
+  - ./cspell.project.yaml
 dictionaryDefinitions:
   - name: project-words
     path: ./project-words.txt

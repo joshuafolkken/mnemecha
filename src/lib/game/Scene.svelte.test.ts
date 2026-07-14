@@ -86,14 +86,14 @@ vi.mock('$lib/game/credits', () => ({
 }))
 
 describe('SimonScene', () => {
-	it('renders without error', () => {
-		const { container } = render(SimonScene)
+	it('renders without error', async () => {
+		const { container } = await render(SimonScene)
 
 		expect(container).toBeTruthy()
 	})
 
-	it('calls make_credits_scroll_bounds with CREDITS_LINE_COUNT and HALF_D', () => {
-		render(SimonScene)
+	it('calls make_credits_scroll_bounds with CREDITS_LINE_COUNT and HALF_D', async () => {
+		await render(SimonScene)
 		expect(vi.mocked(credits_scroll.make_credits_scroll_bounds)).toHaveBeenCalledWith(1, 5)
 	})
 
