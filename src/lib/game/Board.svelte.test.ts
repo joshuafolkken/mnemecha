@@ -30,40 +30,40 @@ const BOARD_TEXT_PROPS = {
 }
 
 describe('SimonBoard', () => {
-	it('renders without error in idle state', () => {
-		const { container } = render(SimonBoard, {
+	it('renders without error in idle state', async () => {
+		const { container } = await render(SimonBoard, {
 			props: { simon_data: make_simon_data(), ...BOARD_TEXT_PROPS },
 		})
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error when a color is active', () => {
-		const { container } = render(SimonBoard, {
+	it('renders without error when a color is active', async () => {
+		const { container } = await render(SimonBoard, {
 			props: { simon_data: make_simon_data({ active_color: 'green' }), ...BOARD_TEXT_PROPS },
 		})
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error in gameover phase', () => {
-		const { container } = render(SimonBoard, {
+	it('renders without error in gameover phase', async () => {
+		const { container } = await render(SimonBoard, {
 			props: { simon_data: make_simon_data({ phase: 'gameover' }), ...BOARD_TEXT_PROPS },
 		})
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error when round is in progress', () => {
-		const { container } = render(SimonBoard, {
+	it('renders without error when round is in progress', async () => {
+		const { container } = await render(SimonBoard, {
 			props: { simon_data: make_simon_data({ phase: 'showing', round: 3 }), ...BOARD_TEXT_PROPS },
 		})
 
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error with flash colors', () => {
-		const { container } = render(SimonBoard, {
+	it('renders without error with flash colors', async () => {
+		const { container } = await render(SimonBoard, {
 			props: {
 				simon_data: make_simon_data({ flash_colors: ['red', 'blue'] }),
 				...BOARD_TEXT_PROPS,

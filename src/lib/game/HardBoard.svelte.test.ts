@@ -33,11 +33,11 @@ const BOARD_TEXT_PROPS = {
 	text_start: 'START',
 }
 
-function expect_renders(
+async function expect_renders(
 	board_index: HardBoardIndex,
 	overrides: Partial<HardSimonBoardData> = {},
-): void {
-	const { container } = render(HardSimonBoard, {
+): Promise<void> {
+	const { container } = await render(HardSimonBoard, {
 		props: {
 			board_index,
 			simon_data: make_simon_data(overrides),
@@ -49,37 +49,37 @@ function expect_renders(
 }
 
 describe('HardSimonBoard', () => {
-	it('renders the center board without error in idle state', () => {
-		expect_renders(CENTER_INDEX)
+	it('renders the center board without error in idle state', async () => {
+		await expect_renders(CENTER_INDEX)
 	})
 
-	it('renders the left board without error in idle state', () => {
-		expect_renders(LEFT_INDEX)
+	it('renders the left board without error in idle state', async () => {
+		await expect_renders(LEFT_INDEX)
 	})
 
-	it('renders the right board without error in idle state', () => {
-		expect_renders(RIGHT_INDEX)
+	it('renders the right board without error in idle state', async () => {
+		await expect_renders(RIGHT_INDEX)
 	})
 
-	it('renders when a (board_index, color) tuple is active', () => {
-		expect_renders(CENTER_INDEX, {
+	it('renders when a (board_index, color) tuple is active', async () => {
+		await expect_renders(CENTER_INDEX, {
 			active_item: { board_index: CENTER_INDEX, color: 'green' },
 		})
 	})
 
-	it('renders without error in gameover phase', () => {
-		expect_renders(CENTER_INDEX, { phase: 'gameover' })
+	it('renders without error in gameover phase', async () => {
+		await expect_renders(CENTER_INDEX, { phase: 'gameover' })
 	})
 
-	it('renders without error during round_complete with flash colors', () => {
-		expect_renders(LEFT_INDEX, {
+	it('renders without error during round_complete with flash colors', async () => {
+		await expect_renders(LEFT_INDEX, {
 			phase: 'round_complete',
 			flash_colors: ['green', 'red', 'yellow', 'blue'],
 			flash_intensity: 2.5,
 		})
 	})
 
-	it('renders without error when round is in progress', () => {
-		expect_renders(CENTER_INDEX, { phase: 'showing', round: 5 })
+	it('renders without error when round is in progress', async () => {
+		await expect_renders(CENTER_INDEX, { phase: 'showing', round: 5 })
 	})
 })

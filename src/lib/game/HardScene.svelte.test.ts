@@ -64,8 +64,8 @@ const SCENE_PROPS = {
 }
 
 describe('HardSimonScene', () => {
-	it('renders without error in idle state', () => {
-		const { container } = render(HardSimonScene, {
+	it('renders without error in idle state', async () => {
+		const { container } = await render(HardSimonScene, {
 			props: {
 				simon_data: make_simon_data(),
 				score_data: make_score_data(),
@@ -76,9 +76,9 @@ describe('HardSimonScene', () => {
 		expect(container).toBeTruthy()
 	})
 
-	it('renders without error when score is non-zero', () => {
+	it('renders without error when score is non-zero', async () => {
 		const score_data = { ...make_score_data(), current_score: 1000, high_score: 5000 }
-		const { container } = render(HardSimonScene, {
+		const { container } = await render(HardSimonScene, {
 			props: {
 				simon_data: make_simon_data(),
 				score_data,
